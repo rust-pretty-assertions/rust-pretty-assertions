@@ -1,18 +1,19 @@
 //! # Pretty Assertions
 //!
 //! When writing tests in Rust, you'll probably use `assert_eq!(a, b)` _a lot_.
+//!
 //! If such a test fails, it will present all the details of `a` and `b`, but you have to spot, the differences yourself, which is not always straightforward, like here:
 //!
-//! ![standard assertion](../examples/standard_assertion.png)
+//! ![standard assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/162f407eb8f627185ce70c0475a661b7480f0038/examples/standard_assertion.png)
 //!
 //! Wouldn't that task be _much_ easier with a colorful diff?
 //!
-//! ![pretty assertion](../examples/pretty_assertion.png)
+//! ![pretty assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/162f407eb8f627185ce70c0475a661b7480f0038/examples/pretty_assertion.png)
 //!
 //! Yes it would. And you only need **one line of code** to make it happen —
 //! seriously:
 //!
-//! ```rust
+//! ```rust,ignore
 //! // add the following line to the top of your crate root to
 //! // overwrite `assert_eq!` with a colorful drop-in replacement
 //! #[macro_use] extern crate pretty_assertions;

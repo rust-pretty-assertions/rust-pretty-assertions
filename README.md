@@ -1,6 +1,12 @@
+[![Build status](https://travis-ci.org/colin-kiegel/rust-pretty-assertions.svg?branch=master)](https://travis-ci.org/colin-kiegel/rust-pretty-assertions)
+[![Latest version](https://img.shields.io/crates/v/rust-pretty-assertions.svg)](https://crates.io/crates/rust-pretty-assertions)
+[![All downloads](https://img.shields.io/crates/d/rust-pretty-assertions.svg)](https://crates.io/crates/rust-pretty-assertions)
+[![Downloads of latest version](https://img.shields.io/crates/dv/rust-pretty-assertions.svg)](https://crates.io/crates/rust-pretty-assertions)
+
 # Pretty Assertions
 
 When writing tests in Rust, you'll probably use `assert_eq!(a, b)` _a lot_.
+
 If such a test fails, it will present all the details of `a` and `b`, but you have to spot, the differences yourself, which is not always straightforward, like here:
 
 ![standard assertion](examples/standard_assertion.png)
