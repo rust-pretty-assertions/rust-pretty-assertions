@@ -1,7 +1,7 @@
 [![Build status](https://travis-ci.org/colin-kiegel/rust-pretty-assertions.svg?branch=master)](https://travis-ci.org/colin-kiegel/rust-pretty-assertions)
-[![Latest version](https://img.shields.io/crates/v/rust-pretty-assertions.svg)](https://crates.io/crates/rust-pretty-assertions)
-[![All downloads](https://img.shields.io/crates/d/rust-pretty-assertions.svg)](https://crates.io/crates/rust-pretty-assertions)
-[![Downloads of latest version](https://img.shields.io/crates/dv/rust-pretty-assertions.svg)](https://crates.io/crates/rust-pretty-assertions)
+[![Latest version](https://img.shields.io/crates/v/pretty-assertions.svg)](https://crates.io/crates/pretty-assertions)
+[![All downloads](https://img.shields.io/crates/d/pretty-assertions.svg)](https://crates.io/crates/pretty-assertions)
+[![Downloads of latest version](https://img.shields.io/crates/dv/pretty-assertions.svg)](https://crates.io/crates/pretty-assertions)
 
 # Pretty Assertions
 
