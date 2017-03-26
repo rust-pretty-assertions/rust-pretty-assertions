@@ -2,7 +2,7 @@
 //!
 //! When writing tests in Rust, you'll probably use `assert_eq!(a, b)` _a lot_.
 //!
-//! If such a test fails, it will present all the details of `a` and `b`, but you have to spot, the differences yourself, which is not always straightforward, like here:
+//! If such a test fails, it will present all the details of `a` and `b`, but you have to spot the differences yourself — which is not always straightforward, like here:
 //!
 //! ![standard assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/162f407eb8f627185ce70c0475a661b7480f0038/examples/standard_assertion.png)
 //!

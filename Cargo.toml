@@ -8,7 +8,7 @@ repository = "https://github.com/colin-kiegel/rust-pretty-assertions"
 documentation = "https://docs.rs/pretty_assertions"
 
 license = "MIT/Apache-2.0"
-categories = ["development-tools", "rust-patterns"]
+categories = ["development-tools"]
 keywords = ["assert", "diff", "pretty", "color"]
 readme = "README.md"
 
