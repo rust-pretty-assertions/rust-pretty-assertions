@@ -15,34 +15,19 @@ Wouldn't that task be _much_ easier with a colorful diff?
 
 ![pretty assertion](examples/pretty_assertion.png)
 
-Yes it would. And you only need **one line of code** to make it happen —
-seriously:
+Yep — and you only need **one line of code** to make it happen:
 
-```rust
-// add the following line to the top of your crate root to
-// overwrite `assert_eq!` with a colorful drop-in replacement
+```rust,ignore
 #[macro_use] extern crate pretty_assertions;
 ```
 
-Ok, and don't forget to add the `pretty_assertions` dependency to `Cargo.toml`.
-Does that count as a line of code?.. ;-)
+<details>
+<summary>Show the example behind the screenshots above.</summary>
 
-## Note
-
-* `pretty_assertions` is an ultra-thin wrapper around the
-  [`difference`](https://crates.io/crates/difference) crate, which does
-  the heavy lifting. It replaces the `assert_eq!` macro with just about 22
-  lines of code.
-* The replacement is only effective in your own crate, not in other libraries
-  you include.
-
-## Example
-
-This is the Rust code behind the screenshots above.
-
-```rust
-// uncomment the next line to make the assertions colorful:
-//#[macro_use] extern crate pretty_assertions;
+```rust,ignore
+// 1. add the `pretty_assertions` dependency to `Cargo.toml`.
+// 2. insert this line at the top of your crate root or integration test
+#[macro_use] extern crate pretty_assertions;
 
 fn main() {
     #[derive(Debug, PartialEq)]
@@ -58,6 +43,32 @@ fn main() {
     assert_eq!(x, y);
 }
 ```
+</details>
+
+## Tip
+
+Specify it as [`[dev-dependency]`](http://doc.crates.io/specifying-dependencies.html#development-dependencies)
+and it will only be used for compiling tests, examples, and benchmarks.
+This way the compile time of `cargo build` won't be affected!
+
+In your crate root, also add `#[cfg(test)]` to the crate import, like this:
+
+```rust,ignore
+#[cfg(test)] // <-- not needed in examples + integration tests
+#[macro_use]
+extern crate pretty_assertions;
+```
+
+## Note
+
+* Each example and integration test also needs `#[macro_use] extern crate
+  pretty_assertions`, if you want colorful diffs there.
+* The replacement is only effective in your own crate, not in other libraries
+  you include.
+* `pretty_assertions` is an ultra-thin wrapper around the
+  [`difference`](https://crates.io/crates/difference) crate, which does the
+  heavy lifting. All that `pretty_assertions` does is to replace the
+  `assert_eq!` macro with just about 22 lines of code.
 
 ## License
 
