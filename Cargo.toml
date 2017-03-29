@@ -1,6 +1,6 @@
 [package]
 name = "pretty_assertions"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Colin Kiegel <kiegel@gmx.de>"]
 
 description = "Overwrite `assert_eq!` with a drop-in replacement, adding a colorful diff."
