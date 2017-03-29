@@ -17,3 +17,13 @@ fn assert_struct() {
 
     assert_eq!(x, y);
 }
+
+#[test]
+#[should_panic(expected="assertion failed: `(left == right)` (left: `\"Hello World!\"`, right: `\"Hello Wrold!\"`, diff: `\"Hello [91mWorld!\"[0m [92mWrold!\"[0m `): not good: Hello World! != Hello Wrold!")]
+fn assert_args() {
+
+    let x = "Hello World!";
+    let y = "Hello Wrold!";
+
+    assert_eq!(x, y, "not good: {} != {}", x, y);
+}
