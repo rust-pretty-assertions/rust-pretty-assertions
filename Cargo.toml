@@ -12,5 +12,8 @@ categories = ["development-tools"]
 keywords = ["assert", "diff", "pretty", "color"]
 readme = "README.md"
 
+[badges]
+travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
+
 [dependencies]
 difference = "1.0.0"
