@@ -65,10 +65,6 @@ extern crate pretty_assertions;
   pretty_assertions`, if you want colorful diffs there.
 * The replacement is only effective in your own crate, not in other libraries
   you include.
-* `pretty_assertions` is an ultra-thin wrapper around the
-  [`difference`](https://crates.io/crates/difference) crate, which does the
-  heavy lifting. All that `pretty_assertions` does is to replace the
-  `assert_eq!` macro with just about 22 lines of code.
 
 ## License
 
