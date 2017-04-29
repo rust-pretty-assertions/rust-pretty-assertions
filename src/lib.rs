@@ -4,11 +4,11 @@
 //!
 //! If such a test fails, it will present all the details of `a` and `b`, but you have to spot, the differences yourself, which is not always straightforward, like here:
 //!
-//! ![standard assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/162f407eb8f627185ce70c0475a661b7480f0038/examples/standard_assertion.png)
+//! ![standard assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/1a7feb17e1dfbeabfac91b0d5a9cb78dfb1bc065/examples/standard_assertion.png)
 //!
 //! Wouldn't that task be _much_ easier with a colorful diff?
 //!
-//! ![pretty assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/162f407eb8f627185ce70c0475a661b7480f0038/examples/pretty_assertion.png)
+//! ![pretty assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/1a7feb17e1dfbeabfac91b0d5a9cb78dfb1bc065/examples/pretty_assertion.png)
 //!
 //! Yep — and you only need **one line of code** to make it happen:
 //!
