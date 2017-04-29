@@ -60,11 +60,45 @@
 //!   pretty_assertions`, if you want colorful diffs there.
 //! * The replacement is only effective in your own crate, not in other libraries
 //!   you include.
+//! * `assert_ne` is also switched to multi-line presentation, but does _not_ show
+//!   a diff.
 
 extern crate difference;
 
+use std::fmt::{self, Debug, Display};
+use difference::Changeset;
+
 #[doc(hidden)]
-pub use difference::Changeset;
+pub struct Comparison {
+    left: String,
+    right: String,
+    changeset: Changeset
+}
+
+impl Comparison {
+    pub fn new<T: Debug>(left: &T, right: &T) -> Comparison {
+        let left_dbg = format!("{:?}", *left);
+        let right_dbg = format!("{:?}", *right);
+        let changeset = Changeset::new(&left_dbg, &right_dbg, " ");
+
+        Comparison {
+            left: left_dbg,
+            right: right_dbg,
+            changeset: changeset,
+        }
+    }
+}
+
+impl Display for Comparison {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "left:  `{}`\
+                   \nright: `{}`\
+                   \ndiff:  `{}`",
+               self.left,
+               self.right,
+               self.changeset)
+    }
+}
 
 #[macro_export]
 macro_rules! assert_eq {
@@ -72,12 +106,11 @@ macro_rules! assert_eq {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
-                    let left_dbg = format!("{:?}", *left_val);
-                    let right_dbg = format!("{:?}", *right_val);
-                    let diff = $crate::Changeset::new(&left_dbg, &right_dbg, " ");
-
-                    panic!("assertion failed: `(left == right)` \
-                           (left: `{}`, right: `{}`, diff: `{}`)", left_dbg, right_dbg, diff)
+                    panic!("assertion failed: `(left == right)`\
+                          \n\
+                          \n{}\
+                          \n",
+                           $crate::Comparison::new(left_val, right_val))
                 }
             }
         }
@@ -86,13 +119,49 @@ macro_rules! assert_eq {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
-                    let left_dbg = format!("{:?}", *left_val);
-                    let right_dbg = format!("{:?}", *right_val);
-                    let diff = $crate::Changeset::new(&left_dbg, &right_dbg, " ");
+                    panic!("assertion failed: `(left == right)`: {}\
+                          \n\
+                          \n{}\
+                          \n",
+                           format_args!($($arg)*),
+                           $crate::Comparison::new(left_val, right_val))
+                }
+            }
+        }
+    });
+}
 
-                    panic!("assertion failed: `(left == right)` \
-                           (left: `{}`, right: `{}`, diff: `{}`): {}", left_dbg, right_dbg, diff,
-                           format_args!($($arg)*))
+#[macro_export]
+macro_rules! assert_ne {
+    ($left:expr, $right:expr) => ({
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                if *left_val == *right_val {
+                    panic!("assertion failed: `(left != right)`\
+                          \n\
+                          \nleft:  `{:?}`\
+                          \nright: `{:?}`\
+                          \n\
+                          \n",
+                           left_val,
+                           right_val)
+                }
+            }
+        }
+    });
+    ($left:expr, $right:expr, $($arg:tt)+) => ({
+        match (&($left), &($right)) {
+            (left_val, right_val) => {
+                if *left_val == *right_val {
+                    panic!("assertion failed: `(left != right)`: {}\
+                          \n\
+                          \nleft:  `{:?}`\
+                          \nright: `{:?}`\
+                          \n\
+                          \n",
+                           format_args!($($arg)+),
+                           left_val,
+                           right_val)
                 }
             }
         }
