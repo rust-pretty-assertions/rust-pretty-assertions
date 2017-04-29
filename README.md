@@ -65,6 +65,8 @@ extern crate pretty_assertions;
   pretty_assertions`, if you want colorful diffs there.
 * The replacement is only effective in your own crate, not in other libraries
   you include.
+* `assert_ne` is also switched to multi-line presentation, but does _not_ show
+  a diff.
 
 ## License
 
