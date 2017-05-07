@@ -42,7 +42,7 @@
 //!
 //! ## Tip
 //!
-//! Specify it as [`[dev-dependency]`](http://doc.crates.io/specifying-dependencies.html#development-dependencies)
+//! Specify it as [`[dev-dependencies]`](http://doc.crates.io/specifying-dependencies.html#development-dependencies)
 //! and it will only be used for compiling tests, examples, and benchmarks.
 //! This way the compile time of `cargo build` won't be affected!
 //!
