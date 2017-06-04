@@ -64,9 +64,13 @@
 //!   a diff.
 
 extern crate difference;
+extern crate ansi_term;
+mod format_changeset;
 
 use std::fmt::{self, Debug, Display};
 use difference::Changeset;
+
+use format_changeset::format_changeset;
 
 #[doc(hidden)]
 pub struct Comparison {
@@ -77,9 +81,9 @@ pub struct Comparison {
 
 impl Comparison {
     pub fn new<TLeft: Debug, TRight: Debug>(left: &TLeft, right: &TRight) -> Comparison {
-        let left_dbg = format!("{:?}", *left);
-        let right_dbg = format!("{:?}", *right);
-        let changeset = Changeset::new(&left_dbg, &right_dbg, " ");
+        let left_dbg = format!("{:#?}", *left);
+        let right_dbg = format!("{:#?}", *right);
+        let changeset = Changeset::new(&left_dbg, &right_dbg, "\n");
 
         Comparison {
             left: left_dbg,
@@ -92,11 +96,10 @@ impl Comparison {
 impl Display for Comparison {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "left:  `{}`\
-                   \nright: `{}`\
-                   \ndiff:  `{}`",
+                   \nright: `{}`",
                self.left,
-               self.right,
-               self.changeset)
+               self.right)?;
+        format_changeset(f, &self.changeset)
     }
 }
 
@@ -139,8 +142,8 @@ macro_rules! assert_ne {
                 if *left_val == *right_val {
                     panic!("assertion failed: `(left != right)`\
                           \n\
-                          \nleft:  `{:?}`\
-                          \nright: `{:?}`\
+                          \nleft:  `{:#?}`\
+                          \nright: `{:#?}`\
                           \n\
                           \n",
                            left_val,
@@ -155,8 +158,8 @@ macro_rules! assert_ne {
                 if *left_val == *right_val {
                     panic!("assertion failed: `(left != right)`: {}\
                           \n\
-                          \nleft:  `{:?}`\
-                          \nright: `{:?}`\
+                          \nleft:  `{:#?}`\
+                          \nright: `{:#?}`\
                           \n\
                           \n",
                            format_args!($($arg)+),

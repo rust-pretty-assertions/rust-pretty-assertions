@@ -4,9 +4,37 @@ extern crate pretty_assertions;
 #[test]
 #[should_panic(expected=r#"assertion failed: `(left == right)`: custom panic message
 
-left:  `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
-right: `Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!") })`
-diff:  `Some(Foo { lorem: "Hello [91mWorld!",[0m [92mWrold!",[0m ipsum: 42, dolor: [91mOk("hey")[0m [92mOk("hey ho!")[0m }) `
+left:  `Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey"
+        )
+    }
+)`
+right: `Some(
+    Foo {
+        lorem: "Hello Wrold!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey ho!"
+        )
+    }
+)`
+diff:  `
+ Some(
+     Foo {
+[31m-        lorem: "Hello World!",[0m
+[32m+[0m        [32mlorem: "Hello[0m [4;32mWrold!",[0m
+         ipsum: 42,
+         dolor: Ok(
+[31m-            "hey"[0m
+[32m+[0m            [4;32m"hey ho!"[0m
+         )
+     }
+ )
+`
 
 "#)]
 fn assert_eq() {
@@ -27,9 +55,37 @@ fn assert_eq() {
 #[test]
 #[should_panic(expected=r#"assertion failed: `(left == right)`: custom panic message
 
-left:  `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
-right: `Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!") })`
-diff:  `Some(Foo { lorem: "Hello [91mWorld!",[0m [92mWrold!",[0m ipsum: 42, dolor: [91mOk("hey")[0m [92mOk("hey ho!")[0m }) `
+left:  `Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey"
+        )
+    }
+)`
+right: `Some(
+    Foo {
+        lorem: "Hello Wrold!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey ho!"
+        )
+    }
+)`
+diff:  `
+ Some(
+     Foo {
+[31m-        lorem: "Hello World!",[0m
+[32m+[0m        [32mlorem: "Hello[0m [4;32mWrold!",[0m
+         ipsum: 42,
+         dolor: Ok(
+[31m-            "hey"[0m
+[32m+[0m            [4;32m"hey ho!"[0m
+         )
+     }
+ )
+`
 
 "#)]
 fn assert_eq_custom() {

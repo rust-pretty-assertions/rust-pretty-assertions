@@ -4,8 +4,24 @@ extern crate pretty_assertions;
 #[test]
 #[should_panic(expected=r#"assertion failed: `(left != right)`
 
-left:  `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
-right: `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
+left:  `Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey"
+        )
+    }
+)`
+right: `Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey"
+        )
+    }
+)`
 
 "#)]
 fn assert_ne() {
@@ -25,8 +41,24 @@ fn assert_ne() {
 #[test]
 #[should_panic(expected=r#"assertion failed: `(left != right)`: custom panic message
 
-left:  `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
-right: `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
+left:  `Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey"
+        )
+    }
+)`
+right: `Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey"
+        )
+    }
+)`
 
 "#)]
 fn assert_ne_custom() {
