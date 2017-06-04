@@ -34,17 +34,17 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                 match diffs[i - 1] {
                     Difference::Rem(ref prev_diff) => {
                         write!(f, "{}", Green.paint("+"))?;
-                        let Changeset { diffs, .. } = Changeset::new(&prev_diff.replace("\n", "\n+"), &diff.replace("\n", "\n+"), "");
+                        let Changeset { diffs, .. } = Changeset::new(prev_diff, diff, "");
                         for c in diffs {
                             match c {
                                 Difference::Same(ref word_diff) => {
-                                    paint!(f, Green, "{}", word_diff)?;
+                                    paint!(f, Green, "{}", word_diff.replace("\n", "\n+"))?;
                                 }
                                 Difference::Add(ref word_diff) => {
                                     let formatted_str = Style::new()
                                         .fg(Green)
                                         .underline()
-                                        .paint(word_diff.to_string());
+                                        .paint(word_diff.replace("\n", "\n+").to_string());
 
                                     write!(f, "{}", formatted_str)?;
                                 }
