@@ -55,7 +55,7 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                     }
                     _ => {
                         paint!(f, Green, "+{}", diff)?;
-                        writeln!(f)?;
+                        writeln!(f, "")?;
                     }
                 };
             }
@@ -66,5 +66,5 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
             }
         }
     }
-    writeln!(f)
+    writeln!(f, "")
 }
