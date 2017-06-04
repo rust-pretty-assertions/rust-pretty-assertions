@@ -71,13 +71,10 @@ use std::fmt::{self, Debug, Display};
 use difference::Changeset;
 
 use format_changeset::format_changeset;
+pub use ansi_term::Style;
 
 #[doc(hidden)]
-pub struct Comparison {
-    left: String,
-    right: String,
-    changeset: Changeset
-}
+pub struct Comparison(Changeset);
 
 impl Comparison {
     pub fn new<TLeft: Debug, TRight: Debug>(left: &TLeft, right: &TRight) -> Comparison {
@@ -85,21 +82,13 @@ impl Comparison {
         let right_dbg = format!("{:#?}", *right);
         let changeset = Changeset::new(&left_dbg, &right_dbg, "\n");
 
-        Comparison {
-            left: left_dbg,
-            right: right_dbg,
-            changeset: changeset,
-        }
+        Comparison(changeset)
     }
 }
 
 impl Display for Comparison {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "left:  `{}`\
-                   \nright: `{}`",
-               self.left,
-               self.right)?;
-        format_changeset(f, &self.changeset)
+        format_changeset(f, &self.0)
     }
 }
 
@@ -142,12 +131,12 @@ macro_rules! assert_ne {
                 if *left_val == *right_val {
                     panic!("assertion failed: `(left != right)`\
                           \n\
-                          \nleft:  `{:#?}`\
-                          \nright: `{:#?}`\
+                          \n{}:\
+                          \n{:#?}\
                           \n\
                           \n",
-                           left_val,
-                           right_val)
+                           $crate::Style::new().bold().paint("Both sides"),
+                           left_val)
                 }
             }
         }
@@ -158,13 +147,13 @@ macro_rules! assert_ne {
                 if *left_val == *right_val {
                     panic!("assertion failed: `(left != right)`: {}\
                           \n\
-                          \nleft:  `{:#?}`\
-                          \nright: `{:#?}`\
+                          \n{}:\
+                          \n{:#?}\
                           \n\
                           \n",
                            format_args!($($arg)+),
-                           left_val,
-                           right_val)
+                           $crate::Style::new().bold().paint("Both sides"),
+                           left_val)
                 }
             }
         }

@@ -17,7 +17,10 @@ macro_rules! paint {
 pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::Result {
     let ref diffs = changeset.diffs;
 
-    writeln!(f, "diff:  `")?;
+    writeln!(f, "{} ({} / {}):",
+             Style::new().bold().paint("Diff"),
+             Red.paint("- left"),
+             Green.paint("+ right"))?;
     for i in 0..diffs.len() {
         match diffs[i] {
             Difference::Same(ref diff) => {
@@ -63,5 +66,5 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
             }
         }
     }
-    writeln!(f, "`")
+    writeln!(f)
 }
