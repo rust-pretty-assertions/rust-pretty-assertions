@@ -46,3 +46,10 @@ fn assert_eq_custom() {
 
     assert_eq!(x, y, "custom panic message");
 }
+
+#[test]
+fn assert_eq_with_comparable_types() {
+	let s0: &'static str = "foo";
+	let s1: String = "foo".to_string();
+	assert_eq!(s0, s1);
+}

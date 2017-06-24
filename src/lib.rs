@@ -76,7 +76,7 @@ pub struct Comparison {
 }
 
 impl Comparison {
-    pub fn new<T: Debug>(left: &T, right: &T) -> Comparison {
+    pub fn new<TLeft: Debug, TRight: Debug>(left: &TLeft, right: &TRight) -> Comparison {
         let left_dbg = format!("{:?}", *left);
         let right_dbg = format!("{:?}", *right);
         let changeset = Changeset::new(&left_dbg, &right_dbg, " ");
