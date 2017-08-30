@@ -1,9 +1,9 @@
 [package]
 name = "pretty_assertions"
-version = "0.2.1"
-authors = ["Colin Kiegel <kiegel@gmx.de>"]
+version = "0.3.0"
+authors = ["Colin Kiegel <kiegel@gmx.de>", "Florent Fayolle <florent.fayolle69@gmail.com>"]
 
-description = "Overwrite `assert_eq!` with a drop-in replacement, adding a colorful diff."
+description = "Overwrite `assert_eq!` and `assert_ne!` with drop-in replacements, adding colorful diffs."
 repository = "https://github.com/colin-kiegel/rust-pretty-assertions"
 documentation = "https://docs.rs/pretty_assertions"
 
