@@ -2,11 +2,20 @@
 extern crate pretty_assertions;
 
 #[test]
-#[should_panic(expected=r#"assertion failed: `(left == right)`: custom panic message
+#[should_panic(expected=r#"assertion failed: `(left == right)`
 
-left:  `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
-right: `Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!") })`
-diff:  `Some(Foo { lorem: "Hello [91mWorld!",[0m [92mWrold!",[0m ipsum: 42, dolor: [91mOk("hey")[0m [92mOk("hey ho!")[0m }) `
+[1mDiff[0m ([31m- left[0m / [32m+ right[0m):
+ Some(
+     Foo {
+[31m-[0m[31m        lorem: "Hello W[0m[41;30mo[0m[31mr[0m[31mld!",[0m
+[32m+[0m[32m        lorem: "Hello W[0m[32mr[0m[42;30mo[0m[32mld!",[0m
+         ipsum: 42,
+         dolor: Ok(
+[31m-[0m[31m            "hey[0m[31m"[0m
+[32m+[0m[32m            "hey[0m[42;30m ho![0m[32m"[0m
+         )
+     }
+ )
 
 "#)]
 fn assert_eq() {
@@ -21,15 +30,24 @@ fn assert_eq() {
     let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
     let y = Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!".to_string())});
 
-    assert_eq!(x, y, "custom panic message");
+    assert_eq!(x, y);
 }
 
 #[test]
 #[should_panic(expected=r#"assertion failed: `(left == right)`: custom panic message
 
-left:  `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
-right: `Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!") })`
-diff:  `Some(Foo { lorem: "Hello [91mWorld!",[0m [92mWrold!",[0m ipsum: 42, dolor: [91mOk("hey")[0m [92mOk("hey ho!")[0m }) `
+[1mDiff[0m ([31m- left[0m / [32m+ right[0m):
+ Some(
+     Foo {
+[31m-[0m[31m        lorem: "Hello W[0m[41;30mo[0m[31mr[0m[31mld!",[0m
+[32m+[0m[32m        lorem: "Hello W[0m[32mr[0m[42;30mo[0m[32mld!",[0m
+         ipsum: 42,
+         dolor: Ok(
+[31m-[0m[31m            "hey[0m[31m"[0m
+[32m+[0m[32m            "hey[0m[42;30m ho![0m[32m"[0m
+         )
+     }
+ )
 
 "#)]
 fn assert_eq_custom() {

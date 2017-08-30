@@ -64,39 +64,31 @@
 //!   a diff.
 
 extern crate difference;
+extern crate ansi_term;
+mod format_changeset;
 
 use std::fmt::{self, Debug, Display};
 use difference::Changeset;
 
+use format_changeset::format_changeset;
+pub use ansi_term::Style;
+
 #[doc(hidden)]
-pub struct Comparison {
-    left: String,
-    right: String,
-    changeset: Changeset
-}
+pub struct Comparison(Changeset);
 
 impl Comparison {
     pub fn new<TLeft: Debug, TRight: Debug>(left: &TLeft, right: &TRight) -> Comparison {
-        let left_dbg = format!("{:?}", *left);
-        let right_dbg = format!("{:?}", *right);
-        let changeset = Changeset::new(&left_dbg, &right_dbg, " ");
+        let left_dbg = format!("{:#?}", *left);
+        let right_dbg = format!("{:#?}", *right);
+        let changeset = Changeset::new(&left_dbg, &right_dbg, "\n");
 
-        Comparison {
-            left: left_dbg,
-            right: right_dbg,
-            changeset: changeset,
-        }
+        Comparison(changeset)
     }
 }
 
 impl Display for Comparison {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "left:  `{}`\
-                   \nright: `{}`\
-                   \ndiff:  `{}`",
-               self.left,
-               self.right,
-               self.changeset)
+        format_changeset(f, &self.0)
     }
 }
 
@@ -132,38 +124,56 @@ macro_rules! assert_eq {
 }
 
 #[macro_export]
-macro_rules! assert_ne {
-    ($left:expr, $right:expr) => ({
-        match (&$left, &$right) {
+#[doc(hidden)]
+macro_rules! __assert_ne {
+    ($left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)+) => ({
+        match (&($left), &($right)) {
             (left_val, right_val) => {
-                if *left_val == *right_val {
-                    panic!("assertion failed: `(left != right)`\
+                if *left_val != *right_val {
+                    return;
+                }
+
+                let left_dbg = format!("{:?}", *left_val);
+                let right_dbg = format!("{:?}", *right_val);
+                if left_dbg != right_dbg {
+
+                    panic!("assertion failed: `(left != right)`{}{}\
                           \n\
-                          \nleft:  `{:?}`\
-                          \nright: `{:?}`\
+                          \n{}\
+                          \n{}: According to the `PartialEq` implementation, both of the values \
+                            are partially equivalent, even if the `Debug` outputs differ.\
                           \n\
                           \n",
-                           left_val,
-                           right_val)
+                           $maybe_semicolon,
+                           format_args!($($arg)+),
+                           $crate::Comparison::new(left_val, right_val),
+                           $crate::Style::new()
+                               .bold()
+                               .underline()
+                               .paint("Note"))
                 }
+
+                panic!("assertion failed: `(left != right)`{}{}\
+                      \n\
+                      \n{}:\
+                      \n{:#?}\
+                      \n\
+                      \n",
+                       $maybe_semicolon,
+                       format_args!($($arg)+),
+                       $crate::Style::new().bold().paint("Both sides"),
+                       left_val)
             }
         }
     });
+}
+
+#[macro_export]
+macro_rules! assert_ne {
+    ($left:expr, $right:expr) => ({
+        __assert_ne!($left, $right, "", "");
+    });
     ($left:expr, $right:expr, $($arg:tt)+) => ({
-        match (&($left), &($right)) {
-            (left_val, right_val) => {
-                if *left_val == *right_val {
-                    panic!("assertion failed: `(left != right)`: {}\
-                          \n\
-                          \nleft:  `{:?}`\
-                          \nright: `{:?}`\
-                          \n\
-                          \n",
-                           format_args!($($arg)+),
-                           left_val,
-                           right_val)
-                }
-            }
-        }
+        __assert_ne!($left, $right, ": ", $($arg)+);
     });
 }

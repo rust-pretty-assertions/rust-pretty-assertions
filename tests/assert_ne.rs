@@ -4,8 +4,16 @@ extern crate pretty_assertions;
 #[test]
 #[should_panic(expected=r#"assertion failed: `(left != right)`
 
-left:  `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
-right: `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
+[1mBoth sides[0m:
+Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey"
+        )
+    }
+)
 
 "#)]
 fn assert_ne() {
@@ -25,8 +33,16 @@ fn assert_ne() {
 #[test]
 #[should_panic(expected=r#"assertion failed: `(left != right)`: custom panic message
 
-left:  `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
-right: `Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey") })`
+[1mBoth sides[0m:
+Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey"
+        )
+    }
+)
 
 "#)]
 fn assert_ne_custom() {
@@ -41,4 +57,19 @@ fn assert_ne_custom() {
     let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
 
     assert_ne!(x, x, "custom panic message");
+}
+
+#[test]
+#[should_panic(expected=r#"assertion failed: `(left != right)`
+
+[1mDiff[0m ([31m- left[0m / [32m+ right[0m):
+ 
+[31m-[0m[31m[0m[41;30m-[0m[31m0[0m
+[32m+[0m[32m[0m[32m0[0m
+
+[1;4mNote[0m: According to the `PartialEq` implementation, both of the values are partially equivalent, even if the `Debug` outputs differ.
+
+"#)]
+fn assert_ne_partial() {
+    assert_ne!(-0.0, 0.0);
 }
