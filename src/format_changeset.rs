@@ -102,5 +102,5 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
             }
         }
     }
-    writeln!(f, "")
+    Ok(())
 }

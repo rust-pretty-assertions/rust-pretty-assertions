@@ -136,33 +136,21 @@ macro_rules! __assert_ne {
                 let left_dbg = format!("{:?}", *left_val);
                 let right_dbg = format!("{:?}", *right_val);
                 if left_dbg != right_dbg {
+
                     panic!("assertion failed: `(left != right)`{}{}\
                           \n\
-                          \n{important_note}: \
-                          Both of the values are partially equivalent (while they are expected not to be), even if the outputs below differ.\
-                          \nProbably the PartialEq trait is the culprit.\
-                          \n\
-                          \n{left_title}:\
-                          \n{left_val:#?}\
-                          \n\
-                          \n{right_title}:\
-                          \n{right_val:#?}\
+                          \n{}\
+                          \n{}: According to the `PartialEq` implementation, both of the values \
+                            are partially equivalent, even if the `Debug` outputs differ.\
                           \n\
                           \n",
                            $maybe_semicolon,
                            format_args!($($arg)+),
-                           important_note = $crate::Style::new()
+                           $crate::Comparison::new(left_val, right_val),
+                           $crate::Style::new()
                                .bold()
                                .underline()
-                               .paint("Important note"),
-                           left_title = $crate::Style::new()
-                               .bold()
-                               .paint("Left"),
-                           left_val = *left_val,
-                           right_title = $crate::Style::new()
-                               .bold()
-                               .paint("Right"),
-                           right_val = *right_val)
+                               .paint("Note"))
                 }
 
                 panic!("assertion failed: `(left != right)`{}{}\

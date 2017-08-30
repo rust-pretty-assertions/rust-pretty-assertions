@@ -62,14 +62,12 @@ fn assert_ne_custom() {
 #[test]
 #[should_panic(expected=r#"assertion failed: `(left != right)`
 
-[1;4mImportant note[0m: Both of the values are partially equivalent (while they are expected not to be), even if the outputs below differ.
-Probably the PartialEq trait is the culprit.
+[1mDiff[0m ([31m- left[0m / [32m+ right[0m):
+ 
+[31m-[0m[31m[0m[41;30m-[0m[31m0[0m
+[32m+[0m[32m[0m[32m0[0m
 
-[1mLeft[0m:
--0
-
-[1mRight[0m:
-0
+[1;4mNote[0m: According to the `PartialEq` implementation, both of the values are partially equivalent, even if the `Debug` outputs differ.
 
 "#)]
 fn assert_ne_partial() {
