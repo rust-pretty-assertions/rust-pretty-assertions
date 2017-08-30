@@ -7,12 +7,12 @@ extern crate pretty_assertions;
 [1mDiff[0m ([31m- left[0m / [32m+ right[0m):
  Some(
      Foo {
-[31m-        lorem: "Hello World!",
-[0m[32m+[0m[32m        lorem: "Hello W[0m[32mr[0m[4;32mo[0m[32mld!",[0m
+[31m-[0m[31m        lorem: "Hello W[0m[41;30mo[0m[31mr[0m[31mld!",[0m
+[32m+[0m[32m        lorem: "Hello W[0m[32mr[0m[42;30mo[0m[32mld!",[0m
          ipsum: 42,
          dolor: Ok(
-[31m-            "hey"
-[0m[32m+[0m[32m            "hey[0m[4;32m ho![0m[32m"[0m
+[31m-[0m[31m            "hey[0m[31m"[0m
+[32m+[0m[32m            "hey[0m[42;30m ho![0m[32m"[0m
          )
      }
  )
@@ -39,12 +39,12 @@ fn assert_eq() {
 [1mDiff[0m ([31m- left[0m / [32m+ right[0m):
  Some(
      Foo {
-[31m-        lorem: "Hello World!",
-[0m[32m+[0m[32m        lorem: "Hello W[0m[32mr[0m[4;32mo[0m[32mld!",[0m
+[31m-[0m[31m        lorem: "Hello W[0m[41;30mo[0m[31mr[0m[31mld!",[0m
+[32m+[0m[32m        lorem: "Hello W[0m[32mr[0m[42;30mo[0m[32mld!",[0m
          ipsum: 42,
          dolor: Ok(
-[31m-            "hey"
-[0m[32m+[0m[32m            "hey[0m[4;32m ho![0m[32m"[0m
+[31m-[0m[31m            "hey[0m[31m"[0m
+[32m+[0m[32m            "hey[0m[42;30m ho![0m[32m"[0m
          )
      }
  )
