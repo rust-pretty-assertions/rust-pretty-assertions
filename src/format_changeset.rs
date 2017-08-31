@@ -4,11 +4,13 @@ use ansi_term::Colour::{Red, Green, Black};
 use ansi_term::Style;
 
 macro_rules! paint {
-    ($f: ident, $colour: ident, $fmt: expr, $($args:tt)*) => (
+    ($f: ident, $colour: expr, $fmt: expr, $($args:tt)*) => (
         write!($f, "{}", $colour.paint(format!($fmt, $($args)*)))
     )
 }
 
+const SIGN_RIGHT: char = '+';
+const SIGN_LEFT: char = '-';
 
 // Adapted from:
 // https://github.com/johannhof/difference.rs/blob/c5749ad7d82aa3d480c15cb61af9f6baa08f116f/examples/github-style.rs
@@ -19,8 +21,8 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
 
     writeln!(f, "{} ({} / {}):",
              Style::new().bold().paint("Diff"),
-             Red.paint("- left"),
-             Green.paint("+ right"))?;
+             Red.paint(format!("{} left", SIGN_LEFT)),
+             Green.paint(format!("{} right", SIGN_RIGHT)))?;
     for i in 0..diffs.len() {
         match diffs[i] {
             Difference::Same(ref same) => {
@@ -39,40 +41,34 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                         // chunk. Note that this chunk can span over multiple lines.
                         let Changeset { diffs, .. } = Changeset::new(removed, added, "");
 
-                        // what's been
-                        write!(f, "{}", Red.paint("-"))?;
+                        // LEFT side (==what's been)
+                        paint!(f, Red, "{}", SIGN_LEFT)?;
                         for c in &diffs {
                             match *c {
                                 Difference::Same(ref word_diff) => {
-                                    paint!(f, Red, "{}", word_diff.replace("\n", "\n-"))?;
+                                    let s = word_diff.replace("\n", &format!("\n{}", SIGN_LEFT));
+                                    paint!(f, Red, "{}", s)?;
                                 }
                                 Difference::Rem(ref word_diff) => {
-                                    let formatted_str = Style::new()
-                                        .fg(Black)
-                                        .on(Red)
-                                        .paint(word_diff.replace("\n", "\n-").to_string());
-
-                                    write!(f, "{}", formatted_str)?;
+                                    let s = word_diff.replace("\n", &format!("\n{}", SIGN_LEFT));
+                                    paint!(f, Black.on(Red), "{}", s)?;
                                 }
                                 _ => (),
                             }
                         }
                         writeln!(f, "")?;
 
-                        // what's new
-                        write!(f, "{}", Green.paint("+"))?;
+                        // RIGHT side (==what's new)
+                        paint!(f, Green, "{}", SIGN_RIGHT)?;
                         for c in &diffs {
                             match *c {
                                 Difference::Same(ref word_diff) => {
-                                    paint!(f, Green, "{}", word_diff.replace("\n", "\n+"))?;
+                                    let s = word_diff.replace("\n", &format!("\n{}", SIGN_RIGHT));
+                                    paint!(f, Green, "{}", s)?;
                                 }
                                 Difference::Add(ref word_diff) => {
-                                    let formatted_str = Style::new()
-                                        .fg(Black)
-                                        .on(Green)
-                                        .paint(word_diff.replace("\n", "\n+").to_string());
-
-                                    write!(f, "{}", formatted_str)?;
+                                    let s = word_diff.replace("\n", &format!("\n{}", SIGN_RIGHT));
+                                    paint!(f, Black.on(Green), "{}", s)?;
                                 }
                                 _ => (),
                             }
@@ -81,7 +77,7 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                     }
                     _ => {
                         for line in added.split("\n") {
-                            paint!(f, Green, "+{}\n", line)?;
+                            paint!(f, Green, "{}{}\n", SIGN_RIGHT, line)?;
                         }
                     }
                 };
@@ -95,7 +91,7 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                     }
                     _ => {
                         for line in removed.split("\n") {
-                            paint!(f, Red, "-{}\n", line)?;
+                            paint!(f, Red, "{}{}\n", SIGN_LEFT, line)?;
                         }
                     }
                 }
