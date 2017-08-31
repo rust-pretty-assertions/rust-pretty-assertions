@@ -62,7 +62,7 @@ fn assert_ne_custom() {
 #[test]
 #[should_panic(expected=r#"assertion failed: `(left != right)`
 
-[1mDiff[0m ([31m⮜ left[0m / [32m⮞ right[0m):
+[1mDiff[0m [31m⮜ left[0m / [32mright ⮞[0m :
  
 [31m⮜[0m[31m[0m[41;30m-[0m[31m0[0m
 [32m⮞[0m[32m[0m[32m0[0m

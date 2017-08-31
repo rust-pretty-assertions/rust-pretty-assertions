@@ -19,10 +19,10 @@ const SIGN_LEFT: char  = '⮜'; // - ⭪ ⭠ ⭰ ⮜ ⏴ ⯇ ◀ ◃ ◁ ◂ ◄
 pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::Result {
     let ref diffs = changeset.diffs;
 
-    writeln!(f, "{} ({} / {}):",
+    writeln!(f, "{} {} / {} :",
              Style::new().bold().paint("Diff"),
              Red.paint(format!("{} left", SIGN_LEFT)),
-             Green.paint(format!("{} right", SIGN_RIGHT)))?;
+             Green.paint(format!("right {}", SIGN_RIGHT)))?;
     for i in 0..diffs.len() {
         match diffs[i] {
             Difference::Same(ref same) => {
