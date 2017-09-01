@@ -9,8 +9,8 @@ macro_rules! paint {
     )
 }
 
-const SIGN_RIGHT: char = '⮞'; // + ⭬ ⭢ ⭲ ⮞ ⏵ ⯈ ▶ ▹ ▷ ▸ ►
-const SIGN_LEFT: char  = '⮜'; // - ⭪ ⭠ ⭰ ⮜ ⏴ ⯇ ◀ ◃ ◁ ◂ ◄
+const SIGN_RIGHT: char = '▶'; // + > → ▶
+const SIGN_LEFT: char  = '◀'; // - < ← ◀
 
 // Adapted from:
 // https://github.com/johannhof/difference.rs/blob/c5749ad7d82aa3d480c15cb61af9f6baa08f116f/examples/github-style.rs
