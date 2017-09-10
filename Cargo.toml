@@ -16,5 +16,5 @@ readme = "README.md"
 travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
 
 [dependencies]
-difference = "1.0.0"
+difference = { version = "1.0.0", git = "https://github.com/nelhage/difference.rs", branch = "fix-tests" }
 ansi_term = "0.9.0"
