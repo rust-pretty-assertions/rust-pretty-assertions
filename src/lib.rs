@@ -94,6 +94,9 @@ impl Display for Comparison {
 
 #[macro_export]
 macro_rules! assert_eq {
+    ($left:expr , $right:expr,) => ({
+        assert_eq!($left, $right)
+    });
     ($left:expr , $right:expr) => ({
         match (&($left), &($right)) {
             (left_val, right_val) => {
@@ -169,6 +172,9 @@ macro_rules! __assert_ne {
 #[macro_export]
 macro_rules! assert_ne {
     ($left:expr, $right:expr) => ({
+        __assert_ne!($left, $right, "", "");
+    });
+    ($left:expr, $right:expr,) => ({
         __assert_ne!($left, $right, "", "");
     });
     ($left:expr, $right:expr, $($arg:tt)+) => ({
