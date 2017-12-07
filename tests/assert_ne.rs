@@ -83,3 +83,61 @@ fn assert_ne_non_empty_return() {
 fn assert_ne_partial() {
     assert_ne!(-0.0, 0.0);
 }
+
+#[test]
+#[should_panic(expected=r#"assertion failed: `(left != right)`
+
+[1mBoth sides[0m:
+Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey"
+        )
+    }
+)
+
+"#)]
+fn assert_ne_trailing_comma() {
+
+    #[derive(Debug, PartialEq)]
+    struct Foo {
+        lorem: &'static str,
+        ipsum: u32,
+        dolor: Result<String, String>,
+    }
+
+    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
+
+    assert_ne!(x, x,);
+}
+
+#[test]
+#[should_panic(expected=r#"assertion failed: `(left != right)`: custom panic message
+
+[1mBoth sides[0m:
+Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey"
+        )
+    }
+)
+
+"#)]
+fn assert_ne_custom_trailing_comma() {
+
+    #[derive(Debug, PartialEq)]
+    struct Foo {
+        lorem: &'static str,
+        ipsum: u32,
+        dolor: Result<String, String>,
+    }
+
+    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
+
+    assert_ne!(x, x, "custom panic message",);
+}
