@@ -2,7 +2,7 @@
 extern crate pretty_assertions;
 
 #[test]
-#[should_panic(expected=r#"assertion failed: `(left != right)`
+#[should_panic(expected = r#"assertion failed: `(left != right)`
 
 [1mBoth sides[0m:
 Some(
@@ -25,13 +25,17 @@ fn assert_ne() {
         dolor: Result<String, String>,
     }
 
-    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
 
     assert_ne!(x, x);
 }
 
 #[test]
-#[should_panic(expected=r#"assertion failed: `(left != right)`: custom panic message
+#[should_panic(expected = r#"assertion failed: `(left != right)`: custom panic message
 
 [1mBoth sides[0m:
 Some(
@@ -54,7 +58,11 @@ fn assert_ne_custom() {
         dolor: Result<String, String>,
     }
 
-    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
 
     assert_ne!(x, x, "custom panic message");
 }
@@ -70,7 +78,7 @@ fn assert_ne_non_empty_return() {
 }
 
 #[test]
-#[should_panic(expected=r#"assertion failed: `(left != right)`
+#[should_panic(expected = r#"assertion failed: `(left != right)`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  
@@ -85,7 +93,7 @@ fn assert_ne_partial() {
 }
 
 #[test]
-#[should_panic(expected=r#"assertion failed: `(left != right)`
+#[should_panic(expected = r#"assertion failed: `(left != right)`
 
 [1mBoth sides[0m:
 Some(
@@ -108,13 +116,17 @@ fn assert_ne_trailing_comma() {
         dolor: Result<String, String>,
     }
 
-    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
 
     assert_ne!(x, x,);
 }
 
 #[test]
-#[should_panic(expected=r#"assertion failed: `(left != right)`: custom panic message
+#[should_panic(expected = r#"assertion failed: `(left != right)`: custom panic message
 
 [1mBoth sides[0m:
 Some(
@@ -137,7 +149,11 @@ fn assert_ne_custom_trailing_comma() {
         dolor: Result<String, String>,
     }
 
-    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
 
     assert_ne!(x, x, "custom panic message",);
 }

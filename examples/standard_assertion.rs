@@ -6,8 +6,16 @@ fn main() {
         dolor: Result<String, String>,
     }
 
-    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
-    let y = Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!".to_string())});
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
+    let y = Some(Foo {
+        lorem: "Hello Wrold!",
+        ipsum: 42,
+        dolor: Ok("hey ho!".to_string()),
+    });
 
     assert_eq!(x, y);
 }

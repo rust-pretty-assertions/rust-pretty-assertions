@@ -10,7 +10,7 @@ macro_rules! paint {
 }
 
 const SIGN_RIGHT: char = '>'; // + > →
-const SIGN_LEFT: char  = '<'; // - < ←
+const SIGN_LEFT: char = '<'; // - < ←
 
 // Adapted from:
 // https://github.com/johannhof/difference.rs/blob/c5749ad7d82aa3d480c15cb61af9f6baa08f116f/examples/github-style.rs
@@ -19,10 +19,13 @@ const SIGN_LEFT: char  = '<'; // - < ←
 pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::Result {
     let ref diffs = changeset.diffs;
 
-    writeln!(f, "{} {} / {} :",
-             Style::new().bold().paint("Diff"),
-             Red.paint(format!("{} left", SIGN_LEFT)),
-             Green.paint(format!("right {}", SIGN_RIGHT)))?;
+    writeln!(
+        f,
+        "{} {} / {} :",
+        Style::new().bold().paint("Diff"),
+        Red.paint(format!("{} left", SIGN_LEFT)),
+        Green.paint(format!("right {}", SIGN_RIGHT))
+    )?;
     for i in 0..diffs.len() {
         match diffs[i] {
             Difference::Same(ref same) => {
@@ -49,7 +52,7 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                 };
             }
             Difference::Rem(ref removed) => {
-                match diffs.get(i+1) {
+                match diffs.get(i + 1) {
                     Some(&Difference::Add(_)) => {
                         // The removal is followed by an addition.
                         //
@@ -145,7 +148,7 @@ pub fn format_replacement(f: &mut fmt::Write, added: &str, removed: &str) -> fmt
 
 #[test]
 fn test_format_replacement() {
-    let added   = "    84,\
+    let added = "    84,\
                  \n    248,";
     let removed = "    0,\
                  \n    0,\
@@ -154,13 +157,20 @@ fn test_format_replacement() {
     let mut buf = String::new();
     let _ = format_replacement(&mut buf, added, removed);
 
-    println!("## removed ##\
+    println!(
+        "## removed ##\
             \n{}\
             \n## added ##\
             \n{}\
             \n## diff ##\
             \n{}",
-            removed, added, buf);
+        removed,
+        added,
+        buf
+    );
 
-    assert_eq!(buf, "\u{1b}[31m<\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m0\u{1b}[0m\u{1b}[31m,\u{1b}[0m\n\u{1b}[31m<\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m0,\u{1b}[0m\n\u{1b}[1;31m<\u{1b}[0m\u{1b}[1;48;5;52;31m    1\u{1b}[0m\u{1b}[31m2\u{1b}[0m\u{1b}[31m8,\u{1b}[0m\n\u{1b}[32m>\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[1;48;5;22;32m84\u{1b}[0m\u{1b}[32m,\u{1b}[0m\n\u{1b}[32m>\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[32m2\u{1b}[0m\u{1b}[1;48;5;22;32m4\u{1b}[0m\u{1b}[32m8,\u{1b}[0m\n");
+    assert_eq!(
+        buf,
+        "\u{1b}[31m<\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m0\u{1b}[0m\u{1b}[31m,\u{1b}[0m\n\u{1b}[31m<\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m0,\u{1b}[0m\n\u{1b}[1;31m<\u{1b}[0m\u{1b}[1;48;5;52;31m    1\u{1b}[0m\u{1b}[31m2\u{1b}[0m\u{1b}[31m8,\u{1b}[0m\n\u{1b}[32m>\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[1;48;5;22;32m84\u{1b}[0m\u{1b}[32m,\u{1b}[0m\n\u{1b}[32m>\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[32m2\u{1b}[0m\u{1b}[1;48;5;22;32m4\u{1b}[0m\u{1b}[32m8,\u{1b}[0m\n"
+    );
 }

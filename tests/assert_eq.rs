@@ -3,7 +3,7 @@ extern crate pretty_assertions;
 extern crate difference;
 
 #[test]
-#[should_panic(expected=r#"assertion failed: `(left == right)`
+#[should_panic(expected = r#"assertion failed: `(left == right)`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
@@ -28,14 +28,22 @@ fn assert_eq() {
         dolor: Result<String, String>,
     }
 
-    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
-    let y = Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!".to_string())});
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
+    let y = Some(Foo {
+        lorem: "Hello Wrold!",
+        ipsum: 42,
+        dolor: Ok("hey ho!".to_string()),
+    });
 
     assert_eq!(x, y);
 }
 
 #[test]
-#[should_panic(expected=r#"assertion failed: `(left == right)`: custom panic message
+#[should_panic(expected = r#"assertion failed: `(left == right)`: custom panic message
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
@@ -60,22 +68,30 @@ fn assert_eq_custom() {
         dolor: Result<String, String>,
     }
 
-    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
-    let y = Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!".to_string())});
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
+    let y = Some(Foo {
+        lorem: "Hello Wrold!",
+        ipsum: 42,
+        dolor: Ok("hey ho!".to_string()),
+    });
 
     assert_eq!(x, y, "custom panic message");
 }
 
 #[test]
 fn assert_eq_with_comparable_types() {
-	let s0: &'static str = "foo";
-	let s1: String = "foo".to_string();
-	assert_eq!(s0, s1);
+    let s0: &'static str = "foo";
+    let s1: String = "foo".to_string();
+    assert_eq!(s0, s1);
 }
 
 #[test]
 #[ignore]
-#[should_panic(expected=r#"assertion failed: `(left == right)`
+#[should_panic(expected = r#"assertion failed: `(left == right)`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  [
@@ -100,7 +116,7 @@ fn issue12() {
 }
 
 #[test]
-#[should_panic(expected=r#"assertion failed: `(left == right)`
+#[should_panic(expected = r#"assertion failed: `(left == right)`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
@@ -125,14 +141,22 @@ fn assert_eq_trailing_comma() {
         dolor: Result<String, String>,
     }
 
-    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
-    let y = Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!".to_string())});
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
+    let y = Some(Foo {
+        lorem: "Hello Wrold!",
+        ipsum: 42,
+        dolor: Ok("hey ho!".to_string()),
+    });
 
     assert_eq!(x, y,);
 }
 
 #[test]
-#[should_panic(expected=r#"assertion failed: `(left == right)`: custom panic message
+#[should_panic(expected = r#"assertion failed: `(left == right)`: custom panic message
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
@@ -157,8 +181,16 @@ fn assert_eq_custom_trailing_comma() {
         dolor: Result<String, String>,
     }
 
-    let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
-    let y = Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!".to_string())});
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
+    let y = Some(Foo {
+        lorem: "Hello Wrold!",
+        ipsum: 42,
+        dolor: Ok("hey ho!".to_string()),
+    });
 
     assert_eq!(x, y, "custom panic message",);
 }
