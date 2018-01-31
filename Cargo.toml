@@ -1,6 +1,6 @@
 [package]
 name = "pretty_assertions"
-version = "0.4.1"
+version = "0.5.0"
 authors = ["Colin Kiegel <kiegel@gmx.de>", "Florent Fayolle <florent.fayolle69@gmail.com>"]
 
 description = "Overwrite `assert_eq!` and `assert_ne!` with drop-in replacements, adding colorful diffs."
@@ -16,5 +16,5 @@ readme = "README.md"
 travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
 
 [dependencies]
-difference = "1.0.0"
-ansi_term = "0.9"
+difference = "2.0.0"
+ansi_term = "0.10"
