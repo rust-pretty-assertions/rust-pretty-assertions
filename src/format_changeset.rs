@@ -31,7 +31,7 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
             Difference::Same(ref same) => {
                 // Have to split line by line in order to have the extra whitespace
                 // at the beginning.
-                for line in same.split("\n") {
+                for line in same.split('\n') {
                     writeln!(f, " {}", line)?;
                 }
             }
@@ -45,7 +45,7 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                         format_replacement(f, added, removed)?;
                     }
                     _ => {
-                        for line in added.split("\n") {
+                        for line in added.split('\n') {
                             paint!(f, Green, "{}{}\n", SIGN_RIGHT, line)?;
                         }
                     }
@@ -59,7 +59,7 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                         // ... we'll handle both in the next iteration.
                     }
                     _ => {
-                        for line in removed.split("\n") {
+                        for line in removed.split('\n') {
                             paint!(f, Red, "{}{}\n", SIGN_LEFT, line)?;
                         }
                     }
@@ -99,7 +99,7 @@ pub fn format_replacement(f: &mut fmt::Write, added: &str, removed: &str) -> fmt
     for c in &diffs {
         match *c {
             Difference::Same(ref word_diff) => {
-                join!(chunk in (word_diff.split("\n")) {
+                join!(chunk in (word_diff.split('\n')) {
                     paint!(f, Red, "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
@@ -107,7 +107,7 @@ pub fn format_replacement(f: &mut fmt::Write, added: &str, removed: &str) -> fmt
                 });
             }
             Difference::Rem(ref word_diff) => {
-                join!(chunk in (word_diff.split("\n")) {
+                join!(chunk in (word_diff.split('\n')) {
                     paint!(f, Red.on(Fixed(52)).bold(), "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
@@ -124,7 +124,7 @@ pub fn format_replacement(f: &mut fmt::Write, added: &str, removed: &str) -> fmt
     for c in &diffs {
         match *c {
             Difference::Same(ref word_diff) => {
-                join!(chunk in (word_diff.split("\n")) {
+                join!(chunk in (word_diff.split('\n')) {
                     paint!(f, Green, "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
@@ -132,7 +132,7 @@ pub fn format_replacement(f: &mut fmt::Write, added: &str, removed: &str) -> fmt
                 });
             }
             Difference::Add(ref word_diff) => {
-                join!(chunk in (word_diff.split("\n")) {
+                join!(chunk in (word_diff.split('\n')) {
                     paint!(f, Green.on(Fixed(22)).bold(), "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
