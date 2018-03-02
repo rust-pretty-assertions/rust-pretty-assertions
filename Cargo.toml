@@ -17,4 +17,4 @@ travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
 
 [dependencies]
 difference = "2.0.0"
-ansi_term = "0.10"
+ansi_term = "0.11"
