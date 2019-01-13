@@ -36,7 +36,8 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                 }
             }
             Difference::Add(ref added) => {
-                match diffs.get(i - 1) {
+                let prev = i.checked_sub(1).and_then(|x| diffs.get(x));
+                match prev {
                     Some(&Difference::Rem(ref removed)) => {
                         // The addition is preceded by an removal.
                         //
@@ -52,7 +53,8 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                 };
             }
             Difference::Rem(ref removed) => {
-                match diffs.get(i + 1) {
+                let next = i.checked_add(1).and_then(|x| diffs.get(x));
+                match next {
                     Some(&Difference::Add(_)) => {
                         // The removal is followed by an addition.
                         //
