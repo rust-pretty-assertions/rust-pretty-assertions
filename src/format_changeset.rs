@@ -36,7 +36,7 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                 }
             }
             Difference::Add(ref added) => {
-                match diffs.get(i - 1) {
+                match diffs.get(i.wrapping_sub(1)) {
                     Some(&Difference::Rem(ref removed)) => {
                         // The addition is preceded by an removal.
                         //
