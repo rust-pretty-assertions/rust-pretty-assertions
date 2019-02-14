@@ -2,7 +2,7 @@
 //!
 //! When writing tests in Rust, you'll probably use `assert_eq!(a, b)` _a lot_.
 //!
-//! If such a test fails, it will present all the details of `a` and `b`. 
+//! If such a test fails, it will present all the details of `a` and `b`.
 //! But you have to spot the differences yourself, which is not always straightforward,
 //! like here:
 //!
@@ -67,6 +67,8 @@
 
 extern crate difference;
 extern crate ansi_term;
+extern crate output_vt100;
+extern crate ctor;
 mod format_changeset;
 
 use std::fmt::{self, Debug, Display};
@@ -74,6 +76,12 @@ use difference::Changeset;
 
 use format_changeset::format_changeset;
 pub use ansi_term::Style;
+
+use ctor::*;
+#[ctor]
+fn init() {
+    output_vt100::init();
+}
 
 #[doc(hidden)]
 pub struct Comparison(Changeset);

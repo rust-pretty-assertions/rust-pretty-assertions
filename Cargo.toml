@@ -18,3 +18,5 @@ travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
 [dependencies]
 difference = "2.0.0"
 ansi_term = "0.11"
+output_vt100 = { git = "https://github.com/Phundrak/output-vt100-rs", branch = "master" }
+ctor = "0.1.7"
