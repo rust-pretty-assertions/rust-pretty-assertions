@@ -1,6 +1,5 @@
-#[macro_use]
-extern crate pretty_assertions;
-
+#[allow(unused_imports)]
+use pretty_assertions::{assert_eq, assert_ne};
 use std::fmt;
 /// Wrapper around string slice that makes debug output `{:?}` to print string same way as `{}`.
 /// Used in different `assert*!` macros in combination with `pretty_assertions` crate to make

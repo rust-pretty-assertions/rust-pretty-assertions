@@ -72,7 +72,7 @@ mod format_changeset;
 use std::fmt::{self, Debug, Display};
 use difference::Changeset;
 
-use format_changeset::format_changeset;
+use crate::format_changeset::format_changeset;
 pub use ansi_term::Style;
 
 #[doc(hidden)]
@@ -129,9 +129,17 @@ macro_rules! assert_eq {
 }
 
 #[macro_export]
-#[doc(hidden)]
-macro_rules! __assert_ne {
-    ($left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)+) => ({
+macro_rules! assert_ne {
+    ($left:expr, $right:expr) => ({
+        assert_ne!(@ $left, $right, "", "");
+    });
+    ($left:expr, $right:expr,) => ({
+        assert_ne!(@ $left, $right, "", "");
+    });
+    ($left:expr, $right:expr, $($arg:tt)+) => ({
+        assert_ne!(@ $left, $right, ": ", $($arg)+);
+    });
+    (@ $left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)+) => ({
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if *left_val == *right_val {
@@ -168,18 +176,5 @@ macro_rules! __assert_ne {
                 }
             }
         }
-    });
-}
-
-#[macro_export]
-macro_rules! assert_ne {
-    ($left:expr, $right:expr) => ({
-        __assert_ne!($left, $right, "", "");
-    });
-    ($left:expr, $right:expr,) => ({
-        __assert_ne!($left, $right, "", "");
-    });
-    ($left:expr, $right:expr, $($arg:tt)+) => ({
-        __assert_ne!($left, $right, ": ", $($arg)+);
     });
 }

@@ -1,6 +1,5 @@
-#[macro_use]
-extern crate pretty_assertions;
-
+#[allow(unused_imports)]
+use pretty_assertions::{assert_eq, assert_ne};
 #[test]
 #[should_panic(expected = r#"assertion failed: `(left != right)`
 
