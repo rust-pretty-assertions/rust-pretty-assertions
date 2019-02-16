@@ -7,7 +7,9 @@
 
 When writing tests in Rust, you'll probably use `assert_eq!(a, b)` _a lot_.
 
-If such a test fails, it will present all the details of `a` and `b`, but you have to spot, the differences yourself, which is not always straightforward, like here:
+If such a test fails, it will present all the details of `a` and `b`. 
+But you have to spot the differences yourself, which is not always straightforward,
+like here:
 
 ![standard assertion](examples/standard_assertion.png)
 
@@ -18,7 +20,7 @@ Wouldn't that task be _much_ easier with a colorful diff?
 Yep — and you only need **one line of code** to make it happen:
 
 ```rust,ignore
-#[macro_use] extern crate pretty_assertions;
+use pretty_assertions::{assert_eq, assert_ne};
 ```
 
 <details>
@@ -26,8 +28,8 @@ Yep — and you only need **one line of code** to make it happen:
 
 ```rust,ignore
 // 1. add the `pretty_assertions` dependency to `Cargo.toml`.
-// 2. insert this line at the top of your crate root or integration test
-#[macro_use] extern crate pretty_assertions;
+// 2. insert this line at the top of each module, as needed
+use pretty_assertions::{assert_eq, assert_ne};
 
 fn main() {
     #[derive(Debug, PartialEq)]
@@ -51,18 +53,18 @@ Specify it as [`[dev-dependencies]`](http://doc.crates.io/specifying-dependencie
 and it will only be used for compiling tests, examples, and benchmarks.
 This way the compile time of `cargo build` won't be affected!
 
-In your crate root, also add `#[cfg(test)]` to the crate import, like this:
+Also add `#[cfg(test)]` to your `use` statements, like this:
 
 ```rust,ignore
-#[cfg(test)] // <-- not needed in examples + integration tests
-#[macro_use]
-extern crate pretty_assertions;
+#[cfg(test)]
+use pretty_assertions::{assert_eq, assert_ne};
 ```
 
 ## Note
 
-* Each example and integration test also needs `#[macro_use] extern crate
-  pretty_assertions`, if you want colorful diffs there.
+* Since `Rust 2018` edition, you need to declare
+  `use pretty_assertions::{assert_eq, assert_ne};` per module.
+  Before you would write `#[macro_use] extern crate pretty_assertions;`.
 * The replacement is only effective in your own crate, not in other libraries
   you include.
 * `assert_ne` is also switched to multi-line presentation, but does _not_ show
