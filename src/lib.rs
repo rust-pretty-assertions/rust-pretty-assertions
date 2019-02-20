@@ -67,8 +67,12 @@
 
 extern crate difference;
 extern crate ansi_term;
+
+#[cfg(windows)]
 extern crate output_vt100;
+#[cfg(windows)]
 extern crate ctor;
+
 mod format_changeset;
 
 use std::fmt::{self, Debug, Display};
@@ -77,7 +81,9 @@ use difference::Changeset;
 use format_changeset::format_changeset;
 pub use ansi_term::Style;
 
+#[cfg(windows)]
 use ctor::*;
+#[cfg(windows)]
 #[ctor]
 fn init() {
     output_vt100::init();
