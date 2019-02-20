@@ -67,6 +67,8 @@ extern crate pretty_assertions;
   you include.
 * `assert_ne` is also switched to multi-line presentation, but does _not_ show
   a diff.
+* Under Windows, the terminal state is modified to properly handle VT100 
+  escape sequences, which may break display for certain use cases.
 
 ## License
 
