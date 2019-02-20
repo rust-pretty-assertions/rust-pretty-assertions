@@ -20,7 +20,6 @@ extern crate difference;
 
 "#)]
 fn assert_eq() {
-
     #[derive(Debug, PartialEq)]
     struct Foo {
         lorem: &'static str,
@@ -43,7 +42,8 @@ fn assert_eq() {
 }
 
 #[test]
-#[should_panic(expected = r#"assertion failed: `(left == right)`: custom panic message
+#[should_panic(
+    expected = r#"assertion failed: `(left == right)`: custom panic message
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
@@ -58,9 +58,9 @@ fn assert_eq() {
      }
  )
 
-"#)]
+"#
+)]
 fn assert_eq_custom() {
-
     #[derive(Debug, PartialEq)]
     struct Foo {
         lorem: &'static str,
@@ -132,7 +132,6 @@ fn issue12() {
 
 "#)]
 fn assert_eq_trailing_comma() {
-
     #[derive(Debug, PartialEq)]
     struct Foo {
         lorem: &'static str,
@@ -155,7 +154,8 @@ fn assert_eq_trailing_comma() {
 }
 
 #[test]
-#[should_panic(expected = r#"assertion failed: `(left == right)`: custom panic message
+#[should_panic(
+    expected = r#"assertion failed: `(left == right)`: custom panic message
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
@@ -170,9 +170,9 @@ fn assert_eq_trailing_comma() {
      }
  )
 
-"#)]
+"#
+)]
 fn assert_eq_custom_trailing_comma() {
-
     #[derive(Debug, PartialEq)]
     struct Foo {
         lorem: &'static str,

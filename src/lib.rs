@@ -65,18 +65,18 @@
 //! * `assert_ne` is also switched to multi-line presentation, but does _not_ show
 //!   a diff.
 
-extern crate difference;
 extern crate ansi_term;
+extern crate difference;
 
 #[cfg(windows)]
-extern crate output_vt100;
-#[cfg(windows)]
 extern crate ctor;
+#[cfg(windows)]
+extern crate output_vt100;
 
 mod format_changeset;
 
-use std::fmt::{self, Debug, Display};
 use difference::Changeset;
+use std::fmt::{self, Debug, Display};
 
 use crate::format_changeset::format_changeset;
 pub use ansi_term::Style;

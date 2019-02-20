@@ -1,7 +1,7 @@
-use difference::{Difference, Changeset};
-use std::fmt;
-use ansi_term::Colour::{Red, Green, Fixed};
+use ansi_term::Colour::{Fixed, Green, Red};
 use ansi_term::Style;
+use difference::{Changeset, Difference};
+use std::fmt;
 
 macro_rules! paint {
     ($f:ident, $colour:expr, $fmt:expr, $($args:tt)*) => (
@@ -153,22 +153,20 @@ fn test_format_replacement() {
     let added = "    84,\
                  \n    248,";
     let removed = "    0,\
-                 \n    0,\
-                 \n    128,";
+                   \n    0,\
+                   \n    128,";
 
     let mut buf = String::new();
     let _ = format_replacement(&mut buf, added, removed);
 
     println!(
         "## removed ##\
-            \n{}\
-            \n## added ##\
-            \n{}\
-            \n## diff ##\
-            \n{}",
-        removed,
-        added,
-        buf
+         \n{}\
+         \n## added ##\
+         \n{}\
+         \n## diff ##\
+         \n{}",
+        removed, added, buf
     );
 
     assert_eq!(

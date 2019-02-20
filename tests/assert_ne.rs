@@ -16,7 +16,6 @@ Some(
 
 "#)]
 fn assert_ne() {
-
     #[derive(Debug, PartialEq)]
     struct Foo {
         lorem: &'static str,
@@ -34,7 +33,8 @@ fn assert_ne() {
 }
 
 #[test]
-#[should_panic(expected = r#"assertion failed: `(left != right)`: custom panic message
+#[should_panic(
+    expected = r#"assertion failed: `(left != right)`: custom panic message
 
 [1mBoth sides[0m:
 Some(
@@ -47,9 +47,9 @@ Some(
     }
 )
 
-"#)]
+"#
+)]
 fn assert_ne_custom() {
-
     #[derive(Debug, PartialEq)]
     struct Foo {
         lorem: &'static str,
@@ -123,7 +123,6 @@ Some(
 
 "#)]
 fn assert_ne_trailing_comma() {
-
     #[derive(Debug, PartialEq)]
     struct Foo {
         lorem: &'static str,
@@ -141,7 +140,8 @@ fn assert_ne_trailing_comma() {
 }
 
 #[test]
-#[should_panic(expected = r#"assertion failed: `(left != right)`: custom panic message
+#[should_panic(
+    expected = r#"assertion failed: `(left != right)`: custom panic message
 
 [1mBoth sides[0m:
 Some(
@@ -154,9 +154,9 @@ Some(
     }
 )
 
-"#)]
+"#
+)]
 fn assert_ne_custom_trailing_comma() {
-
     #[derive(Debug, PartialEq)]
     struct Foo {
         lorem: &'static str,

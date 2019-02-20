@@ -10,9 +10,9 @@ pub struct PrettyString<'a>(pub &'a str);
 
 /// Make diff to display string as multi-line string
 impl<'a> fmt::Debug for PrettyString<'a> {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    f.write_str(self.0)
-  }
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str(self.0)
+    }
 }
 
 #[test]
