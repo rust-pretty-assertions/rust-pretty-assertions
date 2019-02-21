@@ -86,7 +86,7 @@ use ctor::*;
 #[cfg(windows)]
 #[ctor]
 fn init() {
-    output_vt100::init();
+    output_vt100::try_init().ok(); // Do not panic on fail
 }
 
 #[doc(hidden)]
