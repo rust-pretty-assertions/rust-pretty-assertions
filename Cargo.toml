@@ -18,8 +18,8 @@ travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
 
 [dependencies]
 difference = "2.0.0"
-ansi_term = "0.11"
+ansi_term = "0.11.0"
 
 [target.'cfg(windows)'.dependencies]
 output_vt100 = "0.1.2"
-ctor = "0.1.7"
+ctor = "0.1.9"
