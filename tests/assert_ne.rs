@@ -9,9 +9,9 @@ Some(
         lorem: "Hello World!",
         ipsum: 42,
         dolor: Ok(
-            "hey"
-        )
-    }
+            "hey",
+        ),
+    },
 )
 
 "#)]
@@ -42,9 +42,9 @@ Some(
         lorem: "Hello World!",
         ipsum: 42,
         dolor: Ok(
-            "hey"
-        )
-    }
+            "hey",
+        ),
+    },
 )
 
 "#
@@ -116,9 +116,9 @@ Some(
         lorem: "Hello World!",
         ipsum: 42,
         dolor: Ok(
-            "hey"
-        )
-    }
+            "hey",
+        ),
+    },
 )
 
 "#)]
@@ -149,9 +149,9 @@ Some(
         lorem: "Hello World!",
         ipsum: 42,
         dolor: Ok(
-            "hey"
-        )
-    }
+            "hey",
+        ),
+    },
 )
 
 "#

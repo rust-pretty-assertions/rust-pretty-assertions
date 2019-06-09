@@ -5,7 +5,7 @@ rust:
   - nightly
   - beta
   - stable
-  - 1.31.0
+  - 1.35.0
 script: |
   cargo build &&
   cargo test &&
