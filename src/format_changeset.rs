@@ -93,7 +93,7 @@ macro_rules! join {
     )
 }
 
-pub fn format_replacement(f: &mut fmt::Write, added: &str, removed: &str) -> fmt::Result {
+pub fn format_replacement(f: &mut dyn fmt::Write, added: &str, removed: &str) -> fmt::Result {
     let Changeset { diffs, .. } = Changeset::new(removed, added, "");
 
     // LEFT side (==what's been)
