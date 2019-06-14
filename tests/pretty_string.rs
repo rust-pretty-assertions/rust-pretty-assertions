@@ -16,7 +16,7 @@ impl<'a> fmt::Debug for PrettyString<'a> {
 }
 
 #[test]
-#[should_panic(expected = r#"assertion failed: `(left == right)`
+#[should_panic(expected = r#"assertion failed: `(PrettyString("") == PrettyString("foo"))`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
 [32m>foo

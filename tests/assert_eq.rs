@@ -3,7 +3,7 @@ use pretty_assertions::{assert_eq, assert_ne};
 extern crate difference;
 
 #[test]
-#[should_panic(expected = r#"assertion failed: `(left == right)`
+#[should_panic(expected = r#"assertion failed: `(x == y)`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
@@ -43,7 +43,7 @@ fn assert_eq() {
 
 #[test]
 #[should_panic(
-    expected = r#"assertion failed: `(left == right)`: custom panic message
+    expected = r#"assertion failed: `(x == y)`: custom panic message
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
@@ -115,7 +115,7 @@ fn issue12() {
 }
 
 #[test]
-#[should_panic(expected = r#"assertion failed: `(left == right)`
+#[should_panic(expected = r#"assertion failed: `(x == y)`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
@@ -155,7 +155,7 @@ fn assert_eq_trailing_comma() {
 
 #[test]
 #[should_panic(
-    expected = r#"assertion failed: `(left == right)`: custom panic message
+    expected = r#"assertion failed: `(x == y)`: custom panic message
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(

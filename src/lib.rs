@@ -117,10 +117,12 @@ macro_rules! assert_eq {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
-                    panic!("assertion failed: `(left == right)`\
+                    panic!("assertion failed: `({} == {})`\
                           \n\
                           \n{}\
                           \n",
+                           stringify!($left),
+                           stringify!($right),
                            $crate::Comparison::new(left_val, right_val))
                 }
             }
@@ -130,10 +132,12 @@ macro_rules! assert_eq {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
-                    panic!("assertion failed: `(left == right)`: {}\
+                    panic!("assertion failed: `({} == {})`: {}\
                           \n\
                           \n{}\
                           \n",
+                           stringify!($left),
+                           stringify!($right),
                            format_args!($($arg)*),
                            $crate::Comparison::new(left_val, right_val))
                 }
@@ -161,13 +165,15 @@ macro_rules! assert_ne {
                   let right_dbg = format!("{:?}", *right_val);
                   if left_dbg != right_dbg {
 
-                      panic!("assertion failed: `(left != right)`{}{}\
+                      panic!("assertion failed: `({} != {})`{}{}\
                             \n\
                             \n{}\
                             \n{}: According to the `PartialEq` implementation, both of the values \
                               are partially equivalent, even if the `Debug` outputs differ.\
                             \n\
                             \n",
+                             stringify!($left),
+                             stringify!($right),
                              $maybe_semicolon,
                              format_args!($($arg)+),
                              $crate::Comparison::new(left_val, right_val),
@@ -177,12 +183,14 @@ macro_rules! assert_ne {
                                  .paint("Note"))
                   }
 
-                  panic!("assertion failed: `(left != right)`{}{}\
+                  panic!("assertion failed: `({} != {})`{}{}\
                         \n\
                         \n{}:\
                         \n{:#?}\
                         \n\
                         \n",
+                         stringify!($left),
+                         stringify!($right),
                          $maybe_semicolon,
                          format_args!($($arg)+),
                          $crate::Style::new().bold().paint("Both sides"),
