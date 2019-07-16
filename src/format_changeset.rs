@@ -76,7 +76,7 @@ macro_rules! join {
     (
         $elem:ident in ($iter:expr) {
             $( $body:tt )*
-        } seperated by {
+        } separated by {
             $( $separator:tt )*
         }
     ) => (
@@ -103,7 +103,7 @@ pub fn format_replacement(f: &mut dyn fmt::Write, added: &str, removed: &str) ->
             Difference::Same(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
                     paint!(f, Red, "{}", chunk)?;
-                } seperated by {
+                } separated by {
                     writeln!(f)?;
                     paint!(f, Red, "{}", SIGN_LEFT)?;
                 });
@@ -111,7 +111,7 @@ pub fn format_replacement(f: &mut dyn fmt::Write, added: &str, removed: &str) ->
             Difference::Rem(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
                     paint!(f, Red.on(Fixed(52)).bold(), "{}", chunk)?;
-                } seperated by {
+                } separated by {
                     writeln!(f)?;
                     paint!(f, Red.bold(), "{}", SIGN_LEFT)?;
                 });
@@ -128,7 +128,7 @@ pub fn format_replacement(f: &mut dyn fmt::Write, added: &str, removed: &str) ->
             Difference::Same(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
                     paint!(f, Green, "{}", chunk)?;
-                } seperated by {
+                } separated by {
                     writeln!(f)?;
                     paint!(f, Green, "{}", SIGN_RIGHT)?;
                 });
@@ -136,7 +136,7 @@ pub fn format_replacement(f: &mut dyn fmt::Write, added: &str, removed: &str) ->
             Difference::Add(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
                     paint!(f, Green.on(Fixed(22)).bold(), "{}", chunk)?;
-                } seperated by {
+                } separated by {
                     writeln!(f)?;
                     paint!(f, Green.bold(), "{}", SIGN_RIGHT)?;
                 });
