@@ -8,5 +8,7 @@ rust:
   - 1.35.0
 script: |
   cargo build &&
+  cargo build --all-features &&
   cargo test &&
+  cargo test --all-features &&
   cargo doc
