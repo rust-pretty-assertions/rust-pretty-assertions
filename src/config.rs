@@ -32,7 +32,7 @@ const PREFIX_LEFT: &str = "<"; // - < ←
 impl Default for Config {
     fn default() -> Self {
         Config {
-            auto_label: std::cfg!(feature = "labels"),
+            auto_label: cfg!(feature = "labels"),
             default_label_left: "left",
             default_label_right: "right",
             //
