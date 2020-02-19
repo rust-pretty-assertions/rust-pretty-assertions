@@ -89,7 +89,7 @@ pub fn format_changeset(
     changeset: &Changeset,
     config: &Config,
 ) -> fmt::Result {
-    let ref diffs = changeset.diffs;
+    let diffs = &changeset.diffs;
 
     writeln!(
         f,
