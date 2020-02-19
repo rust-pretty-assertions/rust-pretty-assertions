@@ -206,7 +206,7 @@ pub fn format_replacement(
             _ => (),
         }
     }
-    writeln!(f, "")?;
+    writeln!(f)?;
 
     // RIGHT side (==what's new)
     paint!(f, config.right_color, "{}", config.prefix_right)?;
@@ -232,7 +232,7 @@ pub fn format_replacement(
         }
     }
 
-    writeln!(f, "")
+    writeln!(f)
 }
 
 #[test]
