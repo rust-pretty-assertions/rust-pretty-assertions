@@ -158,7 +158,7 @@ macro_rules! join {
     (
         $elem:ident in ($iter:expr) {
             $( $body:tt )*
-        } seperated by {
+        } separated by {
             $( $separator:tt )*
         }
     ) => (
@@ -190,7 +190,7 @@ pub fn format_replacement(
             Difference::Same(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
                     paint!(f, config.left_color, "{}", chunk)?;
-                } seperated by {
+                } separated by {
                     writeln!(f)?;
                     paint!(f, config.left_color, "{}", config.prefix_left)?;
                 });
@@ -198,7 +198,7 @@ pub fn format_replacement(
             Difference::Rem(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
                     paint!(f, config.left_color.on(Fixed(config.left_color_diff_bg)).bold(), "{}", chunk)?;
-                } seperated by {
+                } separated by {
                     writeln!(f)?;
                     paint!(f, config.left_color.bold(), "{}", config.prefix_left)?;
                 });
@@ -215,7 +215,7 @@ pub fn format_replacement(
             Difference::Same(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
                     paint!(f, config.right_color, "{}", chunk)?;
-                } seperated by {
+                } separated by {
                     writeln!(f)?;
                     paint!(f, config.right_color, "{}", config.prefix_right)?;
                 });
@@ -223,7 +223,7 @@ pub fn format_replacement(
             Difference::Add(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
                     paint!(f, config.right_color.on(Fixed(config.right_color_diff_bg)).bold(), "{}", chunk)?;
-                } seperated by {
+                } separated by {
                     writeln!(f)?;
                     paint!(f, config.right_color.bold(), "{}", config.prefix_right)?;
                 });
