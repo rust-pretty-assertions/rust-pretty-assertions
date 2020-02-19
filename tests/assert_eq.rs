@@ -69,7 +69,115 @@ fn assert_eq() {
         assert_eq!(x, y);
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
+
+    let result = result.unwrap_err().payload_str().to_owned();
+    println!("expect={}", expect);
+    println!("result={}", result);
+    with_labels_assert_eq!(expect, result);
+}
+
+#[test]
+fn with_labels_assert_eq() {
+    #[derive(Debug, PartialEq)]
+    struct Foo {
+        lorem: &'static str,
+        ipsum: u32,
+        dolor: Result<String, String>,
+    }
+
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
+    let y = Some(Foo {
+        lorem: "Hello Wrold!",
+        ipsum: 42,
+        dolor: Ok("hey ho!".to_string()),
+    });
+
+    let expect_template = r#"assertion failed: `(expect == actual)`
+
+[1mDiff[0m [31m{{<}} expect[0m / [32mactual {{>}}[0m :
+ Some(
+     Foo {
+[31m{{<}}[0m[31m        lorem: "Hello W[0m[31mo[0m[1;48;5;52;31mr[0m[31mld!",[0m
+[32m{{>}}[0m[32m        lorem: "Hello W[0m[1;48;5;22;32mr[0m[32mo[0m[32mld!",[0m
+         ipsum: 42,
+         dolor: Ok(
+[31m{{<}}[0m[31m            "hey[0m[31m",[0m
+[32m{{>}}[0m[32m            "hey[0m[1;48;5;22;32m ho![0m[32m",[0m
+         ),
+     },
+ )
+
+"#;
+
+    let mut expect = expect_template.to_string();
+
+    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+
+    let result = maybe_unwind(|| {
+        with_labels_assert_eq!(expect: x, actual: y);
+    });
+
+    assert!(result.is_err());
+
+    let result = result.unwrap_err().payload_str().to_owned();
+    println!("expect={}", expect);
+    println!("result={}", result);
+    with_labels_assert_eq!(expect, result);
+}
+
+#[test]
+fn with_labels_assert_eq_simple() {
+    test_setup();
+
+    #[derive(Debug, PartialEq)]
+    struct Foo {
+        lorem: &'static str,
+        ipsum: u32,
+        dolor: Result<String, String>,
+    }
+
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
+    let y = Some(Foo {
+        lorem: "Hello Wrold!",
+        ipsum: 42,
+        dolor: Ok("hey ho!".to_string()),
+    });
+
+    let expect_template = r#"assertion failed: `(x == y)`
+
+[1mDiff[0m [31m{{<}} x[0m / [32my {{>}}[0m :
+ Some(
+     Foo {
+[31m{{<}}[0m[31m        lorem: "Hello W[0m[31mo[0m[1;48;5;52;31mr[0m[31mld!",[0m
+[32m{{>}}[0m[32m        lorem: "Hello W[0m[1;48;5;22;32mr[0m[32mo[0m[32mld!",[0m
+         ipsum: 42,
+         dolor: Ok(
+[31m{{<}}[0m[31m            "hey[0m[31m",[0m
+[32m{{>}}[0m[32m            "hey[0m[1;48;5;22;32m ho![0m[32m",[0m
+         ),
+     },
+ )
+
+"#;
+
+    let mut expect = expect_template.to_string();
+
+    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+
+    let result = maybe_unwind(|| {
+        with_labels_assert_eq!(x, y);
+    });
+
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
@@ -135,7 +243,7 @@ fn assert_eq_custom() {
         assert_eq!(x, y, "custom panic message");
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
@@ -199,7 +307,7 @@ fn issue12() {
         assert_eq!(left, right);
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
@@ -265,7 +373,7 @@ fn assert_eq_trailing_comma() {
         assert_eq!(x, y,);
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
@@ -331,7 +439,7 @@ fn assert_eq_custom_trailing_comma() {
         assert_eq!(x, y, "custom panic message",);
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);

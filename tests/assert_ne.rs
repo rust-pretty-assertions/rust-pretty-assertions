@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use pretty_assertions::{assert_eq, assert_ne};
 
-use pretty_assertions::with_labels_assert_eq;
+use pretty_assertions::{with_labels_assert_eq, with_labels_assert_ne};
 
 use maybe_unwind::maybe_unwind;
 
@@ -60,7 +60,56 @@ Some(
         assert_ne!(x, x);
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
+
+    let result = result.unwrap_err().payload_str().to_owned();
+    println!("expect={}", expect);
+    println!("result={}", result);
+    with_labels_assert_eq!(expect, result);
+}
+
+#[test]
+fn with_labels_assert_ne() {
+    test_setup();
+
+    #[derive(Debug, PartialEq)]
+    struct Foo {
+        lorem: &'static str,
+        ipsum: u32,
+        dolor: Result<String, String>,
+    }
+
+    let x = Some(Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok("hey".to_string()),
+    });
+
+    let expect_template = r#"assertion failed: `({{left}} != {{right}})`
+
+[1mBoth sides[0m:
+Some(
+    Foo {
+        lorem: "Hello World!",
+        ipsum: 42,
+        dolor: Ok(
+            "hey",
+        ),
+    },
+)
+
+"#;
+
+    let mut expect = expect_template.to_string();
+
+    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    expect = expect.replace("{{left}}", "x").replace("{{right}}", "x");
+
+    let result = maybe_unwind(|| {
+        with_labels_assert_ne!(x, x);
+    });
+
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
@@ -117,7 +166,7 @@ Some(
         assert_ne!(x, x, "custom panic message");
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
@@ -172,24 +221,15 @@ fn assert_ne_partial() {
 
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
 
-    #[cfg(not(any(feature = "labels")))]
-    {
-        expect = expect
-            .replace("{{left}}", "left")
-            .replace("{{right}}", "right");
-    }
-    #[cfg(feature = "labels")]
-    {
-        expect = expect
-            .replace("{{left}}", "left")
-            .replace("{{right}}", "right");
-    }
+    expect = expect
+        .replace("{{left}}", "left")
+        .replace("{{right}}", "right");
 
     let result = maybe_unwind(|| {
         assert_ne!(Foo(-0.0), Foo(0.0));
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
@@ -246,7 +286,7 @@ Some(
         assert_ne!(x, x,);
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
@@ -303,7 +343,7 @@ Some(
         assert_ne!(x, x, "custom panic message",);
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);

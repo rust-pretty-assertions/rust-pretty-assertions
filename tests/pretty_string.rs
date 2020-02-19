@@ -58,7 +58,7 @@ fn assert_eq_empty_first() {
         assert_eq!(PrettyString(""), PrettyString("foo"));
     });
 
-    assert!(true, result.is_err());
+    assert!(result.is_err());
 
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
