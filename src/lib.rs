@@ -78,6 +78,7 @@ mod format_changeset;
 pub use ansi_term::Style;
 
 pub use crate::format_changeset::Comparison; // private use; but required to be public for use in exported macros
+pub use crate::format_changeset::Config; // private use; but required to be public for use in exported macros
 
 #[cfg(windows)]
 use ctor::*;
@@ -87,34 +88,44 @@ fn init() {
     output_vt100::try_init().ok(); // Do not panic on fail
 }
 
+#[cfg(not(feature = "labels"))]
 #[macro_export]
 macro_rules! assert_eq {
-    ($left:expr , $right:expr,) => ({
-        assert_eq!($left, $right)
+    ($left:expr, $right:expr, $($arg:tt)*) => ({
+        $crate::with_labels_assert_eq!(left: $left, right: $right, $($arg)*)
     });
-    ($left:expr , $right:expr) => ({
+    ($left:expr, $right:expr) => ({
+        $crate::with_labels_assert_eq!(left: $left, right: $right)
+    });
+}
+
+#[cfg(feature = "labels")]
+#[macro_export]
+macro_rules! assert_eq {
+    ($($arg:tt)+) => ({
+        $crate::with_labels_assert_eq!($($arg)+)
+    });
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! with_labels_assert_eq_impl_ {
+    ($left_label:ident : $left:expr, $right_label:ident : $right:expr, $separator:expr, $($arg:tt)+) => ({
+        let mut config = $crate::Config::new();
+        config.maybe_left_label = Some(stringify!($left_label));
+        config.maybe_right_label = Some(stringify!($right_label));
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
-                    panic!("assertion failed: `(left == right)`\
-                          \n\
-                          \n{}\
-                          \n",
-                           $crate::Comparison::new(left_val, right_val))
-                }
-            }
-        }
-    });
-    ($left:expr , $right:expr, $($arg:tt)*) => ({
-        match (&($left), &($right)) {
-            (left_val, right_val) => {
-                if !(*left_val == *right_val) {
-                    panic!("assertion failed: `(left == right)`: {}\
-                          \n\
-                          \n{}\
-                          \n",
-                           format_args!($($arg)*),
-                           $crate::Comparison::new(left_val, right_val))
+                    panic!("assertion failed: `({} == {})`{}{}\
+                        \n\
+                        \n{}\
+                        \n",
+                        config.maybe_left_label.unwrap_or(config.default_left_label),
+                        config.maybe_right_label.unwrap_or(config.default_right_label),
+                        $separator,
+                        format_args!($($arg)+),
+                        $crate::Comparison::new(config, left_val, right_val))
                 }
             }
         }
@@ -122,52 +133,142 @@ macro_rules! assert_eq {
 }
 
 #[macro_export]
-macro_rules! assert_ne {
+macro_rules! with_labels_assert_eq {
+    ($left_label:ident : $left:expr, $right_label:ident : $right:expr, $($arg:tt)+) => ({
+        $crate::with_labels_assert_eq_impl_!($left_label: $left, $right_label: $right, ": ", $($arg)+)
+    });
+    ($left_label:ident : $left:expr, $right_label:ident : $right:expr,) => ({
+        $crate::with_labels_assert_eq_impl_!($left_label: $left, $right_label: $right, "", "")
+    });
+    ($left_label:ident : $left:expr, $right_label:ident : $right:expr) => ({
+        $crate::with_labels_assert_eq_impl_!($left_label: $left, $right_label: $right, "", "")
+    });
+    // ($left:ident, $right_label:ident : $right:expr, $($arg:tt)*) => ({
+    //     $crate::with_labels_assert_eq!($left: $left, $right_label: $right, $($arg)*)
+    // });
+    // ($left:ident, $right_label:ident : $right:expr) => ({
+    //     $crate::with_labels_assert_eq!($left: $left, $right_label: $right)
+    // });
+    // ($left_label:ident : $left:expr, $right:ident, $($arg:tt)*) => ({
+    //     $crate::with_labels_assert_eq!($left_label: $left, $right: $right, $($arg)*)
+    // });
+    // ($left_label:ident : $left:expr, $right:ident) => ({
+    //     $crate::with_labels_assert_eq!($left_label: $left, $right: $right)
+    // });
+    ($left:ident, $right:ident, $($arg:tt)*) => ({
+        $crate::with_labels_assert_eq!($left: $left, $right: $right, $($arg)*)
+    });
+    ($left:ident, $right:ident) => ({
+        $crate::with_labels_assert_eq!($left: $left, $right: $right)
+    });
+    ($left:expr, $right:expr, $($arg:tt)*) => ({
+        $crate::with_labels_assert_eq!(left: $left, right: $right, $($arg)*)
+    });
     ($left:expr, $right:expr) => ({
-        assert_ne!(@ $left, $right, "", "");
+        $crate::with_labels_assert_eq!(left: $left, right: $right)
     });
-    ($left:expr, $right:expr,) => ({
-        assert_ne!(@ $left, $right, "", "");
+}
+
+#[cfg(not(feature = "labels"))]
+#[macro_export]
+macro_rules! assert_ne {
+    ($left:expr, $right:expr, $($arg:tt)*) => ({
+        $crate::with_labels_assert_ne!(left: $left, right: $right, $($arg)*)
     });
-    ($left:expr, $right:expr, $($arg:tt)+) => ({
-        assert_ne!(@ $left, $right, ": ", $($arg)+);
+    ($left:expr, $right:expr) => ({
+        $crate::with_labels_assert_ne!(left: $left, right: $right)
     });
-    (@ $left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)+) => ({
+}
+
+#[cfg(feature = "labels")]
+#[macro_export]
+macro_rules! assert_ne {
+    ($($arg:tt)+) => ({
+        $crate::with_labels_assert_ne!($($arg)+)
+    });
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! with_labels_assert_ne_impl_ {
+    ($left_label:ident : $left:expr, $right_label:ident : $right:expr, $separator:expr, $($arg:tt)+) => ({
+        let mut config = $crate::Config::new();
+        config.maybe_left_label = Some(stringify!($left_label));
+        config.maybe_right_label = Some(stringify!($right_label));
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if *left_val == *right_val {
-                  let left_dbg = format!("{:?}", *left_val);
-                  let right_dbg = format!("{:?}", *right_val);
-                  if left_dbg != right_dbg {
-
-                      panic!("assertion failed: `(left != right)`{}{}\
+                    let left_dbg = format!("{:?}", *left_val);
+                    let right_dbg = format!("{:?}", *right_val);
+                    if left_dbg != right_dbg {
+                        panic!("assertion failed: `({} != {})`{}{}\
                             \n\
                             \n{}\
                             \n{}: According to the `PartialEq` implementation, both of the values \
-                              are partially equivalent, even if the `Debug` outputs differ.\
+                            are partially equivalent, even if the `Debug` outputs differ.\
                             \n\
                             \n",
-                             $maybe_semicolon,
-                             format_args!($($arg)+),
-                             $crate::Comparison::new(left_val, right_val),
-                             $crate::Style::new()
-                                 .bold()
-                                 .underline()
-                                 .paint("Note"))
-                  }
-
-                  panic!("assertion failed: `(left != right)`{}{}\
+                            config.maybe_left_label.unwrap_or(config.default_left_label),
+                            config.maybe_right_label.unwrap_or(config.default_right_label),
+                            $separator,
+                            format_args!($($arg)+),
+                            $crate::Comparison::new(config, left_val, right_val),
+                            $crate::Style::new()
+                                .bold()
+                                .underline()
+                                .paint("Note"))
+                    }
+                    panic!("assertion failed: `({} != {})`{}{}\
                         \n\
                         \n{}:\
                         \n{:#?}\
                         \n\
                         \n",
-                         $maybe_semicolon,
-                         format_args!($($arg)+),
-                         $crate::Style::new().bold().paint("Both sides"),
-                         left_val)
+                        config.maybe_left_label.unwrap_or(config.default_left_label),
+                        config.maybe_right_label.unwrap_or(config.default_right_label),
+                        $separator,
+                        format_args!($($arg)+),
+                        $crate::Style::new().bold().paint("Both sides"),
+                        left_val)
                 }
             }
         }
+    });
+}
+
+#[macro_export]
+macro_rules! with_labels_assert_ne {
+    ($left_label:ident : $left:expr, $right_label:ident : $right:expr, $($arg:tt)+) => ({
+        $crate::with_labels_assert_ne_impl_!($left_label: $left, $right_label: $right, ": ", $($arg)+)
+    });
+    ($left_label:ident : $left:expr, $right_label:ident : $right:expr,) => ({
+        $crate::with_labels_assert_ne_impl_!($left_label: $left, $right_label: $right, "", "")
+    });
+    ($left_label:ident : $left:expr, $right_label:ident : $right:expr) => ({
+        $crate::with_labels_assert_ne_impl_!($left_label: $left, $right_label: $right, "", "")
+    });
+    // ($left:ident, $right_label:ident : $right:expr, $($arg:tt)*) => ({
+    //     $crate::with_labels_assert_ne!($left: $left, $right_label: $right, $($arg:tt)*)
+    // });
+    // ($left:ident, $right_label:ident : $right:expr) => ({
+    //     $crate::with_labels_assert_ne!($left: $left, $right_label: $right)
+    // });
+    // ($left_label:ident : $left:expr, $right:ident, $($arg:tt)*) => ({
+    //     $crate::with_labels_assert_ne!($left_label: $left, $right: $right, $($arg:tt)*)
+    // });
+    // ($left_label:ident : $left:expr, $right:ident) => ({
+    //     $crate::with_labels_assert_ne!($left_label: $left, $right: $right)
+    // });
+    ($left:ident, $right:ident, $($arg:tt)*) => ({
+        $crate::with_labels_assert_ne!($left: $left, $right: $right, $($arg)*)
+    });
+    ($left:ident, $right:ident) => ({
+        $crate::with_labels_assert_ne!($left: $left, $right: $right)
+    });
+    ($left:expr, $right:expr, $($arg:tt)*) => ({
+        $crate::with_labels_assert_ne!(left: $left, right: $right, $($arg)*)
+    });
+    ($left:expr, $right:expr) => ({
+        $crate::with_labels_assert_ne!(left: $left, right: $right)
     });
 }

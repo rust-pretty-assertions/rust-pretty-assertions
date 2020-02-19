@@ -16,6 +16,9 @@ readme = "README.md"
 [badges]
 travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
 
+[features]
+labels = []
+
 [dependencies]
 difference = "2.0.0"
 ansi_term = "0.11.0"

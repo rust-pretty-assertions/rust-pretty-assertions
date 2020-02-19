@@ -4,21 +4,28 @@ use difference::{Changeset, Difference};
 use std::fmt::{self, Debug, Display};
 
 #[doc(hidden)]
-pub struct Comparison(Changeset);
+pub struct Comparison {
+    changeset: Changeset,
+    config: Config,
+}
 
 impl Comparison {
-    pub fn new<TLeft: Debug, TRight: Debug>(left: &TLeft, right: &TRight) -> Comparison {
+    pub fn new<TLeft: Debug, TRight: Debug>(
+        config: Config,
+        left: &TLeft,
+        right: &TRight,
+    ) -> Comparison {
         let left_dbg = format!("{:#?}", *left);
         let right_dbg = format!("{:#?}", *right);
         let changeset = Changeset::new(&left_dbg, &right_dbg, "\n");
 
-        Comparison(changeset)
+        Comparison { changeset, config }
     }
 }
 
 impl Display for Comparison {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        format_changeset(f, &self.0)
+        format_changeset(f, &self.changeset, &self.config)
     }
 }
 
@@ -28,22 +35,78 @@ macro_rules! paint {
     )
 }
 
-const SIGN_RIGHT: char = '>'; // + > →
-const SIGN_LEFT: char = '<'; // - < ←
+const PREFIX: &str = " ";
+const PREFIX_RIGHT: &str = ">"; // + > →
+const PREFIX_LEFT: &str = "<"; // - < ←
+
+#[doc(hidden)]
+pub struct Config {
+    pub default_left_label: &'static str,
+    pub default_right_label: &'static str,
+    pub left_color: ansi_term::Colour,
+    pub left_color_diff_bg: u8,
+    pub maybe_left_label: Option<&'static str>,
+    pub left_prefix: &'static str,
+    pub right_color: ansi_term::Colour,
+    pub right_color_diff_bg: u8,
+    pub maybe_right_label: Option<&'static str>,
+    pub right_prefix: &'static str,
+    pub prefix: &'static str,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            default_left_label: "left",
+            default_right_label: "right",
+            maybe_left_label: None,
+            maybe_right_label: None,
+            left_color: Red, // (dark) red
+            left_color_diff_bg: 52,
+            left_prefix: PREFIX_LEFT,
+            right_color: Green, // (dark) green
+            right_color_diff_bg: 22,
+            right_prefix: PREFIX_RIGHT,
+            prefix: PREFIX,
+        }
+    }
+}
+
+impl Config {
+    pub fn new() -> Config {
+        Config {
+            ..Default::default()
+        }
+    }
+}
 
 // Adapted from:
 // https://github.com/johannhof/difference.rs/blob/c5749ad7d82aa3d480c15cb61af9f6baa08f116f/examples/github-style.rs
 // Credits johannhof (MIT License)
 
-pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::Result {
+pub fn format_changeset(
+    f: &mut fmt::Formatter,
+    changeset: &Changeset,
+    config: &Config,
+) -> fmt::Result {
     let ref diffs = changeset.diffs;
 
     writeln!(
         f,
         "{} {} / {} :",
         Style::new().bold().paint("Diff"),
-        Red.paint(format!("{} left", SIGN_LEFT)),
-        Green.paint(format!("right {}", SIGN_RIGHT))
+        config.left_color.paint(format!(
+            "{} {}",
+            config.left_prefix,
+            config.maybe_left_label.unwrap_or(config.default_left_label)
+        )),
+        config.right_color.paint(format!(
+            "{} {}",
+            config
+                .maybe_right_label
+                .unwrap_or(config.default_right_label),
+            config.right_prefix
+        ))
     )?;
     for i in 0..diffs.len() {
         match diffs[i] {
@@ -51,7 +114,7 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                 // Have to split line by line in order to have the extra whitespace
                 // at the beginning.
                 for line in same.split('\n') {
-                    writeln!(f, " {}", line)?;
+                    writeln!(f, "{}{}", config.prefix, line)?;
                 }
             }
             Difference::Add(ref added) => {
@@ -62,11 +125,11 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                         //
                         // Let's highlight the character-differences in this replaced
                         // chunk. Note that this chunk can span over multiple lines.
-                        format_replacement(f, added, removed)?;
+                        format_replacement(f, added, removed, &config)?;
                     }
                     _ => {
                         for line in added.split('\n') {
-                            paint!(f, Green, "{}{}\n", SIGN_RIGHT, line)?;
+                            paint!(f, config.right_color, "{}{}\n", config.right_prefix, line)?;
                         }
                     }
                 };
@@ -81,7 +144,7 @@ pub fn format_changeset(f: &mut fmt::Formatter, changeset: &Changeset) -> fmt::R
                     }
                     _ => {
                         for line in removed.split('\n') {
-                            paint!(f, Red, "{}{}\n", SIGN_LEFT, line)?;
+                            paint!(f, config.left_color, "{}{}\n", config.left_prefix, line)?;
                         }
                     }
                 }
@@ -112,27 +175,32 @@ macro_rules! join {
     )
 }
 
-pub fn format_replacement(f: &mut dyn fmt::Write, added: &str, removed: &str) -> fmt::Result {
+pub fn format_replacement(
+    f: &mut dyn fmt::Write,
+    added: &str,
+    removed: &str,
+    config: &Config,
+) -> fmt::Result {
     let Changeset { diffs, .. } = Changeset::new(removed, added, "");
 
     // LEFT side (==what's been)
-    paint!(f, Red, "{}", SIGN_LEFT)?;
+    paint!(f, config.left_color, "{}", config.left_prefix)?;
     for c in &diffs {
         match *c {
             Difference::Same(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
-                    paint!(f, Red, "{}", chunk)?;
+                    paint!(f, config.left_color, "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, Red, "{}", SIGN_LEFT)?;
+                    paint!(f, config.left_color, "{}", config.left_prefix)?;
                 });
             }
             Difference::Rem(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
-                    paint!(f, Red.on(Fixed(52)).bold(), "{}", chunk)?;
+                    paint!(f, config.left_color.on(Fixed(config.left_color_diff_bg)).bold(), "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, Red.bold(), "{}", SIGN_LEFT)?;
+                    paint!(f, config.left_color.bold(), "{}", config.left_prefix)?;
                 });
             }
             _ => (),
@@ -141,23 +209,23 @@ pub fn format_replacement(f: &mut dyn fmt::Write, added: &str, removed: &str) ->
     writeln!(f, "")?;
 
     // RIGHT side (==what's new)
-    paint!(f, Green, "{}", SIGN_RIGHT)?;
+    paint!(f, config.right_color, "{}", config.right_prefix)?;
     for c in &diffs {
         match *c {
             Difference::Same(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
-                    paint!(f, Green, "{}", chunk)?;
+                    paint!(f, config.right_color, "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, Green, "{}", SIGN_RIGHT)?;
+                    paint!(f, config.right_color, "{}", config.right_prefix)?;
                 });
             }
             Difference::Add(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
-                    paint!(f, Green.on(Fixed(22)).bold(), "{}", chunk)?;
+                    paint!(f, config.right_color.on(Fixed(config.right_color_diff_bg)).bold(), "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, Green.bold(), "{}", SIGN_RIGHT)?;
+                    paint!(f, config.right_color.bold(), "{}", config.right_prefix)?;
                 });
             }
             _ => (),
@@ -182,7 +250,8 @@ fn test_format_replacement() {
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
 
     let mut actual = String::new();
-    let _ = format_replacement(&mut actual, added, removed);
+    let config = Config::new();
+    let _ = format_replacement(&mut actual, added, removed, &config);
 
     println!(
         "## removed ##\

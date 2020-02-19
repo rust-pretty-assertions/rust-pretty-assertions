@@ -1,6 +1,8 @@
 #[allow(unused_imports)]
 use pretty_assertions::{assert_eq, assert_ne};
 
+use pretty_assertions::with_labels_assert_eq;
+
 use maybe_unwind::maybe_unwind;
 
 fn test_setup() {
@@ -43,9 +45,16 @@ Some(
 
     let mut expect = expect_template.to_string();
 
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect.replace("{{left}}", "x").replace("{{right}}", "x");
+    }
 
     let result = maybe_unwind(|| {
         assert_ne!(x, x);
@@ -56,7 +65,7 @@ Some(
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }
 
 #[test]
@@ -93,9 +102,16 @@ Some(
 
     let mut expect = expect_template.to_string();
 
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect.replace("{{left}}", "x").replace("{{right}}", "x");
+    }
 
     let result = maybe_unwind(|| {
         assert_ne!(x, x, "custom panic message");
@@ -106,7 +122,7 @@ Some(
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }
 
 #[test]
@@ -155,9 +171,19 @@ fn assert_ne_partial() {
     let mut expect = expect_template.to_string();
 
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
 
     let result = maybe_unwind(|| {
         assert_ne!(Foo(-0.0), Foo(0.0));
@@ -168,7 +194,7 @@ fn assert_ne_partial() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }
 
 #[test]
@@ -205,9 +231,16 @@ Some(
 
     let mut expect = expect_template.to_string();
 
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect.replace("{{left}}", "x").replace("{{right}}", "x");
+    }
 
     let result = maybe_unwind(|| {
         assert_ne!(x, x,);
@@ -218,7 +251,7 @@ Some(
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }
 
 #[test]
@@ -255,9 +288,16 @@ Some(
 
     let mut expect = expect_template.to_string();
 
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect.replace("{{left}}", "x").replace("{{right}}", "x");
+    }
 
     let result = maybe_unwind(|| {
         assert_ne!(x, x, "custom panic message",);
@@ -268,5 +308,5 @@ Some(
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }

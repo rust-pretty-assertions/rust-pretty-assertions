@@ -1,6 +1,8 @@
 #[allow(unused_imports)]
 use pretty_assertions::{assert_eq, assert_ne};
 
+use pretty_assertions::with_labels_assert_eq;
+
 use maybe_unwind::maybe_unwind;
 
 use std::fmt;
@@ -38,9 +40,19 @@ fn assert_eq_empty_first() {
     let mut expect = expect_template.to_string();
 
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
 
     let result = maybe_unwind(|| {
         assert_eq!(PrettyString(""), PrettyString("foo"));
@@ -51,5 +63,5 @@ fn assert_eq_empty_first() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }

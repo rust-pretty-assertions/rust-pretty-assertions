@@ -1,6 +1,8 @@
 #[allow(unused_imports)]
 use pretty_assertions::{assert_eq, assert_ne};
 
+use pretty_assertions::with_labels_assert_eq;
+
 use maybe_unwind::maybe_unwind;
 
 fn test_setup() {
@@ -51,9 +53,17 @@ fn assert_eq() {
     let mut expect = expect_template.to_string();
 
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect.replace("{{left}}", "x").replace("{{right}}", "y");
+    }
 
     let result = maybe_unwind(|| {
         assert_eq!(x, y);
@@ -64,7 +74,7 @@ fn assert_eq() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }
 
 #[test]
@@ -109,9 +119,17 @@ fn assert_eq_custom() {
     let mut expect = expect_template.to_string();
 
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect.replace("{{left}}", "x").replace("{{right}}", "y");
+    }
 
     let result = maybe_unwind(|| {
         assert_eq!(x, y, "custom panic message");
@@ -122,7 +140,7 @@ fn assert_eq_custom() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }
 
 #[test]
@@ -161,9 +179,19 @@ fn issue12() {
     let mut expect = expect_template.to_string();
 
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
 
     let result = maybe_unwind(|| {
         println!(" left={:#?}", left);
@@ -176,7 +204,7 @@ fn issue12() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }
 
 #[test]
@@ -221,9 +249,17 @@ fn assert_eq_trailing_comma() {
     let mut expect = expect_template.to_string();
 
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect.replace("{{left}}", "x").replace("{{right}}", "y");
+    }
 
     let result = maybe_unwind(|| {
         assert_eq!(x, y,);
@@ -234,7 +270,7 @@ fn assert_eq_trailing_comma() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }
 
 #[test]
@@ -279,9 +315,17 @@ fn assert_eq_custom_trailing_comma() {
     let mut expect = expect_template.to_string();
 
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
-    expect = expect
-        .replace("{{left}}", "left")
-        .replace("{{right}}", "right");
+
+    #[cfg(not(any(feature = "labels")))]
+    {
+        expect = expect
+            .replace("{{left}}", "left")
+            .replace("{{right}}", "right");
+    }
+    #[cfg(feature = "labels")]
+    {
+        expect = expect.replace("{{left}}", "x").replace("{{right}}", "y");
+    }
 
     let result = maybe_unwind(|| {
         assert_eq!(x, y, "custom panic message",);
@@ -292,5 +336,5 @@ fn assert_eq_custom_trailing_comma() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    assert_eq!(expect, result);
+    with_labels_assert_eq!(expect, result);
 }
