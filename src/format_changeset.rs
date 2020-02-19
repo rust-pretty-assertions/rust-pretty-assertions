@@ -156,8 +156,14 @@ fn test_format_replacement() {
                    \n    0,\
                    \n    128,";
 
-    let mut buf = String::new();
-    let _ = format_replacement(&mut buf, added, removed);
+    let expect_template = "\u{1b}[31m{{<}}\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m0\u{1b}[0m\u{1b}[31m,\u{1b}[0m\n\u{1b}[31m{{<}}\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m0,\u{1b}[0m\n\u{1b}[1;31m{{<}}\u{1b}[0m\u{1b}[1;48;5;52;31m    1\u{1b}[0m\u{1b}[31m2\u{1b}[0m\u{1b}[31m8,\u{1b}[0m\n\u{1b}[32m{{>}}\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[1;48;5;22;32m84\u{1b}[0m\u{1b}[32m,\u{1b}[0m\n\u{1b}[32m{{>}}\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[32m2\u{1b}[0m\u{1b}[1;48;5;22;32m4\u{1b}[0m\u{1b}[32m8,\u{1b}[0m\n";
+
+    let mut expect = expect_template.to_string();
+
+    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+
+    let mut actual = String::new();
+    let _ = format_replacement(&mut actual, added, removed);
 
     println!(
         "## removed ##\
@@ -166,11 +172,11 @@ fn test_format_replacement() {
          \n{}\
          \n## diff ##\
          \n{}",
-        removed, added, buf
+        removed, added, actual
     );
 
-    assert_eq!(
-        buf,
-        "\u{1b}[31m<\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m0\u{1b}[0m\u{1b}[31m,\u{1b}[0m\n\u{1b}[31m<\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m0,\u{1b}[0m\n\u{1b}[1;31m<\u{1b}[0m\u{1b}[1;48;5;52;31m    1\u{1b}[0m\u{1b}[31m2\u{1b}[0m\u{1b}[31m8,\u{1b}[0m\n\u{1b}[32m>\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[1;48;5;22;32m84\u{1b}[0m\u{1b}[32m,\u{1b}[0m\n\u{1b}[32m>\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[32m2\u{1b}[0m\u{1b}[1;48;5;22;32m4\u{1b}[0m\u{1b}[32m8,\u{1b}[0m\n"
-    );
+    println!("actual={}", actual);
+    println!("expect={}", expect);
+
+    assert_eq!(actual, expect);
 }
