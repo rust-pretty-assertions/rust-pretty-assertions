@@ -41,33 +41,33 @@ const PREFIX_LEFT: &str = "<"; // - < ←
 
 #[doc(hidden)]
 pub struct Config {
-    pub default_left_label: &'static str,
-    pub default_right_label: &'static str,
+    pub default_label_left: &'static str,
+    pub default_label_right: &'static str,
     pub left_color: ansi_term::Colour,
     pub left_color_diff_bg: u8,
-    pub maybe_left_label: Option<&'static str>,
-    pub left_prefix: &'static str,
+    pub maybe_label_left: Option<&'static str>,
+    pub maybe_label_right: Option<&'static str>,
     pub right_color: ansi_term::Colour,
     pub right_color_diff_bg: u8,
-    pub maybe_right_label: Option<&'static str>,
-    pub right_prefix: &'static str,
     pub prefix: &'static str,
+    pub prefix_left: &'static str,
+    pub prefix_right: &'static str,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Config {
-            default_left_label: "left",
-            default_right_label: "right",
-            maybe_left_label: None,
-            maybe_right_label: None,
+            default_label_left: "left",
+            default_label_right: "right",
             left_color: Red, // (dark) red
             left_color_diff_bg: 52,
-            left_prefix: PREFIX_LEFT,
             right_color: Green, // (dark) green
             right_color_diff_bg: 22,
-            right_prefix: PREFIX_RIGHT,
             prefix: PREFIX,
+            prefix_left: PREFIX_LEFT,
+            prefix_right: PREFIX_RIGHT,
+            maybe_label_left: None,
+            maybe_label_right: None,
         }
     }
 }
@@ -97,15 +97,15 @@ pub fn format_changeset(
         Style::new().bold().paint("Diff"),
         config.left_color.paint(format!(
             "{} {}",
-            config.left_prefix,
-            config.maybe_left_label.unwrap_or(config.default_left_label)
+            config.prefix_left,
+            config.maybe_label_left.unwrap_or(config.default_label_left)
         )),
         config.right_color.paint(format!(
             "{} {}",
             config
-                .maybe_right_label
-                .unwrap_or(config.default_right_label),
-            config.right_prefix
+                .maybe_label_right
+                .unwrap_or(config.default_label_right),
+            config.prefix_right
         ))
     )?;
     for i in 0..diffs.len() {
@@ -129,7 +129,7 @@ pub fn format_changeset(
                     }
                     _ => {
                         for line in added.split('\n') {
-                            paint!(f, config.right_color, "{}{}\n", config.right_prefix, line)?;
+                            paint!(f, config.right_color, "{}{}\n", config.prefix_right, line)?;
                         }
                     }
                 };
@@ -144,7 +144,7 @@ pub fn format_changeset(
                     }
                     _ => {
                         for line in removed.split('\n') {
-                            paint!(f, config.left_color, "{}{}\n", config.left_prefix, line)?;
+                            paint!(f, config.left_color, "{}{}\n", config.prefix_left, line)?;
                         }
                     }
                 }
@@ -184,7 +184,7 @@ pub fn format_replacement(
     let Changeset { diffs, .. } = Changeset::new(removed, added, "");
 
     // LEFT side (==what's been)
-    paint!(f, config.left_color, "{}", config.left_prefix)?;
+    paint!(f, config.left_color, "{}", config.prefix_left)?;
     for c in &diffs {
         match *c {
             Difference::Same(ref word_diff) => {
@@ -192,7 +192,7 @@ pub fn format_replacement(
                     paint!(f, config.left_color, "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, config.left_color, "{}", config.left_prefix)?;
+                    paint!(f, config.left_color, "{}", config.prefix_left)?;
                 });
             }
             Difference::Rem(ref word_diff) => {
@@ -200,7 +200,7 @@ pub fn format_replacement(
                     paint!(f, config.left_color.on(Fixed(config.left_color_diff_bg)).bold(), "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, config.left_color.bold(), "{}", config.left_prefix)?;
+                    paint!(f, config.left_color.bold(), "{}", config.prefix_left)?;
                 });
             }
             _ => (),
@@ -209,7 +209,7 @@ pub fn format_replacement(
     writeln!(f, "")?;
 
     // RIGHT side (==what's new)
-    paint!(f, config.right_color, "{}", config.right_prefix)?;
+    paint!(f, config.right_color, "{}", config.prefix_right)?;
     for c in &diffs {
         match *c {
             Difference::Same(ref word_diff) => {
@@ -217,7 +217,7 @@ pub fn format_replacement(
                     paint!(f, config.right_color, "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, config.right_color, "{}", config.right_prefix)?;
+                    paint!(f, config.right_color, "{}", config.prefix_right)?;
                 });
             }
             Difference::Add(ref word_diff) => {
@@ -225,7 +225,7 @@ pub fn format_replacement(
                     paint!(f, config.right_color.on(Fixed(config.right_color_diff_bg)).bold(), "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, config.right_color.bold(), "{}", config.right_prefix)?;
+                    paint!(f, config.right_color.bold(), "{}", config.prefix_right)?;
                 });
             }
             _ => (),

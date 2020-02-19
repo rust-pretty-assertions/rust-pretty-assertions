@@ -110,22 +110,22 @@ macro_rules! assert_eq {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! with_labels_assert_eq_impl_ {
-    ($left_label:ident : $left:expr, $right_label:ident : $right:expr, $separator:expr, $($arg:tt)+) => ({
+    ($label_left:ident : $left:expr, $label_right:ident : $right:expr, $separator:expr, $($arg:tt)+) => ({
         let mut config = $crate::Config::new();
-        config.maybe_left_label = Some(stringify!($left_label));
-        config.maybe_right_label = Some(stringify!($right_label));
+        config.maybe_label_left = Some(stringify!($label_left));
+        config.maybe_label_right = Some(stringify!($label_right));
         match (&($left), &($right)) {
-            (left_val, right_val) => {
-                if !(*left_val == *right_val) {
+            (val_left, val_right) => {
+                if !(*val_left == *val_right) {
                     panic!("assertion failed: `({} == {})`{}{}\
                         \n\
                         \n{}\
                         \n",
-                        config.maybe_left_label.unwrap_or(config.default_left_label),
-                        config.maybe_right_label.unwrap_or(config.default_right_label),
+                        config.maybe_label_left.unwrap_or(config.default_label_left),
+                        config.maybe_label_right.unwrap_or(config.default_label_right),
                         $separator,
                         format_args!($($arg)+),
-                        $crate::Comparison::new(config, left_val, right_val))
+                        $crate::Comparison::new(config, val_left, val_right))
                 }
             }
         }
@@ -134,26 +134,26 @@ macro_rules! with_labels_assert_eq_impl_ {
 
 #[macro_export]
 macro_rules! with_labels_assert_eq {
-    ($left_label:ident : $left:expr, $right_label:ident : $right:expr, $($arg:tt)+) => ({
-        $crate::with_labels_assert_eq_impl_!($left_label: $left, $right_label: $right, ": ", $($arg)+)
+    ($label_left:ident : $left:expr, $label_right:ident : $right:expr, $($arg:tt)+) => ({
+        $crate::with_labels_assert_eq_impl_!($label_left: $left, $label_right: $right, ": ", $($arg)+)
     });
-    ($left_label:ident : $left:expr, $right_label:ident : $right:expr,) => ({
-        $crate::with_labels_assert_eq_impl_!($left_label: $left, $right_label: $right, "", "")
+    ($label_left:ident : $left:expr, $label_right:ident : $right:expr,) => ({
+        $crate::with_labels_assert_eq_impl_!($label_left: $left, $label_right: $right, "", "")
     });
-    ($left_label:ident : $left:expr, $right_label:ident : $right:expr) => ({
-        $crate::with_labels_assert_eq_impl_!($left_label: $left, $right_label: $right, "", "")
+    ($label_left:ident : $left:expr, $label_right:ident : $right:expr) => ({
+        $crate::with_labels_assert_eq_impl_!($label_left: $left, $label_right: $right, "", "")
     });
-    // ($left:ident, $right_label:ident : $right:expr, $($arg:tt)*) => ({
-    //     $crate::with_labels_assert_eq!($left: $left, $right_label: $right, $($arg)*)
+    // ($left:ident, $label_right:ident : $right:expr, $($arg:tt)*) => ({
+    //     $crate::with_labels_assert_eq!($left: $left, $label_right: $right, $($arg)*)
     // });
-    // ($left:ident, $right_label:ident : $right:expr) => ({
-    //     $crate::with_labels_assert_eq!($left: $left, $right_label: $right)
+    // ($left:ident, $label_right:ident : $right:expr) => ({
+    //     $crate::with_labels_assert_eq!($left: $left, $label_right: $right)
     // });
-    // ($left_label:ident : $left:expr, $right:ident, $($arg:tt)*) => ({
-    //     $crate::with_labels_assert_eq!($left_label: $left, $right: $right, $($arg)*)
+    // ($label_left:ident : $left:expr, $right:ident, $($arg:tt)*) => ({
+    //     $crate::with_labels_assert_eq!($label_left: $left, $right: $right, $($arg)*)
     // });
-    // ($left_label:ident : $left:expr, $right:ident) => ({
-    //     $crate::with_labels_assert_eq!($left_label: $left, $right: $right)
+    // ($label_left:ident : $left:expr, $right:ident) => ({
+    //     $crate::with_labels_assert_eq!($label_left: $left, $right: $right)
     // });
     ($left:ident, $right:ident, $($arg:tt)*) => ({
         $crate::with_labels_assert_eq!($left: $left, $right: $right, $($arg)*)
@@ -191,15 +191,15 @@ macro_rules! assert_ne {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! with_labels_assert_ne_impl_ {
-    ($left_label:ident : $left:expr, $right_label:ident : $right:expr, $separator:expr, $($arg:tt)+) => ({
+    ($label_left:ident : $left:expr, $label_right:ident : $right:expr, $separator:expr, $($arg:tt)+) => ({
         let mut config = $crate::Config::new();
-        config.maybe_left_label = Some(stringify!($left_label));
-        config.maybe_right_label = Some(stringify!($right_label));
+        config.maybe_label_left = Some(stringify!($label_left));
+        config.maybe_label_right = Some(stringify!($label_right));
         match (&($left), &($right)) {
-            (left_val, right_val) => {
-                if *left_val == *right_val {
-                    let left_dbg = format!("{:?}", *left_val);
-                    let right_dbg = format!("{:?}", *right_val);
+            (val_left, val_right) => {
+                if *val_left == *val_right {
+                    let left_dbg = format!("{:?}", *val_left);
+                    let right_dbg = format!("{:?}", *val_right);
                     if left_dbg != right_dbg {
                         panic!("assertion failed: `({} != {})`{}{}\
                             \n\
@@ -208,11 +208,11 @@ macro_rules! with_labels_assert_ne_impl_ {
                             are partially equivalent, even if the `Debug` outputs differ.\
                             \n\
                             \n",
-                            config.maybe_left_label.unwrap_or(config.default_left_label),
-                            config.maybe_right_label.unwrap_or(config.default_right_label),
+                            config.maybe_label_left.unwrap_or(config.default_label_left),
+                            config.maybe_label_right.unwrap_or(config.default_label_right),
                             $separator,
                             format_args!($($arg)+),
-                            $crate::Comparison::new(config, left_val, right_val),
+                            $crate::Comparison::new(config, val_left, val_right),
                             $crate::Style::new()
                                 .bold()
                                 .underline()
@@ -224,12 +224,12 @@ macro_rules! with_labels_assert_ne_impl_ {
                         \n{:#?}\
                         \n\
                         \n",
-                        config.maybe_left_label.unwrap_or(config.default_left_label),
-                        config.maybe_right_label.unwrap_or(config.default_right_label),
+                        config.maybe_label_left.unwrap_or(config.default_label_left),
+                        config.maybe_label_right.unwrap_or(config.default_label_right),
                         $separator,
                         format_args!($($arg)+),
                         $crate::Style::new().bold().paint("Both sides"),
-                        left_val)
+                        val_left)
                 }
             }
         }
@@ -238,26 +238,26 @@ macro_rules! with_labels_assert_ne_impl_ {
 
 #[macro_export]
 macro_rules! with_labels_assert_ne {
-    ($left_label:ident : $left:expr, $right_label:ident : $right:expr, $($arg:tt)+) => ({
-        $crate::with_labels_assert_ne_impl_!($left_label: $left, $right_label: $right, ": ", $($arg)+)
+    ($label_left:ident : $left:expr, $label_right:ident : $right:expr, $($arg:tt)+) => ({
+        $crate::with_labels_assert_ne_impl_!($label_left: $left, $label_right: $right, ": ", $($arg)+)
     });
-    ($left_label:ident : $left:expr, $right_label:ident : $right:expr,) => ({
-        $crate::with_labels_assert_ne_impl_!($left_label: $left, $right_label: $right, "", "")
+    ($label_left:ident : $left:expr, $label_right:ident : $right:expr,) => ({
+        $crate::with_labels_assert_ne_impl_!($label_left: $left, $label_right: $right, "", "")
     });
-    ($left_label:ident : $left:expr, $right_label:ident : $right:expr) => ({
-        $crate::with_labels_assert_ne_impl_!($left_label: $left, $right_label: $right, "", "")
+    ($label_left:ident : $left:expr, $label_right:ident : $right:expr) => ({
+        $crate::with_labels_assert_ne_impl_!($label_left: $left, $label_right: $right, "", "")
     });
-    // ($left:ident, $right_label:ident : $right:expr, $($arg:tt)*) => ({
-    //     $crate::with_labels_assert_ne!($left: $left, $right_label: $right, $($arg:tt)*)
+    // ($left:ident, $label_right:ident : $right:expr, $($arg:tt)*) => ({
+    //     $crate::with_labels_assert_ne!($left: $left, $label_right: $right, $($arg:tt)*)
     // });
-    // ($left:ident, $right_label:ident : $right:expr) => ({
-    //     $crate::with_labels_assert_ne!($left: $left, $right_label: $right)
+    // ($left:ident, $label_right:ident : $right:expr) => ({
+    //     $crate::with_labels_assert_ne!($left: $left, $label_right: $right)
     // });
-    // ($left_label:ident : $left:expr, $right:ident, $($arg:tt)*) => ({
-    //     $crate::with_labels_assert_ne!($left_label: $left, $right: $right, $($arg:tt)*)
+    // ($label_left:ident : $left:expr, $right:ident, $($arg:tt)*) => ({
+    //     $crate::with_labels_assert_ne!($label_left: $left, $right: $right, $($arg:tt)*)
     // });
-    // ($left_label:ident : $left:expr, $right:ident) => ({
-    //     $crate::with_labels_assert_ne!($left_label: $left, $right: $right)
+    // ($label_left:ident : $left:expr, $right:ident) => ({
+    //     $crate::with_labels_assert_ne!($label_left: $left, $right: $right)
     // });
     ($left:ident, $right:ident, $($arg:tt)*) => ({
         $crate::with_labels_assert_ne!($left: $left, $right: $right, $($arg)*)
