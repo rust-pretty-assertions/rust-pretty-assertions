@@ -73,12 +73,13 @@ extern crate ctor;
 #[cfg(windows)]
 extern crate output_vt100;
 
-mod format_changeset;
+pub mod comparison;
+pub mod config;
 
-pub use ansi_term::Style;
+pub use ansi_term::{Color, Colour, Style};
 
-pub use crate::format_changeset::Comparison; // private use; but required to be public for use in exported macros
-pub use crate::format_changeset::Config; // private use; but required to be public for use in exported macros
+pub use crate::comparison::Comparison; // private use; but required to be public for use in exported macros
+pub use crate::config::Config; // private use; but required to be public for use in exported macros
 
 #[cfg(windows)]
 use ctor::*;
