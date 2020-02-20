@@ -18,8 +18,11 @@ pub struct Config {
     pub style_left_diff: Style, // style for left/first (aka prior) argument intra-line differences
     pub style_right_diff: Style, // style for right/second (aka after) argument intra-line differences
 
-    pub maybe_label_left: Option<&'static str>, // left/first (aka prior) label, if available
-    pub maybe_label_right: Option<&'static str>, // right/second (aka after) label, if available
+    // "private"; but must be pub accessible for use in exported macros
+    #[doc(hidden)]
+    pub _maybe_label_left: Option<&'static str>, // left/first (aka prior) label, if available
+    #[doc(hidden)]
+    pub _maybe_label_right: Option<&'static str>, // right/second (aka after) label, if available
 }
 
 const PREFIX: &str = " ";
@@ -42,9 +45,9 @@ impl Default for Config {
             style_right: Color::Green.normal(), // (dark) green ("Green"), aka Color::Fixed(2)
             style_left_diff: Color::Red.on(Color::Fixed(52)).bold(), // bold bright red ("Red") on "DarkRed"
             style_right_diff: Color::Green.on(Color::Fixed(22)).bold(), // bold bright green ("Lime") on "DarkGreen"
-            //
-            maybe_label_left: None,
-            maybe_label_right: None,
+            // "private"
+            _maybe_label_left: None,
+            _maybe_label_right: None,
         }
     }
 }

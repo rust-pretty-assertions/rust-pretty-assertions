@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use pretty_assertions::{assert_eq, assert_ne};
 
-use pretty_assertions::with_labels_assert_eq;
+use pretty_assertions::with_config_assert_eq;
 
 use maybe_unwind::maybe_unwind;
 
@@ -74,7 +74,14 @@ fn assert_eq() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -119,7 +126,14 @@ fn with_labels_assert_eq() {
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
 
     let result = maybe_unwind(|| {
-        with_labels_assert_eq!(expect: x, actual: y);
+        with_config_assert_eq!(
+            pretty_assertions::Config {
+                auto_label: true,
+                ..Default::default()
+            },
+            expect: x,
+            actual: y
+        );
     });
 
     assert!(result.is_err());
@@ -127,7 +141,14 @@ fn with_labels_assert_eq() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -174,7 +195,14 @@ fn with_labels_assert_eq_simple() {
     expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
 
     let result = maybe_unwind(|| {
-        with_labels_assert_eq!(x, y);
+        with_config_assert_eq!(
+            pretty_assertions::Config {
+                auto_label: true,
+                ..Default::default()
+            },
+            x,
+            y
+        );
     });
 
     assert!(result.is_err());
@@ -182,7 +210,14 @@ fn with_labels_assert_eq_simple() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -248,7 +283,14 @@ fn assert_eq_custom() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -312,7 +354,14 @@ fn issue12() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -378,7 +427,14 @@ fn assert_eq_trailing_comma() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -444,5 +500,12 @@ fn assert_eq_custom_trailing_comma() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }

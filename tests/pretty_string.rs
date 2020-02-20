@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use pretty_assertions::{assert_eq, assert_ne};
 
-use pretty_assertions::with_labels_assert_eq;
+use pretty_assertions::with_config_assert_eq;
 
 use maybe_unwind::maybe_unwind;
 
@@ -63,5 +63,12 @@ fn assert_eq_empty_first() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }

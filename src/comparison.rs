@@ -1,4 +1,3 @@
-use ansi_term::Style;
 use difference::{Changeset, Difference};
 use std::fmt::{self, Debug, Display};
 
@@ -36,8 +35,14 @@ impl Display for Comparison {
 
 macro_rules! paint {
     ($f:ident, $colour:expr, $fmt:expr, $($args:tt)*) => (
-        write!($f, "{}", $colour.paint(format!($fmt, $($args)*)))
+        write!($f, "{}", painted!($colour, format!($fmt, $($args)*)))
     )
+}
+
+macro_rules! painted {
+    ($colour:expr, $formatted:expr) => {
+        $colour.paint($formatted)
+    };
 }
 
 pub fn format_comparison(
@@ -50,19 +55,27 @@ pub fn format_comparison(
     writeln!(
         f,
         "{} {} / {} :",
-        Style::new().bold().paint("Diff"),
-        config.style_left.paint(format!(
-            "{} {}",
-            config.prefix_left,
-            config.maybe_label_left.unwrap_or(config.default_label_left)
-        )),
-        config.style_right.paint(format!(
-            "{} {}",
-            config
-                .maybe_label_right
-                .unwrap_or(config.default_label_right),
-            config.prefix_right
-        ))
+        config.style.bold().paint("Diff"),
+        painted!(
+            config.style_left,
+            format!(
+                "{} {}",
+                config.prefix_left,
+                config
+                    ._maybe_label_left
+                    .unwrap_or(config.default_label_left)
+            )
+        ),
+        painted!(
+            config.style_right,
+            format!(
+                "{} {}",
+                config
+                    ._maybe_label_right
+                    .unwrap_or(config.default_label_right),
+                config.prefix_right
+            )
+        )
     )?;
     for i in 0..diffs.len() {
         match diffs[i] {
@@ -70,7 +83,12 @@ pub fn format_comparison(
                 // Have to split line by line in order to have the extra whitespace
                 // at the beginning.
                 for line in same.split('\n') {
-                    writeln!(f, "{}{}", config.prefix, line)?;
+                    writeln!(
+                        f,
+                        "{}{}",
+                        painted!(config.style, config.prefix),
+                        painted!(config.style, line)
+                    )?;
                 }
             }
             Difference::Add(ref added) => {
@@ -162,7 +180,7 @@ pub fn format_replacement(
             _ => (),
         }
     }
-    writeln!(f)?;
+    writeln!(f, "{}", config.style.paint(""))?;
 
     // RIGHT side (==what's new)
     paint!(f, config.style_right, "{}", config.prefix_right)?;
@@ -187,8 +205,9 @@ pub fn format_replacement(
             _ => (),
         }
     }
+    writeln!(f, "{}", painted!(config.style, ""))?;
 
-    writeln!(f)
+    Ok(())
 }
 
 #[test]
@@ -222,5 +241,12 @@ fn test_format_replacement() {
     println!("actual={}", actual);
     println!("expect={}", expect);
 
-    assert_eq!(actual, expect);
+    crate::with_config_assert_eq!(
+        Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        actual,
+        expect
+    );
 }

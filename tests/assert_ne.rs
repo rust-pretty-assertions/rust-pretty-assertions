@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use pretty_assertions::{assert_eq, assert_ne};
 
-use pretty_assertions::{with_labels_assert_eq, with_labels_assert_ne};
+use pretty_assertions::{with_config_assert_eq, with_config_assert_ne, Config};
 
 use maybe_unwind::maybe_unwind;
 
@@ -65,7 +65,14 @@ Some(
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -106,7 +113,14 @@ Some(
     expect = expect.replace("{{left}}", "x").replace("{{right}}", "x");
 
     let result = maybe_unwind(|| {
-        with_labels_assert_ne!(x, x);
+        with_config_assert_ne!(
+            Config {
+                auto_label: true,
+                ..Default::default()
+            },
+            x,
+            x
+        );
     });
 
     assert!(result.is_err());
@@ -114,7 +128,14 @@ Some(
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -171,7 +192,14 @@ Some(
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        pretty_assertions::Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -234,7 +262,14 @@ fn assert_ne_partial() {
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -291,7 +326,14 @@ Some(
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
 
 #[test]
@@ -348,5 +390,12 @@ Some(
     let result = result.unwrap_err().payload_str().to_owned();
     println!("expect={}", expect);
     println!("result={}", result);
-    with_labels_assert_eq!(expect, result);
+    with_config_assert_eq!(
+        Config {
+            auto_label: true,
+            ..Default::default()
+        },
+        expect,
+        result
+    );
 }
