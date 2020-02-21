@@ -75,11 +75,9 @@ extern crate output_vt100;
 
 mod format_changeset;
 
-use difference::Changeset;
-use std::fmt::{self, Debug, Display};
-
-use crate::format_changeset::format_changeset;
 pub use ansi_term::Style;
+
+pub use crate::format_changeset::Comparison; // private use; but required to be public for use in exported macros
 
 #[cfg(windows)]
 use ctor::*;
@@ -87,25 +85,6 @@ use ctor::*;
 #[ctor]
 fn init() {
     output_vt100::try_init().ok(); // Do not panic on fail
-}
-
-#[doc(hidden)]
-pub struct Comparison(Changeset);
-
-impl Comparison {
-    pub fn new<TLeft: Debug, TRight: Debug>(left: &TLeft, right: &TRight) -> Comparison {
-        let left_dbg = format!("{:#?}", *left);
-        let right_dbg = format!("{:#?}", *right);
-        let changeset = Changeset::new(&left_dbg, &right_dbg, "\n");
-
-        Comparison(changeset)
-    }
-}
-
-impl Display for Comparison {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        format_changeset(f, &self.0)
-    }
 }
 
 #[macro_export]

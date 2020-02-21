@@ -1,7 +1,26 @@
 use ansi_term::Colour::{Fixed, Green, Red};
 use ansi_term::Style;
 use difference::{Changeset, Difference};
-use std::fmt;
+use std::fmt::{self, Debug, Display};
+
+#[doc(hidden)]
+pub struct Comparison(Changeset);
+
+impl Comparison {
+    pub fn new<TLeft: Debug, TRight: Debug>(left: &TLeft, right: &TRight) -> Comparison {
+        let left_dbg = format!("{:#?}", *left);
+        let right_dbg = format!("{:#?}", *right);
+        let changeset = Changeset::new(&left_dbg, &right_dbg, "\n");
+
+        Comparison(changeset)
+    }
+}
+
+impl Display for Comparison {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        format_changeset(f, &self.0)
+    }
+}
 
 macro_rules! paint {
     ($f:ident, $colour:expr, $fmt:expr, $($args:tt)*) => (
