@@ -155,7 +155,16 @@ pub fn format_replacement(
     removed: &str,
     config: &Config,
 ) -> fmt::Result {
-    let Changeset { diffs, .. } = Changeset::new(removed, added, "");
+    let mut removed_lines = removed.split('\n');
+    let removed_line = removed_lines.next_back().unwrap();
+    let mut added_lines = added.split('\n');
+    let added_line = added_lines.next().unwrap();
+
+    let Changeset { diffs, .. } = Changeset::new(removed_line, added_line, "");
+
+    for line in removed_lines {
+        paint!(f, config.style_left, "{}{}\n", config.prefix_left, line)?;
+    }
 
     // LEFT side (==what's been)
     paint!(f, config.style_left, "{}", config.prefix_left)?;
@@ -207,6 +216,10 @@ pub fn format_replacement(
     }
     writeln!(f, "{}", painted!(config.style, ""))?;
 
+    for line in added_lines {
+        paint!(f, config.style_right, "{}{}\n", config.prefix_right, line)?;
+    }
+
     Ok(())
 }
 
@@ -218,7 +231,7 @@ fn test_format_replacement() {
                    \n    0,\
                    \n    128,";
 
-    let expect_template = "\u{1b}[31m{{<}}\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m0\u{1b}[0m\u{1b}[31m,\u{1b}[0m\n\u{1b}[31m{{<}}\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m0,\u{1b}[0m\n\u{1b}[31m{{<}}\u{1b}[0m\u{1b}[1;48;5;52;31m    1\u{1b}[0m\u{1b}[31m2\u{1b}[0m\u{1b}[31m8,\u{1b}[0m\n\u{1b}[32m{{>}}\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[1;48;5;22;32m84\u{1b}[0m\u{1b}[32m,\u{1b}[0m\n\u{1b}[32m{{>}}\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[32m2\u{1b}[0m\u{1b}[1;48;5;22;32m4\u{1b}[0m\u{1b}[32m8,\u{1b}[0m\n";
+    let expect_template = "\u{1b}[31m{{<}}    0,\n\u{1b}[0m\u{1b}[31m{{<}}    0,\n\u{1b}[0m\u{1b}[31m{{<}}\u{1b}[0m\u{1b}[31m    \u{1b}[0m\u{1b}[1;48;5;52;31m12\u{1b}[0m\u{1b}[31m8\u{1b}[0m\u{1b}[31m,\u{1b}[0m\n\u{1b}[32m{{>}}\u{1b}[0m\u{1b}[32m    \u{1b}[0m\u{1b}[32m8\u{1b}[0m\u{1b}[1;48;5;22;32m4\u{1b}[0m\u{1b}[32m,\u{1b}[0m\n\u{1b}[32m{{>}}    248,\n\u{1b}[0m";
 
     let mut expect = expect_template.to_string();
 
