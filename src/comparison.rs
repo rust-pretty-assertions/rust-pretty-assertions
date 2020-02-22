@@ -235,7 +235,14 @@ fn test_format_replacement() {
 
     let mut expect = expect_template.to_string();
 
-    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    #[cfg(not(any(feature = "diffstyle_git")))]
+    {
+        expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    }
+    #[cfg(feature = "diffstyle_git")]
+    {
+        expect = expect.replace("{{<}}", "-").replace("{{>}}", "+");
+    }
 
     let mut actual = String::new();
     let config = Config::new();

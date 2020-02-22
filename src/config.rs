@@ -26,8 +26,16 @@ pub struct Config {
 }
 
 const PREFIX: &str = " ";
+
+#[cfg(not(any(feature = "diffstyle_git")))]
 const PREFIX_RIGHT: &str = ">"; // + > →
+#[cfg(not(any(feature = "diffstyle_git")))]
 const PREFIX_LEFT: &str = "<"; // - < ←
+
+#[cfg(feature = "diffstyle_git")]
+const PREFIX_RIGHT: &str = "+"; // + > →
+#[cfg(feature = "diffstyle_git")]
+const PREFIX_LEFT: &str = "-"; // - < ←
 
 impl Default for Config {
     fn default() -> Self {

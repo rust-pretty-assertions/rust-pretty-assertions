@@ -17,6 +17,7 @@ readme = "README.md"
 travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
 
 [features]
+diffstyle_git = []
 labels = []
 
 [dependencies]
