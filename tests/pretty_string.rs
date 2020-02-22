@@ -39,7 +39,14 @@ fn assert_eq_empty_first() {
 
     let mut expect = expect_template.to_string();
 
-    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    #[cfg(not(any(feature = "diffstyle_git")))]
+    {
+        expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    }
+    #[cfg(feature = "diffstyle_git")]
+    {
+        expect = expect.replace("{{<}}", "-").replace("{{>}}", "+");
+    }
 
     #[cfg(not(any(feature = "labels")))]
     {

@@ -52,7 +52,14 @@ fn assert_eq() {
 
     let mut expect = expect_template.to_string();
 
-    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    #[cfg(not(any(feature = "diffstyle_git")))]
+    {
+        expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    }
+    #[cfg(feature = "diffstyle_git")]
+    {
+        expect = expect.replace("{{<}}", "-").replace("{{>}}", "+");
+    }
 
     #[cfg(not(any(feature = "labels")))]
     {
@@ -123,7 +130,14 @@ fn with_labels_assert_eq() {
 
     let mut expect = expect_template.to_string();
 
-    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    #[cfg(not(any(feature = "diffstyle_git")))]
+    {
+        expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    }
+    #[cfg(feature = "diffstyle_git")]
+    {
+        expect = expect.replace("{{<}}", "-").replace("{{>}}", "+");
+    }
 
     let result = maybe_unwind(|| {
         with_config_assert_eq!(
@@ -192,7 +206,16 @@ fn with_labels_assert_eq_simple() {
 
     let mut expect = expect_template.to_string();
 
-    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    #[cfg(not(any(feature = "diffstyle_git")))]
+    {
+        expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    }
+    #[cfg(feature = "diffstyle_git")]
+    {
+        expect = expect.replace("{{<}}", "-").replace("{{>}}", "+");
+    }
+
+    expect = expect.replace("{{left}}", "x").replace("{{right}}", "y");
 
     let result = maybe_unwind(|| {
         with_config_assert_eq!(
@@ -261,7 +284,14 @@ fn assert_eq_custom() {
 
     let mut expect = expect_template.to_string();
 
-    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    #[cfg(not(any(feature = "diffstyle_git")))]
+    {
+        expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    }
+    #[cfg(feature = "diffstyle_git")]
+    {
+        expect = expect.replace("{{<}}", "-").replace("{{>}}", "+");
+    }
 
     #[cfg(not(any(feature = "labels")))]
     {
@@ -328,7 +358,14 @@ fn issue12() {
 
     let mut expect = expect_template.to_string();
 
-    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    #[cfg(not(any(feature = "diffstyle_git")))]
+    {
+        expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    }
+    #[cfg(feature = "diffstyle_git")]
+    {
+        expect = expect.replace("{{<}}", "-").replace("{{>}}", "+");
+    }
 
     #[cfg(not(any(feature = "labels")))]
     {
@@ -405,7 +442,14 @@ fn assert_eq_trailing_comma() {
 
     let mut expect = expect_template.to_string();
 
-    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    #[cfg(not(any(feature = "diffstyle_git")))]
+    {
+        expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    }
+    #[cfg(feature = "diffstyle_git")]
+    {
+        expect = expect.replace("{{<}}", "-").replace("{{>}}", "+");
+    }
 
     #[cfg(not(any(feature = "labels")))]
     {
@@ -478,7 +522,14 @@ fn assert_eq_custom_trailing_comma() {
 
     let mut expect = expect_template.to_string();
 
-    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    #[cfg(not(any(feature = "diffstyle_git")))]
+    {
+        expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    }
+    #[cfg(feature = "diffstyle_git")]
+    {
+        expect = expect.replace("{{<}}", "-").replace("{{>}}", "+");
+    }
 
     #[cfg(not(any(feature = "labels")))]
     {

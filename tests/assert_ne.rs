@@ -247,7 +247,14 @@ fn assert_ne_partial() {
 
     let mut expect = expect_template.to_string();
 
-    expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    #[cfg(not(any(feature = "diffstyle_git")))]
+    {
+        expect = expect.replace("{{<}}", "<").replace("{{>}}", ">");
+    }
+    #[cfg(feature = "diffstyle_git")]
+    {
+        expect = expect.replace("{{<}}", "-").replace("{{>}}", "+");
+    }
 
     expect = expect
         .replace("{{left}}", "left")
