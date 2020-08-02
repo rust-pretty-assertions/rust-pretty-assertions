@@ -174,3 +174,24 @@ fn assert_ne_custom_trailing_comma() {
 
     assert_ne!(x, x, "custom panic message",);
 }
+
+#[test]
+fn assert_ne_unsized() {
+    let a: &[u8] = b"e";
+    let b: &[u8] = b"ee";
+    assert_ne!(*a, *b);
+}
+
+#[test]
+#[should_panic(expected = r#"assertion failed: `(left != right)`
+
+[1mBoth sides[0m:
+[
+    101,
+]
+
+"#)]
+fn assert_ne_unsized_panic() {
+    let a: &[u8] = b"e";
+    assert_ne!(*a, *a);
+}
