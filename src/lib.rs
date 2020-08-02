@@ -93,9 +93,12 @@ fn init() {
 pub struct Comparison(Changeset);
 
 impl Comparison {
-    pub fn new<TLeft: Debug, TRight: Debug>(left: &TLeft, right: &TRight) -> Comparison {
-        let left_dbg = format!("{:#?}", *left);
-        let right_dbg = format!("{:#?}", *right);
+    pub fn new<TLeft: Debug + ?Sized, TRight: Debug + ?Sized>(
+        left: &TLeft,
+        right: &TRight,
+    ) -> Comparison {
+        let left_dbg = format!("{:#?}", &*left);
+        let right_dbg = format!("{:#?}", &*right);
         let changeset = Changeset::new(&left_dbg, &right_dbg, "\n");
 
         Comparison(changeset)
@@ -157,8 +160,8 @@ macro_rules! assert_ne {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if *left_val == *right_val {
-                  let left_dbg = format!("{:?}", *left_val);
-                  let right_dbg = format!("{:?}", *right_val);
+                  let left_dbg = format!("{:?}", &*left_val);
+                  let right_dbg = format!("{:?}", &*right_val);
                   if left_dbg != right_dbg {
 
                       panic!("assertion failed: `(left != right)`{}{}\

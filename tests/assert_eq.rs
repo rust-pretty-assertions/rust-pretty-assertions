@@ -1,3 +1,5 @@
+#![allow(clippy::eq_op)]
+
 #[allow(unused_imports)]
 use pretty_assertions::{assert_eq, assert_ne};
 extern crate difference;
@@ -192,4 +194,26 @@ fn assert_eq_custom_trailing_comma() {
     });
 
     assert_eq!(x, y, "custom panic message",);
+}
+
+#[test]
+fn assert_eq_unsized() {
+    let a: &[u8] = b"e";
+    assert_eq!(*a, *a);
+}
+
+#[test]
+#[should_panic(expected = r#"assertion failed: `(left == right)`
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+ [
+     101,
+[32m>    101,
+[0m ]
+
+"#)]
+fn assert_eq_unsized_panic() {
+    let a: &[u8] = b"e";
+    let b: &[u8] = b"ee";
+    assert_eq!(*a, *b);
 }
