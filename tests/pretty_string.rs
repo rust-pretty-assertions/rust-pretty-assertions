@@ -4,7 +4,6 @@ use std::fmt;
 /// Used in different `assert*!` macros in combination with `pretty_assertions` crate to make
 /// test failures to show nice diffs.
 #[derive(PartialEq, Eq)]
-#[doc(hidden)]
 pub struct PrettyString<'a>(pub &'a str);
 
 /// Make diff to display string as multi-line string
@@ -18,7 +17,8 @@ impl<'a> fmt::Debug for PrettyString<'a> {
 #[should_panic(expected = r#"assertion failed: `(left == right)`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
-[32m>foo
+[31m<
+[0m[32m>[0m[1;48;5;22;32mfoo[0m[32m
 [0m
 "#)]
 fn assert_eq_empty_first() {
