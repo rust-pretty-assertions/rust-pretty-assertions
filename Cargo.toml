@@ -21,8 +21,8 @@ readme = "README.md"
 travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
 
 [dependencies]
-difference = "2.0.0"
 ansi_term = "0.12.1"
+diff = "0.1.12"
 
 [target.'cfg(windows)'.dependencies]
 output_vt100 = "0.1.2"
