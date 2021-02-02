@@ -19,8 +19,9 @@ impl<'a> fmt::Debug for PrettyString<'a> {
 #[should_panic(expected = r#"assertion failed: `(left == right)`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
-[32m>foo
-[0m
+[31m<[0m
+[32m>[0m[1;48;5;22;32mfoo[0m
+
 "#)]
 fn assert_eq_empty_first() {
     assert_eq!(PrettyString(""), PrettyString("foo"));

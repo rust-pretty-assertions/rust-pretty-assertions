@@ -66,7 +66,7 @@
 //!   a diff.
 
 extern crate ansi_term;
-extern crate difference;
+extern crate diffus;
 
 #[cfg(windows)]
 extern crate ctor;
@@ -75,7 +75,6 @@ extern crate output_vt100;
 
 mod format_changeset;
 
-use difference::Changeset;
 use std::fmt::{self, Debug, Display};
 
 use crate::format_changeset::format_changeset;
@@ -90,21 +89,28 @@ fn init() {
 }
 
 #[doc(hidden)]
-pub struct Comparison(Changeset);
+pub struct Comparison<'a, TLeft, TRight> {
+    left: &'a TLeft,
+    right: &'a TRight,
+}
 
-impl Comparison {
-    pub fn new<TLeft: Debug, TRight: Debug>(left: &TLeft, right: &TRight) -> Comparison {
-        let left_dbg = format!("{:#?}", *left);
-        let right_dbg = format!("{:#?}", *right);
-        let changeset = Changeset::new(&left_dbg, &right_dbg, "\n");
-
-        Comparison(changeset)
+impl<'a, TLeft, TRight> Comparison<'a, TLeft, TRight> {
+    pub fn new(left: &'a TLeft, right: &'a TRight) -> Comparison<'a, TLeft, TRight> {
+        Comparison { left, right }
     }
 }
 
-impl Display for Comparison {
+impl<'a, TLeft, TRight> Display for Comparison<'a, TLeft, TRight>
+where
+    TLeft: Debug,
+    TRight: Debug,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        format_changeset(f, &self.0)
+        // To diff arbitary types, render them as debug strings
+        let left_debug = format!("{:#?}", self.left);
+        let right_debug = format!("{:#?}", self.right);
+        // And then diff the debug output
+        format_changeset(f, &left_debug, &right_debug)
     }
 }
 
