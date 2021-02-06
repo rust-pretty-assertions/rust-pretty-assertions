@@ -1,12 +1,43 @@
-sudo: false
 language: rust
 cache: cargo
+dist: focal
+
+# this matrix generates jobs for the `test` stage
+os:
+  - linux
+  - windows
 rust:
   - nightly
   - beta
   - stable
   - 1.35.0
-script: |
-  cargo build &&
-  cargo test &&
-  cargo doc
+
+# run only one job first to see if it fails, then run the rest
+jobs:
+  include:
+    - stage: fast-test
+      os: linux
+      rust: stable
+      # additional behaviour just for this comprehensive job
+      before_install: |
+        rustup component add rustfmt clippy
+        cargo install cargo-audit cargo-tarpaulin
+      script: |
+        cargo fmt -- --check
+        cargo audit --deny warnings
+        cargo clippy --all-targets -- -D warnings
+        cargo test
+        cargo doc --no-deps
+      after_success: |
+        cargo tarpaulin --out xml
+        bash <(curl -s https://codecov.io/bash)
+  exclude:
+    - stage: test
+      os: linux
+      rust: stable
+  allow_failures:
+    - rust: nightly
+
+stages:
+  - fast-test
+  - test
