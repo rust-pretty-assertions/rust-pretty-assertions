@@ -11,23 +11,17 @@ rust:
   - beta
   - stable
   - 1.35.0
+script: cargo test
 
-# run only one job first to see if it fails, then run the rest
+# run only one comprehensive job first to see if it fails
+# then run the rest of the build matrix with simple tests
 jobs:
   include:
     - stage: fast-test
       os: linux
       rust: stable
-      # additional behaviour just for this comprehensive job
-      before_install: |
-        rustup component add rustfmt clippy
-        cargo install cargo-audit cargo-tarpaulin
-      script: |
-        cargo fmt -- --check
-        cargo audit --deny warnings
-        cargo clippy --all-targets -- -D warnings
-        cargo test
-        cargo doc --no-deps
+      before_install: ./scripts/install
+      script: ./scripts/check
       after_success: |
         cargo tarpaulin --out xml
         bash <(curl -s https://codecov.io/bash)

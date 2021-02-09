@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -exuo pipefail
+
+rustup component add rustfmt clippy
+cargo install cargo-audit cargo-tarpaulin
