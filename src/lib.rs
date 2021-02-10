@@ -14,31 +14,29 @@
 //!
 //! Yep — and you only need **one line of code** to make it happen:
 //!
-//! ```rust,ignore
+//! ```rust
 //! use pretty_assertions::{assert_eq, assert_ne};
 //! ```
 //!
 //! <details>
 //! <summary>Show the example behind the screenshots above.</summary>
 //!
-//! ```rust,ignore
+//! ```rust,should_panic
 //! // 1. add the `pretty_assertions` dependency to `Cargo.toml`.
 //! // 2. insert this line at the top of each module, as needed
 //! use pretty_assertions::{assert_eq, assert_ne};
 //!
-//! fn main() {
-//!     #[derive(Debug, PartialEq)]
-//!     struct Foo {
-//!         lorem: &'static str,
-//!         ipsum: u32,
-//!         dolor: Result<String, String>,
-//!     }
-//!
-//!     let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
-//!     let y = Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!".to_string())});
-//!
-//!     assert_eq!(x, y);
+//! #[derive(Debug, PartialEq)]
+//! struct Foo {
+//!     lorem: &'static str,
+//!     ipsum: u32,
+//!     dolor: Result<String, String>,
 //! }
+//!
+//! let x = Some(Foo { lorem: "Hello World!", ipsum: 42, dolor: Ok("hey".to_string())});
+//! let y = Some(Foo { lorem: "Hello Wrold!", ipsum: 42, dolor: Ok("hey ho!".to_string())});
+//!
+//! assert_eq!(x, y);
 //! ```
 //! </details>
 //!
@@ -50,7 +48,7 @@
 //!
 //! Also add `#[cfg(test)]` to your `use` statements, like this:
 //!
-//! ```rust,ignore
+//! ```rust
 //! #[cfg(test)]
 //! use pretty_assertions::{assert_eq, assert_ne};
 //! ```
