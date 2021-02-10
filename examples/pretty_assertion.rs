@@ -1,4 +1,3 @@
-#[allow(unused_imports)]
-use pretty_assertions::{assert_eq, assert_ne};
+use pretty_assertions::assert_eq;
 
 include!("standard_assertion.rs");

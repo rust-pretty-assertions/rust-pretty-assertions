@@ -1,9 +1,5 @@
 #![allow(clippy::eq_op)]
 
-#[allow(unused_imports)]
-use pretty_assertions::{assert_eq, assert_ne};
-extern crate difference;
-
 #[test]
 #[should_panic(expected = r#"assertion failed: `(left == right)`
 
@@ -40,7 +36,7 @@ fn assert_eq() {
         dolor: Ok("hey ho!".to_string()),
     });
 
-    assert_eq!(x, y);
+    pretty_assertions::assert_eq!(x, y);
 }
 
 #[test]
@@ -81,14 +77,14 @@ fn assert_eq_custom() {
         dolor: Ok("hey ho!".to_string()),
     });
 
-    assert_eq!(x, y, "custom panic message");
+    pretty_assertions::assert_eq!(x, y, "custom panic message");
 }
 
 #[test]
 fn assert_eq_with_comparable_types() {
     let s0: &'static str = "foo";
     let s1: String = "foo".to_string();
-    assert_eq!(s0, s1);
+    pretty_assertions::assert_eq!(s0, s1);
 }
 
 #[test]
@@ -113,7 +109,7 @@ fn assert_eq_with_comparable_types() {
 fn issue12() {
     let left = vec![0, 0, 0, 128, 10, 191, 5, 64];
     let right = vec![84, 248, 45, 64];
-    assert_eq!(left, right);
+    pretty_assertions::assert_eq!(left, right);
 }
 
 #[test]
@@ -152,7 +148,7 @@ fn assert_eq_trailing_comma() {
         dolor: Ok("hey ho!".to_string()),
     });
 
-    assert_eq!(x, y,);
+    pretty_assertions::assert_eq!(x, y,);
 }
 
 #[test]
@@ -193,13 +189,13 @@ fn assert_eq_custom_trailing_comma() {
         dolor: Ok("hey ho!".to_string()),
     });
 
-    assert_eq!(x, y, "custom panic message",);
+    pretty_assertions::assert_eq!(x, y, "custom panic message",);
 }
 
 #[test]
 fn assert_eq_unsized() {
     let a: &[u8] = b"e";
-    assert_eq!(*a, *a);
+    pretty_assertions::assert_eq!(*a, *a);
 }
 
 #[test]
@@ -215,5 +211,5 @@ fn assert_eq_unsized() {
 fn assert_eq_unsized_panic() {
     let a: &[u8] = b"e";
     let b: &[u8] = b"ee";
-    assert_eq!(*a, *b);
+    pretty_assertions::assert_eq!(*a, *b);
 }

@@ -114,7 +114,7 @@ impl Display for Comparison {
 #[macro_export]
 macro_rules! assert_eq {
     ($left:expr , $right:expr,) => ({
-        assert_eq!($left, $right)
+        $crate::assert_eq!($left, $right)
     });
     ($left:expr , $right:expr) => ({
         match (&($left), &($right)) {
@@ -148,13 +148,13 @@ macro_rules! assert_eq {
 #[macro_export]
 macro_rules! assert_ne {
     ($left:expr, $right:expr) => ({
-        assert_ne!(@ $left, $right, "", "");
+        $crate::assert_ne!(@ $left, $right, "", "");
     });
     ($left:expr, $right:expr,) => ({
-        assert_ne!(@ $left, $right, "", "");
+        $crate::assert_ne!(@ $left, $right, "", "");
     });
     ($left:expr, $right:expr, $($arg:tt)+) => ({
-        assert_ne!(@ $left, $right, ": ", $($arg)+);
+        $crate::assert_ne!(@ $left, $right, ": ", $($arg)+);
     });
     (@ $left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)+) => ({
         match (&($left), &($right)) {
