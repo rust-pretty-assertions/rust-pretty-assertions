@@ -1,7 +1,5 @@
 #![allow(clippy::eq_op)]
 
-#[allow(unused_imports)]
-use pretty_assertions::{assert_eq, assert_ne};
 #[test]
 #[should_panic(expected = r#"assertion failed: `(left != right)`
 
@@ -31,7 +29,7 @@ fn assert_ne() {
         dolor: Ok("hey".to_string()),
     });
 
-    assert_ne!(x, x);
+    pretty_assertions::assert_ne!(x, x);
 }
 
 #[test]
@@ -65,14 +63,14 @@ fn assert_ne_custom() {
         dolor: Ok("hey".to_string()),
     });
 
-    assert_ne!(x, x, "custom panic message");
+    pretty_assertions::assert_ne!(x, x, "custom panic message");
 }
 
 #[test]
 #[should_panic]
 fn assert_ne_non_empty_return() {
     fn not_zero(x: u32) -> u32 {
-        assert_ne!(x, 0);
+        pretty_assertions::assert_ne!(x, 0);
         x
     };
     not_zero(0);
@@ -106,7 +104,7 @@ fn assert_ne_partial() {
         }
     }
 
-    assert_ne!(Foo(-0.0), Foo(0.0));
+    pretty_assertions::assert_ne!(Foo(-0.0), Foo(0.0));
 }
 
 #[test]
@@ -138,7 +136,7 @@ fn assert_ne_trailing_comma() {
         dolor: Ok("hey".to_string()),
     });
 
-    assert_ne!(x, x,);
+    pretty_assertions::assert_ne!(x, x,);
 }
 
 #[test]
@@ -172,14 +170,14 @@ fn assert_ne_custom_trailing_comma() {
         dolor: Ok("hey".to_string()),
     });
 
-    assert_ne!(x, x, "custom panic message",);
+    pretty_assertions::assert_ne!(x, x, "custom panic message",);
 }
 
 #[test]
 fn assert_ne_unsized() {
     let a: &[u8] = b"e";
     let b: &[u8] = b"ee";
-    assert_ne!(*a, *b);
+    pretty_assertions::assert_ne!(*a, *b);
 }
 
 #[test]
@@ -193,5 +191,5 @@ fn assert_ne_unsized() {
 "#)]
 fn assert_ne_unsized_panic() {
     let a: &[u8] = b"e";
-    assert_ne!(*a, *a);
+    pretty_assertions::assert_ne!(*a, *a);
 }

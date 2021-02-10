@@ -1,6 +1,5 @@
-#[allow(unused_imports)]
-use pretty_assertions::{assert_eq, assert_ne};
 use std::fmt;
+
 /// Wrapper around string slice that makes debug output `{:?}` to print string same way as `{}`.
 /// Used in different `assert*!` macros in combination with `pretty_assertions` crate to make
 /// test failures to show nice diffs.
@@ -23,5 +22,5 @@ impl<'a> fmt::Debug for PrettyString<'a> {
 [0m
 "#)]
 fn assert_eq_empty_first() {
-    assert_eq!(PrettyString(""), PrettyString("foo"));
+    pretty_assertions::assert_eq!(PrettyString(""), PrettyString("foo"));
 }
