@@ -72,7 +72,7 @@ fn assert_ne_non_empty_return() {
     fn not_zero(x: u32) -> u32 {
         pretty_assertions::assert_ne!(x, 0);
         x
-    };
+    }
     not_zero(0);
 }
 
@@ -81,7 +81,7 @@ fn assert_ne_non_empty_return() {
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
 [31m<[0m[1;48;5;52;31m-[0m[31m0.0[0m
-[32m>[0m[32m0.0[0m
+[32m>0.0[0m
 
 [1;4mNote[0m: According to the `PartialEq` implementation, both of the values are partially equivalent, even if the `Debug` outputs differ.
 

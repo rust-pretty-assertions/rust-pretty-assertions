@@ -63,21 +63,12 @@
 //! * `assert_ne` is also switched to multi-line presentation, but does _not_ show
 //!   a diff.
 
-extern crate ansi_term;
-extern crate difference;
+#![deny(clippy::all, missing_docs, unsafe_code)]
 
-#[cfg(windows)]
-extern crate ctor;
-#[cfg(windows)]
-extern crate output_vt100;
-
-mod format_changeset;
-
-use difference::Changeset;
+pub use ansi_term::Style;
 use std::fmt::{self, Debug, Display};
 
-use crate::format_changeset::format_changeset;
-pub use ansi_term::Style;
+mod printer;
 
 #[cfg(windows)]
 use ctor::*;
@@ -87,28 +78,73 @@ fn init() {
     output_vt100::try_init().ok(); // Do not panic on fail
 }
 
-#[doc(hidden)]
-pub struct Comparison(Changeset);
+/// A comparison of two values.
+///
+/// Where both values implement `Debug`, the comparison can be displayed as a pretty diff.
+///
+/// ```
+/// use pretty_assertions::Comparison;
+///
+/// print!("{}", Comparison::new(&123, &134));
+/// ```
+///
+/// The values may have different types, although in practice they are usually the same.
+pub struct Comparison<'a, TLeft, TRight>
+where
+    TLeft: ?Sized,
+    TRight: ?Sized,
+{
+    left: &'a TLeft,
+    right: &'a TRight,
+}
 
-impl Comparison {
-    pub fn new<TLeft: Debug + ?Sized, TRight: Debug + ?Sized>(
-        left: &TLeft,
-        right: &TRight,
-    ) -> Comparison {
-        let left_dbg = format!("{:#?}", &*left);
-        let right_dbg = format!("{:#?}", &*right);
-        let changeset = Changeset::new(&left_dbg, &right_dbg, "\n");
-
-        Comparison(changeset)
+impl<'a, TLeft, TRight> Comparison<'a, TLeft, TRight>
+where
+    TLeft: ?Sized,
+    TRight: ?Sized,
+{
+    /// Store two values to be compared in future.
+    ///
+    /// Expensive diffing is deferred until calling `Debug::fmt`.
+    pub fn new(left: &'a TLeft, right: &'a TRight) -> Comparison<'a, TLeft, TRight> {
+        Comparison { left, right }
     }
 }
 
-impl Display for Comparison {
+impl<'a, TLeft, TRight> Display for Comparison<'a, TLeft, TRight>
+where
+    TLeft: Debug + ?Sized,
+    TRight: Debug + ?Sized,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        format_changeset(f, &self.0)
+        // To diff arbitary types, render them as debug strings
+        let left_debug = format!("{:#?}", self.left);
+        let right_debug = format!("{:#?}", self.right);
+        // And then diff the debug output
+        printer::write_header(f)?;
+        printer::write_lines(f, &left_debug, &right_debug)
     }
 }
 
+/// Asserts that two expressions are equal to each other (using [`PartialEq`]).
+///
+/// On panic, this macro will print a diff derived from [`Debug`] representation of
+/// each value.
+///
+/// This is a drop in replacement for [`std::assert_eq!`].
+/// You can provide a custom panic message if desired.
+///
+/// # Examples
+///
+/// ```
+/// use pretty_assertions::assert_eq;
+///
+/// let a = 3;
+/// let b = 1 + 2;
+/// assert_eq!(a, b);
+///
+/// assert_eq!(a, b, "we are testing addition with {} and {}", a, b);
+/// ```
 #[macro_export]
 macro_rules! assert_eq {
     ($left:expr , $right:expr,) => ({
@@ -143,6 +179,25 @@ macro_rules! assert_eq {
     });
 }
 
+/// Asserts that two expressions are not equal to each other (using [`PartialEq`]).
+///
+/// On panic, this macro will print the values of the expressions with their
+/// [`Debug`] representations.
+///
+/// This is a drop in replacement for [`std::assert_ne!`].
+/// You can provide a custom panic message if desired.
+///
+/// # Examples
+///
+/// ```
+/// use pretty_assertions::assert_ne;
+///
+/// let a = 3;
+/// let b = 2;
+/// assert_ne!(a, b);
+///
+/// assert_ne!(a, b, "we are testing that the values are not equal");
+/// ```
 #[macro_export]
 macro_rules! assert_ne {
     ($left:expr, $right:expr) => ({

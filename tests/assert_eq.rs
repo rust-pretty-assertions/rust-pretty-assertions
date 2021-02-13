@@ -6,12 +6,12 @@
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
      Foo {
-[31m<[0m[31m        lorem: "Hello W[0m[31mo[0m[1;48;5;52;31mr[0m[31mld!",[0m
-[32m>[0m[32m        lorem: "Hello W[0m[1;48;5;22;32mr[0m[32mo[0m[32mld!",[0m
+[31m<        lorem: "Hello W[0m[1;48;5;52;31mo[0m[31mrld!",[0m
+[32m>        lorem: "Hello Wr[0m[1;48;5;22;32mo[0m[32mld!",[0m
          ipsum: 42,
          dolor: Ok(
-[31m<[0m[31m            "hey[0m[31m",[0m
-[32m>[0m[32m            "hey[0m[1;48;5;22;32m ho![0m[32m",[0m
+[31m<            "hey",[0m
+[32m>            "hey[0m[1;48;5;22;32m ho![0m[32m",[0m
          ),
      },
  )
@@ -46,12 +46,12 @@ fn assert_eq() {
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
      Foo {
-[31m<[0m[31m        lorem: "Hello W[0m[31mo[0m[1;48;5;52;31mr[0m[31mld!",[0m
-[32m>[0m[32m        lorem: "Hello W[0m[1;48;5;22;32mr[0m[32mo[0m[32mld!",[0m
+[31m<        lorem: "Hello W[0m[1;48;5;52;31mo[0m[31mrld!",[0m
+[32m>        lorem: "Hello Wr[0m[1;48;5;22;32mo[0m[32mld!",[0m
          ipsum: 42,
          dolor: Ok(
-[31m<[0m[31m            "hey[0m[31m",[0m
-[32m>[0m[32m            "hey[0m[1;48;5;22;32m ho![0m[32m",[0m
+[31m<            "hey",[0m
+[32m>            "hey[0m[1;48;5;22;32m ho![0m[32m",[0m
          ),
      },
  )
@@ -91,17 +91,30 @@ fn assert_eq_with_comparable_types() {
 #[should_panic(expected = r#"assertion failed: `(left == right)`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
+[31m<[0m[1;48;5;52;31m9[0m
+[32m>[0m[1;48;5;22;32m8[0m
+"#)]
+fn inline_diff_simple() {
+    let left = 9;
+    let right = 8;
+    pretty_assertions::assert_eq!(left, right);
+}
+
+#[test]
+#[should_panic(expected = r#"assertion failed: `(left == right)`
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
  [
-[31m<[0m[31m    [0m[1;48;5;52;31m0[0m[31m,[0m
-[31m<[0m[31m    [0m[1;48;5;52;31m0,[0m
-[1;31m<[0m[1;48;5;52;31m    0,[0m
-[1;31m<[0m[1;48;5;52;31m    1[0m[31m2[0m[31m8,[0m
-[31m<[0m[31m    [0m[1;48;5;52;31m10,[0m
-[1;31m<[0m[1;48;5;52;31m    191,[0m
-[1;31m<[0m[1;48;5;52;31m    [0m[31m5,[0m
-[32m>[0m[32m    [0m[1;48;5;22;32m84[0m[32m,[0m
-[32m>[0m[32m    [0m[32m2[0m[1;48;5;22;32m4[0m[32m8,[0m
-[32m>[0m[32m    [0m[1;48;5;22;32m4[0m[32m5,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    128,[0m
+[31m<    10,[0m
+[31m<    191,[0m
+[31m<    [0m[1;48;5;52;31m5[0m[31m,[0m
+[32m>    [0m[1;48;5;22;32m84[0m[32m,[0m
+[32m>    248,[0m
+[32m>    45,[0m
      64,
  ]
 
@@ -118,12 +131,12 @@ fn issue12() {
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
      Foo {
-[31m<[0m[31m        lorem: "Hello W[0m[31mo[0m[1;48;5;52;31mr[0m[31mld!",[0m
-[32m>[0m[32m        lorem: "Hello W[0m[1;48;5;22;32mr[0m[32mo[0m[32mld!",[0m
+[31m<        lorem: "Hello W[0m[1;48;5;52;31mo[0m[31mrld!",[0m
+[32m>        lorem: "Hello Wr[0m[1;48;5;22;32mo[0m[32mld!",[0m
          ipsum: 42,
          dolor: Ok(
-[31m<[0m[31m            "hey[0m[31m",[0m
-[32m>[0m[32m            "hey[0m[1;48;5;22;32m ho![0m[32m",[0m
+[31m<            "hey",[0m
+[32m>            "hey[0m[1;48;5;22;32m ho![0m[32m",[0m
          ),
      },
  )
@@ -158,12 +171,12 @@ fn assert_eq_trailing_comma() {
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  Some(
      Foo {
-[31m<[0m[31m        lorem: "Hello W[0m[31mo[0m[1;48;5;52;31mr[0m[31mld!",[0m
-[32m>[0m[32m        lorem: "Hello W[0m[1;48;5;22;32mr[0m[32mo[0m[32mld!",[0m
+[31m<        lorem: "Hello W[0m[1;48;5;52;31mo[0m[31mrld!",[0m
+[32m>        lorem: "Hello Wr[0m[1;48;5;22;32mo[0m[32mld!",[0m
          ipsum: 42,
          dolor: Ok(
-[31m<[0m[31m            "hey[0m[31m",[0m
-[32m>[0m[32m            "hey[0m[1;48;5;22;32m ho![0m[32m",[0m
+[31m<            "hey",[0m
+[32m>            "hey[0m[1;48;5;22;32m ho![0m[32m",[0m
          ),
      },
  )
@@ -204,8 +217,8 @@ fn assert_eq_unsized() {
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
  [
      101,
-[32m>    101,
-[0m ]
+[32m>    101,[0m
+ ]
 
 "#)]
 fn assert_eq_unsized_panic() {
