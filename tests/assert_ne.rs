@@ -1,7 +1,7 @@
 #![allow(clippy::eq_op)]
 
 #[test]
-#[should_panic(expected = r#"assertion failed: `(left != right)`
+#[should_panic(expected = r#"assertion failed: `(x != x)`
 
 [1mBoth sides[0m:
 Some(
@@ -34,7 +34,7 @@ fn assert_ne() {
 
 #[test]
 #[should_panic(
-    expected = r#"assertion failed: `(left != right)`: custom panic message
+    expected = r#"assertion failed: `(x != x)`: custom panic message
 
 [1mBoth sides[0m:
 Some(
@@ -77,7 +77,7 @@ fn assert_ne_non_empty_return() {
 }
 
 #[test]
-#[should_panic(expected = r#"assertion failed: `(left != right)`
+#[should_panic(expected = r#"assertion failed: `(Foo(-0.0) != Foo(0.0))`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
 [31m<[0m[1;48;5;52;31m-[0m[31m0.0[0m
@@ -108,7 +108,7 @@ fn assert_ne_partial() {
 }
 
 #[test]
-#[should_panic(expected = r#"assertion failed: `(left != right)`
+#[should_panic(expected = r#"assertion failed: `(x != x)`
 
 [1mBoth sides[0m:
 Some(
@@ -141,7 +141,7 @@ fn assert_ne_trailing_comma() {
 
 #[test]
 #[should_panic(
-    expected = r#"assertion failed: `(left != right)`: custom panic message
+    expected = r#"assertion failed: `(x != x)`: custom panic message
 
 [1mBoth sides[0m:
 Some(
