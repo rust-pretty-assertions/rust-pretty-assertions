@@ -1,5 +1,7 @@
 # Unreleased
 
+# v0.7.0
+
 ## Changed
 
 - Move from `difference` to `diff` for calculating diffs. The exact assertion messages generated may differ from previous versions. ([#52](https://github.com/colin-kiegel/rust-pretty-assertions/issues/52), [@tommilligan](https://github.com/tommilligan))
