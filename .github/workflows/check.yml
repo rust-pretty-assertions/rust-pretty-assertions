@@ -1,0 +1,83 @@
+on: [push, pull_request]
+
+name: check
+
+jobs:
+  # Test, and also do other things like code coverage
+  detailed-test:
+    name: Test main target
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Cache build files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+            cargo_target
+          key: detailed-test-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Install additional test dependencies
+        env:
+          CARGO_TARGET_DIR: cargo_target
+        run: ./scripts/install
+      - name: Run check script
+        run: ./scripts/check
+      - name: Upload coverage
+        continue-on-error: true
+        run: |
+          cargo tarpaulin --out xml
+          bash <(curl -s https://codecov.io/bash)
+
+  # Test on all supported platforms
+  test:
+    needs: detailed-test
+    name: Test all other targets
+    strategy:
+      matrix:
+        os:
+          - ubuntu-20.04
+          - windows-2019
+        rust:
+          - stable
+          - beta
+          - 1.35.0
+        experimental:
+          - false
+        # Run a canary test on nightly that's allowed to fail
+        include:
+          - os: ubuntu-20.04
+            rust: nightly
+            experimental: true
+        # Don't bother retesting stable linux, we did it in the comprehensive test
+        exclude:
+          - os: ubuntu-20.04
+            rust: stable
+            experimental: false
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Cache build files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: test-${{ matrix.os }}-${{ matrix.rust }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - name: Run tests
+        run: cargo test
