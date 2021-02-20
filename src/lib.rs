@@ -6,11 +6,11 @@
 //! But you have to spot the differences yourself, which is not always straightforward,
 //! like here:
 //!
-//! ![standard assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/v0.6.1/examples/standard_assertion.png)
+//! ![standard assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/cab2f7be17b86d41512c41497a9d9c9508022023/examples/standard_assertion.png)
 //!
 //! Wouldn't that task be _much_ easier with a colorful diff?
 //!
-//! ![pretty assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/v0.6.1/examples/pretty_assertion.png)
+//! ![pretty assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/cab2f7be17b86d41512c41497a9d9c9508022023/examples/pretty_assertion.png)
 //!
 //! Yep — and you only need **one line of code** to make it happen:
 //!
