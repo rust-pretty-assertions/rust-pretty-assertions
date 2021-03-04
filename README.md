@@ -7,15 +7,15 @@
 
 When writing tests in Rust, you'll probably use `assert_eq!(a, b)` _a lot_.
 
-If such a test fails, it will present all the details of `a` and `b`. 
+If such a test fails, it will present all the details of `a` and `b`.
 But you have to spot the differences yourself, which is not always straightforward,
 like here:
 
-![standard assertion](examples/standard_assertion.png)
+![standard assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/2d2357ff56d22c51a86b2f1cfe6efcee9f5a8081/examples/standard_assertion.png)
 
 Wouldn't that task be _much_ easier with a colorful diff?
 
-![pretty assertion](examples/pretty_assertion.png)
+![pretty assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/2d2357ff56d22c51a86b2f1cfe6efcee9f5a8081/examples/pretty_assertion.png)
 
 Yep — and you only need **one line of code** to make it happen:
 
@@ -45,6 +45,7 @@ fn main() {
     assert_eq!(x, y);
 }
 ```
+
 </details>
 
 ## Tip
@@ -62,16 +63,16 @@ use pretty_assertions::{assert_eq, assert_ne};
 
 ## Note
 
-* Since `Rust 2018` edition, you need to declare
+- Since `Rust 2018` edition, you need to declare
   `use pretty_assertions::{assert_eq, assert_ne};` per module.
   Before you would write `#[macro_use] extern crate pretty_assertions;`.
-* The replacement is only effective in your own crate, not in other libraries
+- The replacement is only effective in your own crate, not in other libraries
   you include.
-* `assert_ne` is also switched to multi-line presentation, but does _not_ show
+- `assert_ne` is also switched to multi-line presentation, but does _not_ show
   a diff.
-* Under Windows, the terminal state is modified to properly handle VT100 
+- Under Windows, the terminal state is modified to properly handle VT100
   escape sequences, which may break display for certain use cases.
-* The minimum supported rust version (MSRV) is 1.35.0
+- The minimum supported rust version (MSRV) is 1.35.0
 
 ## License
 
