@@ -6,6 +6,14 @@
 
 - Move from `difference` to `diff` for calculating diffs. The exact assertion messages generated may differ from previous versions. ([#52](https://github.com/colin-kiegel/rust-pretty-assertions/issues/52), [@tommilligan](https://github.com/tommilligan))
 
+For example, the following assertion message from `v0.7.0`:
+
+![pretty assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/2d2357ff56d22c51a86b2f1cfe6efcee9f5a8081/examples/pretty_assertion.png)
+
+Was previously rendered like this in `v0.6.1`:
+
+![pretty assertion](https://raw.githubusercontent.com/colin-kiegel/rust-pretty-assertions/2d2357ff56d22c51a86b2f1cfe6efcee9f5a8081/examples/pretty_assertion_v0_6_1.png)
+
 ## Added
 
 - Support for unsized values ([#42](https://github.com/colin-kiegel/rust-pretty-assertions/issues/42), [@stanislav-tkach](https://github.com/stanislav-tkach))
