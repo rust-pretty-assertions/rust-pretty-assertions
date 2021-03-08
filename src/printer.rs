@@ -197,6 +197,30 @@ fn write_inline_diff<TWrite: fmt::Write>(f: &mut TWrite, left: &str, right: &str
 #[cfg(test)]
 mod test {
     use super::*;
+    use proptest::prelude::*;
+    use proptest::proptest;
+
+    /// Generate a random number of random lines, joined together with newline.
+    fn lines_strategy() -> BoxedStrategy<String> {
+        proptest::collection::vec("\\PC*", 1..16)
+            .prop_map(|vec| vec.join("\n"))
+            .boxed()
+    }
+
+    // Check our writer functions don't crash with random arbitrary input.
+    proptest! {
+        #[test]
+        fn write_inline_diff_arbitary(ref left in "\\PC*", ref right in "\\PC*") {
+            let mut f = String::new();
+            write_inline_diff(&mut f, left, right).unwrap();
+        }
+
+        #[test]
+        fn write_diff_arbitary(ref left in lines_strategy(), ref right in lines_strategy()) {
+            let mut f = String::new();
+            write_inline_diff(&mut f, left, right).unwrap();
+        }
+    }
 
     // ANSI terminal codes used in our outputs.
     //
