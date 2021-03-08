@@ -17,7 +17,6 @@ jobs:
             ~/.cargo/git
             target
             ~/.cargo/bin
-            cargo_target
           # We reuse the cache from our detailed test environment, if available
           key: detailed-test-${{ runner.os }}-cargo-${{ hashFiles('Cargo.toml') }}
       - name: Install toolchain
