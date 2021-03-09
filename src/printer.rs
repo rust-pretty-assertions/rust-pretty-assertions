@@ -30,29 +30,43 @@ pub(crate) fn write_header(f: &mut fmt::Formatter) -> fmt::Result {
 /// obtained with `take` for further processing.
 #[derive(Default)]
 struct LatentDeletion<'a> {
+    // The most recent deleted line we've seen
     value: Option<&'a str>,
+    // The number of deleted lines we've seen, including the current value
+    count: usize,
 }
 
 impl<'a> LatentDeletion<'a> {
     /// Set the chunk value.
     fn set(&mut self, value: &'a str) {
         self.value = Some(value);
+        self.count += 1;
     }
 
-    /// Take the underlying chunk value.
+    /// Take the underlying chunk value, if it's suitable for inline diffing.
+    ///
+    /// If there is no value of we've seen more than one line, return `None`.
     fn take(&mut self) -> Option<&'a str> {
-        self.value.take()
+        if self.count == 1 {
+            self.value.take()
+        } else {
+            None
+        }
     }
 
     /// If a value is set, print it as a whole chunk, using the given formatter.
     ///
-    /// Resets the internal state to default.
+    /// If a value is not set, reset the count to zero (as we've called `flush` twice,
+    /// without seeing another deletion. Therefore the line in the middle was something else).
     fn flush<TWrite: fmt::Write>(&mut self, f: &mut TWrite) -> fmt::Result {
         if let Some(value) = self.value {
             paint!(f, Red, "{}{}", SIGN_LEFT, value)?;
             writeln!(f)?;
+            self.value = None;
+        } else {
+            self.count = 0;
         }
-        self.value = None;
+
         Ok(())
     }
 }
@@ -69,47 +83,45 @@ pub(crate) fn write_lines<TWrite: fmt::Write>(
 ) -> fmt::Result {
     let diff = ::diff::lines(left, right);
 
-    // Keep track of if the previous chunk in the iteration was a deletion.
-    //
-    // We defer writing all deletions to the subsequent loop, to find out if
-    // we need to write a character-level diff instead.
+    let mut changes = diff.into_iter().peekable();
     let mut previous_deletion = LatentDeletion::default();
 
-    for change in diff.into_iter() {
-        match change {
-            ::diff::Result::Both(value, _) => {
-                // Handle the previous deletion, if it exists
+    while let Some(change) = changes.next() {
+        match (change, changes.peek()) {
+            // If the text is unchanged, just print it plain
+            (::diff::Result::Both(value, _), _) => {
                 previous_deletion.flush(f)?;
-
-                // Print this line with a space at the front to preserve indentation.
                 writeln!(f, " {}", value)?;
             }
-            ::diff::Result::Right(inserted) => {
+            // Defer any deletions to next loop
+            (::diff::Result::Left(deleted), _) => {
+                previous_deletion.flush(f)?;
+                previous_deletion.set(deleted);
+            }
+            // Underlying diff library should never return this sequence
+            (::diff::Result::Right(_), Some(::diff::Result::Left(_))) => {
+                panic!("insertion followed by deletion");
+            }
+            // If we're being followed by more insertions, don't inline diff
+            (::diff::Result::Right(inserted), Some(::diff::Result::Right(_))) => {
+                previous_deletion.flush(f)?;
+                paint!(f, Green, "{}{}", SIGN_RIGHT, inserted)?;
+                writeln!(f)?;
+            }
+            // Otherwise, check if we need to inline diff with the previous line (if it was a deletion)
+            (::diff::Result::Right(inserted), _) => {
                 if let Some(deleted) = previous_deletion.take() {
-                    // The insertion is preceded by an deletion.
-                    //
-                    // Let's highlight the character-differences in this replaced
-                    // chunk. Note that this chunk can span over multiple lines.
                     write_inline_diff(f, deleted, inserted)?;
                 } else {
+                    previous_deletion.flush(f)?;
                     paint!(f, Green, "{}{}", SIGN_RIGHT, inserted)?;
                     writeln!(f)?;
                 }
             }
-            ::diff::Result::Left(deleted) => {
-                // Handle the previous deletion, if it exists
-                previous_deletion.flush(f)?;
-
-                // If we get a deletion, defer writing it to the next loop
-                // as we need to know what the next tag is.
-                previous_deletion.set(deleted);
-            }
-        }
+        };
     }
 
-    // Handle the previous deletion, if it exists
     previous_deletion.flush(f)?;
-
     Ok(())
 }
 
@@ -354,6 +366,70 @@ mod test {
         check_printer(write_lines, left, right, &expected);
     }
 
+    /// Relistic multiple line chunks
+    ///
+    /// We can't support realistic line diffing in large blocks
+    /// (also, it's unclear how usefult this is)
+    ///
+    /// So if we have more than one line in a single removal chunk, disable inline diffing.
+    #[test]
+    fn write_lines_multiline_block() {
+        let left = r#"Proboscis
+Cabbage"#;
+        let right = r#"Probed
+Caravaggio"#;
+        let expected = format!(
+            r#"{red_light}<Proboscis{reset}
+{red_light}<Cabbage{reset}
+{green_light}>Probed{reset}
+{green_light}>Caravaggio{reset}
+"#,
+            red_light = RED_LIGHT,
+            green_light = GREEN_LIGHT,
+            reset = RESET,
+        );
+
+        check_printer(write_lines, left, right, &expected);
+    }
+
+    /// Single deletion line, multiple insertions - no inline diffing.
+    #[test]
+    fn write_lines_multiline_insert() {
+        let left = r#"Cabbage"#;
+        let right = r#"Probed
+Caravaggio"#;
+        let expected = format!(
+            r#"{red_light}<Cabbage{reset}
+{green_light}>Probed{reset}
+{green_light}>Caravaggio{reset}
+"#,
+            red_light = RED_LIGHT,
+            green_light = GREEN_LIGHT,
+            reset = RESET,
+        );
+
+        check_printer(write_lines, left, right, &expected);
+    }
+
+    /// Multiple deletion, single insertion - no inline diffing.
+    #[test]
+    fn write_lines_multiline_delete() {
+        let left = r#"Proboscis
+Cabbage"#;
+        let right = r#"Probed"#;
+        let expected = format!(
+            r#"{red_light}<Proboscis{reset}
+{red_light}<Cabbage{reset}
+{green_light}>Probed{reset}
+"#,
+            red_light = RED_LIGHT,
+            green_light = GREEN_LIGHT,
+            reset = RESET,
+        );
+
+        check_printer(write_lines, left, right, &expected);
+    }
+
     /// Regression test for multiline highlighting issue
     #[test]
     fn write_lines_issue12() {
@@ -381,17 +457,15 @@ mod test {
 {red_light}<    128,{reset}
 {red_light}<    10,{reset}
 {red_light}<    191,{reset}
-{red_light}<    {reset}{red_heavy}5{reset}{red_light},{reset}
-{green_light}>    {reset}{green_heavy}84{reset}{green_light},{reset}
+{red_light}<    5,{reset}
+{green_light}>    84,{reset}
 {green_light}>    248,{reset}
 {green_light}>    45,{reset}
      64,
  ]
 "#,
             red_light = RED_LIGHT,
-            red_heavy = RED_HEAVY,
             green_light = GREEN_LIGHT,
-            green_heavy = GREEN_HEAVY,
             reset = RESET,
         );
 
