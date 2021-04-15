@@ -154,7 +154,7 @@ macro_rules! assert_eq {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
-                    panic!("assertion failed: `(left == right)`\
+                    ::std::panic!("assertion failed: `(left == right)`\
                           \n\
                           \n{}\
                           \n",
@@ -167,7 +167,7 @@ macro_rules! assert_eq {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
-                    panic!("assertion failed: `(left == right)`: {}\
+                    ::std::panic!("assertion failed: `(left == right)`: {}\
                           \n\
                           \n{}\
                           \n",
@@ -213,11 +213,11 @@ macro_rules! assert_ne {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if *left_val == *right_val {
-                  let left_dbg = format!("{:?}", &*left_val);
-                  let right_dbg = format!("{:?}", &*right_val);
+                  let left_dbg = ::std::format!("{:?}", &*left_val);
+                  let right_dbg = ::std::format!("{:?}", &*right_val);
                   if left_dbg != right_dbg {
 
-                      panic!("assertion failed: `(left != right)`{}{}\
+                      ::std::panic!("assertion failed: `(left != right)`{}{}\
                             \n\
                             \n{}\
                             \n{}: According to the `PartialEq` implementation, both of the values \
@@ -233,7 +233,7 @@ macro_rules! assert_ne {
                                  .paint("Note"))
                   }
 
-                  panic!("assertion failed: `(left != right)`{}{}\
+                  ::std::panic!("assertion failed: `(left != right)`{}{}\
                         \n\
                         \n{}:\
                         \n{:#?}\
@@ -251,8 +251,11 @@ macro_rules! assert_ne {
 
 #[cfg(test)]
 #[allow(clippy::eq_op)]
+#[no_implicit_prelude]
 mod test {
     mod assert_eq {
+        use ::std::string::{String, ToString};
+
         #[test]
         fn passes() {
             let a = "some value";
@@ -342,6 +345,8 @@ mod test {
     }
 
     mod assert_ne {
+        use ::std::string::{String, ToString};
+
         #[test]
         fn passes() {
             let a = "a";
@@ -442,11 +447,11 @@ mod test {
             use ::std::fmt;
             impl fmt::Debug for Foo {
                 fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                    write!(f, "{:.1?}", self.0)
+                    ::std::write!(f, "{:.1?}", self.0)
                 }
             }
 
-            impl PartialEq for Foo {
+            impl ::std::cmp::PartialEq for Foo {
                 fn eq(&self, other: &Self) -> bool {
                     self.0 == other.0
                 }
