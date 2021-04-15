@@ -1,5 +1,9 @@
 # Unreleased
 
+# v0.7.2
+
+- Fix macro hygiene for expansion in a `no_implicit_prelude` context ([#70](https://github.com/colin-kiegel/rust-pretty-assertions/issues/70), [@tommilligan](https://github.com/tommilligan))
+
 # v0.7.1
 
 - Fix a bug where multiline changes showed an unhelpful inline diff ([#66](https://github.com/colin-kiegel/rust-pretty-assertions/issues/66), [@tommilligan](https://github.com/tommilligan))
