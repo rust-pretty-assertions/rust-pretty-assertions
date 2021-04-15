@@ -1,6 +1,6 @@
 [package]
 name = "pretty_assertions"
-version = "0.7.1"
+version = "0.7.2"
 authors = [
     "Colin Kiegel <kiegel@gmx.de>",
     "Florent Fayolle <florent.fayolle69@gmail.com>",

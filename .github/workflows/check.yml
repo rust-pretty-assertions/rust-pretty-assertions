@@ -19,7 +19,7 @@ jobs:
             target
             ~/.cargo/bin
             cargo_target
-          key: detailed-test-${{ runner.os }}-cargo-${{ hashFiles('Cargo.toml') }}
+          key: detailed-test-${{ runner.os }}-cargo-${{ hashFiles('Cargo.toml') }}-v2
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
