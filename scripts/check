@@ -1,9 +1,26 @@
 #!/bin/bash
 
-set -exuo pipefail
+set -euo pipefail
 
+function eprintln() {
+  >&2 echo "$1"
+}
+
+eprintln "Formatting sources"
 cargo fmt -- --check
+
+eprintln "Auditing dependencies"
 cargo audit --deny warnings
+
+eprintln "Linting sources"
 cargo clippy --all-targets -- -D warnings
+
+eprintln "Running unit tests"
 cargo test
+
+eprintln "Building documentation"
 cargo doc --no-deps
+
+eprintln "Running examples"
+cargo run --example standard_assertion
+cargo run --example pretty_assertion
