@@ -8,4 +8,6 @@ echo "cargo login ***********************************"
 cargo login "${CARGO_LOGIN_TOKEN}"
 set -x
 
+pushd pretty_assertions
 cargo publish
+popd

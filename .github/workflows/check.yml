@@ -19,7 +19,7 @@ jobs:
             target
             ~/.cargo/bin
             cargo_target
-          key: detailed-test-${{ runner.os }}-cargo-${{ hashFiles('Cargo.toml') }}-v2
+          key: detailed-test-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}-v2
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -74,7 +74,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: test-${{ matrix.os }}-${{ matrix.rust }}-cargo-${{ hashFiles('Cargo.toml') }}
+          key: test-${{ matrix.os }}-${{ matrix.rust }}-cargo-${{ hashFiles('**/Cargo.toml') }}
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:

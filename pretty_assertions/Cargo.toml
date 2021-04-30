@@ -1,0 +1,29 @@
+[package]
+name = "pretty_assertions"
+version = "0.7.2"
+authors = [
+    "Colin Kiegel <kiegel@gmx.de>",
+    "Florent Fayolle <florent.fayolle69@gmail.com>",
+    "Tom Milligan <code@tommilligan.net>",
+]
+edition = "2018"
+
+description = "Overwrite `assert_eq!` and `assert_ne!` with drop-in replacements, adding colorful diffs."
+repository = "https://github.com/colin-kiegel/rust-pretty-assertions"
+documentation = "https://docs.rs/pretty_assertions"
+
+license = "MIT/Apache-2.0"
+categories = ["development-tools"]
+keywords = ["assert", "diff", "pretty", "color"]
+readme = "README.md"
+
+[badges]
+travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
+
+[dependencies]
+ansi_term = "0.12.1"
+diff = "0.1.12"
+
+[target.'cfg(windows)'.dependencies]
+output_vt100 = "0.1.2"
+ctor = "0.1.9"
