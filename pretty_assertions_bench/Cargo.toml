@@ -1,0 +1,16 @@
+[package]
+name = "pretty_assertions_bench"
+version = "0.1.0"
+authors = ["Tom Milligan <code@tommilligan.net>"]
+edition = "2018"
+
+[dependencies]
+criterion = { version = "0.3.4", features = ["html_reports"] }
+pretty_assertions = { path = "../pretty_assertions" }
+
+[lib]
+bench = false
+
+[[bench]]
+name = "bench_main"
+harness = false
