@@ -2,4 +2,5 @@
 
 members = [
     "pretty_assertions",
+    "pretty_assertions_bench",
 ]
