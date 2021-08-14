@@ -18,6 +18,9 @@ cargo clippy --all-targets -- -D warnings
 eprintln "Running unit tests"
 cargo test
 
+eprintln "Running unit tests (unstable)"
+cargo +nightly test --manifest-path pretty_assertions/Cargo.toml --all --features unstable
+
 eprintln "Building documentation"
 cargo doc --no-deps
 

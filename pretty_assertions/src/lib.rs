@@ -62,6 +62,13 @@
 //!   you include.
 //! * `assert_ne` is also switched to multi-line presentation, but does _not_ show
 //!   a diff.
+//!
+//! ## Features
+//!
+//! Features provided by the crate are as follows:
+//!
+//! - `unstable`: opt-in to unstable features that may not follow Semantic Versioning.
+//!   Implmenetion behind this feature is subject to change without warning between patch versions.
 
 #![deny(clippy::all, missing_docs, unsafe_code)]
 
@@ -234,6 +241,88 @@ macro_rules! assert_ne {
                         left_val
                     )
                 }
+            }
+        }
+    });
+}
+
+/// Asserts that a value matches a pattern.
+///
+/// On panic, this macro will print a diff derived from [`Debug`] representation of
+/// the value, and a string representation of the pattern.
+///
+/// This is a drop in replacement for [`std::assert_matches::assert_matches!`].
+/// You can provide a custom panic message if desired.
+///
+/// # Examples
+///
+/// ```
+/// use pretty_assertions::assert_matches;
+///
+/// let a = Some(3);
+/// assert_matches!(a, Some(_));
+///
+/// assert_matches!(a, Some(value) if value > 2, "we are testing {:?} with a pattern", a);
+/// ```
+///
+/// # Features
+///
+/// Requires the `unstable` feature to be enabled.
+///
+/// **Please note:** implementation under the `unstable` feature may be changed between
+/// patch versions without warning.
+#[cfg(feature = "unstable")]
+#[macro_export]
+macro_rules! assert_matches {
+    ($left:expr, $( $pattern:pat )|+ $( if $guard: expr )? $(,)?) => ({
+        match $left {
+            $( $pattern )|+ $( if $guard )? => {}
+            ref left_val => {
+                $crate::assert_matches!(
+                    @
+                    left_val,
+                    ::std::stringify!($($pattern)|+ $(if $guard)?),
+                    "",
+                    ""
+                );
+            }
+        }
+    });
+    ($left:expr, $( $pattern:pat )|+ $( if $guard: expr )?, $($arg:tt)+) => ({
+        match $left {
+            $( $pattern )|+ $( if $guard )? => {}
+            ref left_val => {
+                $crate::assert_matches!(
+                    @
+                    left_val,
+                    ::std::stringify!($($pattern)|+ $(if $guard)?),
+                    ": ",
+                    $($arg)+
+                );
+            }
+        }
+
+    });
+    (@ $left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)*) => ({
+        match (&($left), &($right)) {
+            (left_val, right_val) => {
+                // Use the Display implementation to display the pattern,
+                // as using Debug would add another layer of quotes to the output.
+                struct Pattern<'a>(&'a str);
+                impl ::std::fmt::Debug for Pattern<'_> {
+                    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+                        ::std::fmt::Display::fmt(self.0, f)
+                    }
+                }
+
+                ::std::panic!("assertion failed: `(left matches right)`{}{}\
+                   \n\
+                   \n{}\
+                   \n",
+                   $maybe_semicolon,
+                   format_args!($($arg)*),
+                   $crate::Comparison::new(left_val, &Pattern(right_val))
+                )
             }
         }
     });

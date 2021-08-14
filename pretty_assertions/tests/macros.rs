@@ -220,3 +220,89 @@ mod assert_ne {
         not_zero(0);
     }
 }
+
+#[cfg(feature = "unstable")]
+mod assert_matches {
+    use ::std::option::Option::{None, Some};
+
+    #[test]
+    fn passes() {
+        let a = Some("some value");
+        ::pretty_assertions::assert_matches!(a, Some(_));
+    }
+
+    #[test]
+    fn passes_unsized() {
+        let a: &[u8] = b"e";
+        ::pretty_assertions::assert_matches!(*a, _);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"assertion failed: `(left matches right)`
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+[31m<[0m[1;48;5;52;31mN[0m[31mo[0m[1;48;5;52;31mn[0m[31me[0m
+[32m>[0m[1;48;5;22;32mS[0m[32mo[0m[1;48;5;22;32mm[0m[32me[0m[1;48;5;22;32m(_)[0m
+
+"#)]
+    fn fails() {
+        ::pretty_assertions::assert_matches!(None::<usize>, Some(_));
+    }
+
+    #[test]
+    #[should_panic(expected = r#"assertion failed: `(left matches right)`
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+[31m<Some([0m
+[31m<    3,[0m
+[31m<)[0m
+[32m>Some(3) if 0 > 0[0m
+
+"#)]
+    fn fails_guard() {
+        ::pretty_assertions::assert_matches!(Some(3), Some(3) if 0 > 0,);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"assertion failed: `(left matches right)`
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+[31m<[[0m
+[31m<    101,[0m
+[31m<][0m
+[32m>ref b if b == b"ee"[0m
+
+"#)]
+    fn fails_unsized() {
+        let a: &[u8] = b"e";
+        ::pretty_assertions::assert_matches!(*a, ref b if b == b"ee");
+    }
+
+    #[test]
+    #[should_panic(
+        expected = r#"assertion failed: `(left matches right)`: custom panic message
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+[31m<[0m[1;48;5;52;31m666[0m
+[32m>[0m[1;48;5;22;32m999[0m
+
+"#
+    )]
+    fn fails_custom() {
+        ::pretty_assertions::assert_matches!(666, 999, "custom panic message");
+    }
+
+    #[test]
+    #[should_panic(
+        expected = r#"assertion failed: `(left matches right)`: custom panic message
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+[31m<[0m[1;48;5;52;31m666[0m
+[32m>[0m[1;48;5;22;32m999[0m
+
+"#
+    )]
+    fn fails_custom_trailing_comma() {
+        ::pretty_assertions::assert_matches!(666, 999, "custom panic message",);
+    }
+}

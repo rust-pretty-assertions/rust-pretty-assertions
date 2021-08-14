@@ -17,8 +17,11 @@ categories = ["development-tools"]
 keywords = ["assert", "diff", "pretty", "color"]
 readme = "README.md"
 
-[badges]
-travis-ci = { repository = "colin-kiegel/rust-pretty-assertions" }
+[features]
+default = []
+
+# Enable unstable features requiring nightly rustc
+unstable = []
 
 [dependencies]
 ansi_term = "0.12.1"
