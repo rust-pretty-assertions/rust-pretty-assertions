@@ -25,6 +25,11 @@ jobs:
         with:
           toolchain: stable
           override: true
+      - name: Install toolchain (nightly)
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: false
       - name: Install additional test dependencies
         env:
           CARGO_TARGET_DIR: cargo_target

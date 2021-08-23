@@ -1,5 +1,8 @@
 # Unreleased
 
+- Adds the `unstable` feature to the `pretty_assertions` crate, for use with nightly rustc ([#81](https://github.com/colin-kiegel/rust-pretty-assertions/pull/81), [@tommilligan](https://github.com/tommilligan))
+- Add a drop in replacement for the unstable stdlib `assert_matches` macro, behind the `unstable` flag - thanks [@gilescope](https://github.com/gilescope) for the suggestion! ([#81](https://github.com/colin-kiegel/rust-pretty-assertions/issues/81), [@tommilligan](https://github.com/tommilligan))
+
 # v0.7.2
 
 - Fix macro hygiene for expansion in a `no_implicit_prelude` context ([#70](https://github.com/colin-kiegel/rust-pretty-assertions/issues/70), [@tommilligan](https://github.com/tommilligan))
