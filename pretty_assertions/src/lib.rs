@@ -65,15 +65,23 @@
 //!
 //! ## Features
 //!
-//! Features provided by the crate are as follows:
+//! Features provided by the crate are:
 //!
+//! - `std`: Use the Rust standard library. Enabled by default.
+//!   Exactly one of `std` and `alloc` is required.
+//! - `alloc`: Use the `alloc` crate.
+//!   Exactly one of `std` and `alloc` is required.
 //! - `unstable`: opt-in to unstable features that may not follow Semantic Versioning.
 //!   Implmenetion behind this feature is subject to change without warning between patch versions.
 
+#![cfg_attr(not(feature = "std"), no_std)]
 #![deny(clippy::all, missing_docs, unsafe_code)]
 
+#[cfg(feature = "alloc")]
+#[macro_use]
+extern crate alloc;
 pub use ansi_term::Style;
-use std::fmt::{self, Debug, Display};
+use core::fmt::{self, Debug, Display};
 
 mod printer;
 
@@ -138,7 +146,7 @@ where
 /// On panic, this macro will print a diff derived from [`Debug`] representation of
 /// each value.
 ///
-/// This is a drop in replacement for [`std::assert_eq!`].
+/// This is a drop in replacement for [`core::assert_eq!`].
 /// You can provide a custom panic message if desired.
 ///
 /// # Examples
@@ -164,7 +172,7 @@ macro_rules! assert_eq {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
-                    ::std::panic!("assertion failed: `(left == right)`{}{}\
+                    ::core::panic!("assertion failed: `(left == right)`{}{}\
                        \n\
                        \n{}\
                        \n",
@@ -183,7 +191,7 @@ macro_rules! assert_eq {
 /// On panic, this macro will print the values of the expressions with their
 /// [`Debug`] representations.
 ///
-/// This is a drop in replacement for [`std::assert_ne!`].
+/// This is a drop in replacement for [`core::assert_ne!`].
 /// You can provide a custom panic message if desired.
 ///
 /// # Examples
@@ -209,27 +217,7 @@ macro_rules! assert_ne {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if *left_val == *right_val {
-                    let left_dbg = ::std::format!("{:?}", &*left_val);
-                    let right_dbg = ::std::format!("{:?}", &*right_val);
-                    if left_dbg != right_dbg {
-                        ::std::panic!("assertion failed: `(left != right)`{}{}\
-                            \n\
-                            \n{}\
-                            \n{}: According to the `PartialEq` implementation, both of the values \
-                              are partially equivalent, even if the `Debug` outputs differ.\
-                            \n\
-                            \n",
-                            $maybe_semicolon,
-                            format_args!($($arg)+),
-                            $crate::Comparison::new(left_val, right_val),
-                            $crate::Style::new()
-                                .bold()
-                                .underline()
-                                .paint("Note")
-                        )
-                    }
-
-                    ::std::panic!("assertion failed: `(left != right)`{}{}\
+                    ::core::panic!("assertion failed: `(left != right)`{}{}\
                         \n\
                         \n{}:\
                         \n{:#?}\
@@ -251,7 +239,7 @@ macro_rules! assert_ne {
 /// On panic, this macro will print a diff derived from [`Debug`] representation of
 /// the value, and a string representation of the pattern.
 ///
-/// This is a drop in replacement for [`std::assert_matches::assert_matches!`].
+/// This is a drop in replacement for [`core::assert_matches::assert_matches!`].
 /// You can provide a custom panic message if desired.
 ///
 /// # Examples
@@ -281,7 +269,7 @@ macro_rules! assert_matches {
                 $crate::assert_matches!(
                     @
                     left_val,
-                    ::std::stringify!($($pattern)|+ $(if $guard)?),
+                    ::core::stringify!($($pattern)|+ $(if $guard)?),
                     "",
                     ""
                 );
@@ -295,7 +283,7 @@ macro_rules! assert_matches {
                 $crate::assert_matches!(
                     @
                     left_val,
-                    ::std::stringify!($($pattern)|+ $(if $guard)?),
+                    ::core::stringify!($($pattern)|+ $(if $guard)?),
                     ": ",
                     $($arg)+
                 );
@@ -309,13 +297,13 @@ macro_rules! assert_matches {
                 // Use the Display implementation to display the pattern,
                 // as using Debug would add another layer of quotes to the output.
                 struct Pattern<'a>(&'a str);
-                impl ::std::fmt::Debug for Pattern<'_> {
-                    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-                        ::std::fmt::Display::fmt(self.0, f)
+                impl ::core::fmt::Debug for Pattern<'_> {
+                    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                        ::core::fmt::Display::fmt(self.0, f)
                     }
                 }
 
-                ::std::panic!("assertion failed: `(left matches right)`{}{}\
+                ::core::panic!("assertion failed: `(left matches right)`{}{}\
                    \n\
                    \n{}\
                    \n",

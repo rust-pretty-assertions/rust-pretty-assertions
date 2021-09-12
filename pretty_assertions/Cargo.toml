@@ -18,9 +18,15 @@ keywords = ["assert", "diff", "pretty", "color"]
 readme = "README.md"
 
 [features]
-default = []
+default = ["std"]
 
-# Enable unstable features requiring nightly rustc
+# Use the Rust standard library.
+# Exactly one of `std` and `alloc` is required.
+std = []
+# Use the `alloc` crate.
+# Exactly one of `std` and `alloc` is required.
+alloc = []
+# Enable unstable features. Requires nightly rustc.
 unstable = []
 
 [dependencies]
@@ -30,3 +36,4 @@ diff = "0.1.12"
 [target.'cfg(windows)'.dependencies]
 output_vt100 = "0.1.2"
 ctor = "0.1.9"
+

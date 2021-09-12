@@ -15,8 +15,22 @@ cargo audit --deny warnings
 eprintln "Linting sources"
 cargo clippy --all-targets -- -D warnings
 
-eprintln "Running unit tests"
+# We cd to package directory as it's the only one with tests
+# and cargo doesn't support feature flags in virtual workspaces
+# https://github.com/rust-lang/cargo/issues/5364
+pushd pretty_assertions
+
+eprintln "Running tests (default)"
 cargo test
+eprintln "Running tests (alloc)"
+cargo test --no-default-features --features alloc
+
+eprintln "Running tests (nightly) (unstable)"
+cargo +nightly test --features unstable
+eprintln "Running tests (nightly) (alloc, unstable)"
+cargo +nightly test --no-default-features --features alloc --features unstable
+
+popd
 
 eprintln "Running unit tests (unstable)"
 cargo +nightly test --manifest-path pretty_assertions/Cargo.toml --all --features unstable
@@ -24,6 +38,7 @@ cargo +nightly test --manifest-path pretty_assertions/Cargo.toml --all --feature
 eprintln "Building documentation"
 cargo doc --no-deps
 
-eprintln "Running examples"
+eprintln "Running examples (standard)"
 cargo run --example standard_assertion
+eprintln "Running examples (pretty)"
 cargo run --example pretty_assertion
