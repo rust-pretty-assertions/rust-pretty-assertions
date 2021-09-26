@@ -1,5 +1,13 @@
 # Unreleased
 
+# v1.0.0
+
+## Removed
+
+- `assert_ne` no longer warns if values match using `PartialEq` but not with `Debug`. This was noted as no longer being necessary after Rust 1.25 (current MSRV 1.35.0)
+
+## Added
+
 - Officially support `no_std` (thanks to [@Luro02](https://github.com/Luro02) for the report and reviews!). Adds the `std` and `alloc` features to the `pretty_assertions` crate, with `std` enabled by default ([#83](https://github.com/colin-kiegel/rust-pretty-assertions/pull/83), [@tommilligan](https://github.com/tommilligan))
 - Adds the `unstable` feature to the `pretty_assertions` crate, for use with nightly rustc ([#81](https://github.com/colin-kiegel/rust-pretty-assertions/pull/81), [@tommilligan](https://github.com/tommilligan))
 - Add a drop in replacement for the unstable stdlib `assert_matches` macro, behind the `unstable` flag - thanks [@gilescope](https://github.com/gilescope) for the suggestion! ([#81](https://github.com/colin-kiegel/rust-pretty-assertions/issues/81), [@tommilligan](https://github.com/tommilligan))
