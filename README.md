@@ -74,6 +74,15 @@ use pretty_assertions::{assert_eq, assert_ne};
   escape sequences, which may break display for certain use cases.
 - The minimum supported rust version (MSRV) is 1.35.0
 
+### `no_std` support
+
+For `no_std` support, disable the `std` feature and enable the `alloc` feature:
+
+```toml
+# Cargo.toml
+pretty_assertions = { version= "...", default-features = false, features = ["alloc"] }
+```
+
 ## License
 
 Licensed under either of

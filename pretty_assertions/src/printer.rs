@@ -1,8 +1,10 @@
+#[cfg(feature = "alloc")]
+use alloc::format;
 use ansi_term::{
     Colour::{Fixed, Green, Red},
     Style,
 };
-use std::fmt;
+use core::fmt;
 
 macro_rules! paint {
     ($f:expr, $colour:expr, $fmt:expr, $($args:tt)*) => (
@@ -210,6 +212,9 @@ fn write_inline_diff<TWrite: fmt::Write>(f: &mut TWrite, left: &str, right: &str
 mod test {
     use super::*;
 
+    #[cfg(feature = "alloc")]
+    use alloc::string::String;
+
     // ANSI terminal codes used in our outputs.
     //
     // Interpolate these into test strings to make expected values easier to read.
@@ -230,6 +235,8 @@ mod test {
         let mut actual = String::new();
         printer(&mut actual, left, right).expect("printer function failed");
 
+        // Cannot use IO without stdlib
+        #[cfg(feature = "std")]
         println!(
             "## left ##\n\
              {}\n\
