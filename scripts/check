@@ -10,7 +10,8 @@ eprintln "Formatting sources"
 cargo fmt -- --check
 
 eprintln "Auditing dependencies"
-cargo audit --deny warnings
+cargo audit --deny warnings \
+  --ignore RUSTSEC-2021-0127 # unmaintained serde_cbor
 
 eprintln "Linting sources"
 cargo clippy --all-targets -- -D warnings
