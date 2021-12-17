@@ -1,5 +1,9 @@
 # Unreleased
 
+## Fixed
+
+- Ensure license text is included in crate archive - thanks [@decathorpe](https://github.com/decathorpe) for reporting this ([#87](https://github.com/colin-kiegel/rust-pretty-assertions/pull/87), [@tommilligan](https://github.com/tommilligan))
+
 # v1.0.0
 
 ## Removed
