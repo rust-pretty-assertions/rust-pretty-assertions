@@ -5,6 +5,70 @@
 extern crate alloc;
 
 #[allow(clippy::eq_op)]
+mod assert_str_eq {
+    use ::core::{cmp::PartialEq, convert::AsRef};
+
+    #[cfg(feature = "alloc")]
+    use ::alloc::string::{String, ToString};
+    #[cfg(feature = "std")]
+    use ::std::string::{String, ToString};
+
+    #[test]
+    fn passes_str() {
+        let a = "some value";
+        ::pretty_assertions::assert_str_eq!(a, a);
+    }
+
+    #[test]
+    fn passes_string() {
+        let a: String = "some value".to_string();
+        ::pretty_assertions::assert_str_eq!(a, a);
+    }
+
+    #[test]
+    fn passes_comparable_types() {
+        let s0: &'static str = "foo";
+        let s1: String = "foo".to_string();
+        ::pretty_assertions::assert_str_eq!(s0, s1);
+    }
+
+    #[test]
+    fn passes_as_ref_types() {
+        #[derive(PartialEq)]
+        struct MyString(String);
+
+        impl AsRef<str> for MyString {
+            fn as_ref(&self) -> &str {
+                &self.0
+            }
+        }
+
+        impl PartialEq<String> for MyString {
+            fn eq(&self, other: &String) -> bool {
+                &self.0 == other
+            }
+        }
+
+        let s0 = MyString("foo".to_string());
+        let s1 = "foo".to_string();
+        ::pretty_assertions::assert_str_eq!(s0, s1);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"assertion failed: `(left == right)`
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+ foo
+[31m<ba[0m[1;48;5;52;31mr[0m
+[32m>ba[0m[1;48;5;22;32mz[0m
+
+"#)]
+    fn fails_foo() {
+        ::pretty_assertions::assert_str_eq!("foo\nbar", "foo\nbaz");
+    }
+}
+
+#[allow(clippy::eq_op)]
 mod assert_eq {
     #[cfg(feature = "alloc")]
     use ::alloc::string::{String, ToString};

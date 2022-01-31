@@ -141,6 +141,76 @@ where
     }
 }
 
+/// A comparison of two strings.
+///
+/// In contrast to [`Comparison`], which uses the [`core::fmt::Debug`] representation,
+/// `StrComparison` uses the string values directly, resulting in multi-line output for multiline strings.
+///
+/// ```
+/// use pretty_assertions::StrComparison;
+///
+/// print!("{}", StrComparison::new("foo\nbar", "foo\nbaz"));
+/// ```
+///
+/// ## Value type bounds
+///
+/// Any value that can be referenced as a [`str`] via [`AsRef`] may be used:
+///
+/// ```
+/// use pretty_assertions::StrComparison;
+///
+/// #[derive(PartialEq)]
+/// struct MyString(String);
+///
+/// impl AsRef<str> for MyString {
+///     fn as_ref(&self) -> &str {
+///         &self.0
+///     }
+/// }
+///
+/// print!(
+///     "{}",
+///     StrComparison::new(
+///         &MyString("foo\nbar".to_owned()),
+///         &MyString("foo\nbaz".to_owned()),
+///     ),
+/// );
+/// ```
+///
+/// The values may have different types, although in practice they are usually the same.
+pub struct StrComparison<'a, TLeft, TRight>
+where
+    TLeft: ?Sized,
+    TRight: ?Sized,
+{
+    left: &'a TLeft,
+    right: &'a TRight,
+}
+
+impl<'a, TLeft, TRight> StrComparison<'a, TLeft, TRight>
+where
+    TLeft: AsRef<str> + ?Sized,
+    TRight: AsRef<str> + ?Sized,
+{
+    /// Store two values to be compared in future.
+    ///
+    /// Expensive diffing is deferred until calling `Debug::fmt`.
+    pub fn new(left: &'a TLeft, right: &'a TRight) -> StrComparison<'a, TLeft, TRight> {
+        StrComparison { left, right }
+    }
+}
+
+impl<'a, TLeft, TRight> Display for StrComparison<'a, TLeft, TRight>
+where
+    TLeft: AsRef<str> + ?Sized,
+    TRight: AsRef<str> + ?Sized,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        printer::write_header(f)?;
+        printer::write_lines(f, self.left.as_ref(), self.right.as_ref())
+    }
+}
+
 /// Asserts that two expressions are equal to each other (using [`PartialEq`]).
 ///
 /// On panic, this macro will print a diff derived from [`Debug`] representation of
@@ -179,6 +249,51 @@ macro_rules! assert_eq {
                        $maybe_semicolon,
                        format_args!($($arg)*),
                        $crate::Comparison::new(left_val, right_val)
+                    )
+                }
+            }
+        }
+    });
+}
+
+/// Asserts that two expressions are equal to each other (using [`PartialEq`]).
+///
+/// On panic, this macro will print a diff derived from each value's [`str`] representation.
+/// See [`StrComparison`] for further details.
+///
+/// This is a drop in replacement for [`core::assert_eq!`].
+/// You can provide a custom panic message if desired.
+///
+/// # Examples
+///
+/// ```
+/// use pretty_assertions::assert_str_eq;
+///
+/// let a = "foo\nbar";
+/// let b = ["foo", "bar"].join("\n");
+/// assert_str_eq!(a, b);
+///
+/// assert_str_eq!(a, b, "we are testing concatenation with {} and {}", a, b);
+/// ```
+#[macro_export]
+macro_rules! assert_str_eq {
+    ($left:expr, $right:expr$(,)?) => ({
+        $crate::assert_str_eq!(@ $left, $right, "", "");
+    });
+    ($left:expr, $right:expr, $($arg:tt)*) => ({
+        $crate::assert_str_eq!(@ $left, $right, ": ", $($arg)+);
+    });
+    (@ $left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)*) => ({
+        match (&($left), &($right)) {
+            (left_val, right_val) => {
+                if !(*left_val == *right_val) {
+                    ::core::panic!("assertion failed: `(left == right)`{}{}\
+                       \n\
+                       \n{}\
+                       \n",
+                       $maybe_semicolon,
+                       format_args!($($arg)*),
+                       $crate::StrComparison::new(left_val, right_val)
                     )
                 }
             }
