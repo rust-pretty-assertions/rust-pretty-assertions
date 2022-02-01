@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if ! cargo tarpaulin --version; then
+  cargo install cargo-tarpaulin --force
+fi
+
+cargo tarpaulin --out html
