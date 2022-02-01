@@ -1,5 +1,11 @@
 # Unreleased
 
+# v1.1.0
+
+## Added
+
+- Add `assert_str_eq` for comparing two `str`-like values without `Debug` formatting. Thanks to [@x3ro](https://github.com/x3ro) for implementing this! ([#88](https://github.com/colin-kiegel/rust-pretty-assertions/pull/88), [@x3ro](https://github.com/x3ro))
+
 ## Fixed
 
 - Ensure license text is included in crate archive - thanks [@decathorpe](https://github.com/decathorpe) for reporting this ([#87](https://github.com/colin-kiegel/rust-pretty-assertions/pull/87), [@tommilligan](https://github.com/tommilligan))
