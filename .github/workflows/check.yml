@@ -3,7 +3,7 @@ on: [push, pull_request]
 name: check
 
 jobs:
-  # Test, and also do other things like code coverage
+  # Test, and also do other things like doctests and examples
   detailed-test:
     name: Test main target
     runs-on: ubuntu-20.04
@@ -36,11 +36,6 @@ jobs:
         run: ./scripts/install
       - name: Run check script
         run: ./scripts/check
-      - name: Upload coverage
-        continue-on-error: true
-        run: |
-          cargo tarpaulin --out xml
-          bash <(curl -s https://codecov.io/bash)
 
   # Test on all supported platforms
   test:
