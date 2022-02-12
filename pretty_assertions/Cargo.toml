@@ -34,6 +34,5 @@ ansi_term = "0.12.1"
 diff = "0.1.12"
 
 [target.'cfg(windows)'.dependencies]
-output_vt100 = "0.1.2"
+output_vt100 = "0.1.3"
 ctor = "0.1.9"
-
