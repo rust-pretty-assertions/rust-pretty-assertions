@@ -238,7 +238,7 @@ macro_rules! assert_eq {
     ($left:expr, $right:expr, $($arg:tt)*) => ({
         $crate::assert_eq!(@ $left, $right, ": ", $($arg)+);
     });
-    (@ $left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)*) => ({
+    (@ $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)*) => ({
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
@@ -246,7 +246,7 @@ macro_rules! assert_eq {
                        \n\
                        \n{}\
                        \n",
-                       $maybe_semicolon,
+                       $maybe_colon,
                        format_args!($($arg)*),
                        $crate::Comparison::new(left_val, right_val)
                     )
@@ -283,7 +283,7 @@ macro_rules! assert_str_eq {
     ($left:expr, $right:expr, $($arg:tt)*) => ({
         $crate::assert_str_eq!(@ $left, $right, ": ", $($arg)+);
     });
-    (@ $left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)*) => ({
+    (@ $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)*) => ({
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
@@ -291,7 +291,7 @@ macro_rules! assert_str_eq {
                        \n\
                        \n{}\
                        \n",
-                       $maybe_semicolon,
+                       $maybe_colon,
                        format_args!($($arg)*),
                        $crate::StrComparison::new(left_val, right_val)
                     )
@@ -328,7 +328,7 @@ macro_rules! assert_ne {
     ($left:expr, $right:expr, $($arg:tt)+) => ({
         $crate::assert_ne!(@ $left, $right, ": ", $($arg)+);
     });
-    (@ $left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)+) => ({
+    (@ $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)+) => ({
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if *left_val == *right_val {
@@ -338,7 +338,7 @@ macro_rules! assert_ne {
                         \n{:#?}\
                         \n\
                         \n",
-                        $maybe_semicolon,
+                        $maybe_colon,
                         format_args!($($arg)+),
                         $crate::Style::new().bold().paint("Both sides"),
                         left_val
@@ -406,7 +406,7 @@ macro_rules! assert_matches {
         }
 
     });
-    (@ $left:expr, $right:expr, $maybe_semicolon:expr, $($arg:tt)*) => ({
+    (@ $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)*) => ({
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 // Use the Display implementation to display the pattern,
@@ -422,7 +422,7 @@ macro_rules! assert_matches {
                    \n\
                    \n{}\
                    \n",
-                   $maybe_semicolon,
+                   $maybe_colon,
                    format_args!($($arg)*),
                    $crate::Comparison::new(left_val, &Pattern(right_val))
                 )
