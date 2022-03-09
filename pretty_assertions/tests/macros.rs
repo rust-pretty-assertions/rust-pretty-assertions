@@ -32,25 +32,40 @@ mod assert_str_eq {
         ::pretty_assertions::assert_str_eq!(s0, s1);
     }
 
+    #[derive(PartialEq)]
+    struct MyString(String);
+
+    impl AsRef<str> for MyString {
+        fn as_ref(&self) -> &str {
+            &self.0
+        }
+    }
+
+    impl PartialEq<String> for MyString {
+        fn eq(&self, other: &String) -> bool {
+            &self.0 == other
+        }
+    }
+
     #[test]
     fn passes_as_ref_types() {
-        #[derive(PartialEq)]
-        struct MyString(String);
-
-        impl AsRef<str> for MyString {
-            fn as_ref(&self) -> &str {
-                &self.0
-            }
-        }
-
-        impl PartialEq<String> for MyString {
-            fn eq(&self, other: &String) -> bool {
-                &self.0 == other
-            }
-        }
-
         let s0 = MyString("foo".to_string());
         let s1 = "foo".to_string();
+        ::pretty_assertions::assert_str_eq!(s0, s1);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"assertion failed: `(left == right)`
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+ foo
+[31m<ba[0m[1;48;5;52;31mr[0m
+[32m>ba[0m[1;48;5;22;32mz[0m
+
+"#)]
+    fn fails_as_ref_types() {
+        let s0 = MyString("foo\nbar".to_string());
+        let s1 = "foo\nbaz".to_string();
         ::pretty_assertions::assert_str_eq!(s0, s1);
     }
 
@@ -173,6 +188,19 @@ mod assert_eq {
 "#)]
     fn fails_str() {
         ::pretty_assertions::assert_eq!("foo\nbar", "foo\nbaz");
+    }
+
+    #[test]
+    #[should_panic(expected = r#"assertion failed: `(left == right)`
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+ foo
+[31m<ba[0m[1;48;5;52;31mr[0m
+[32m>ba[0m[1;48;5;22;32mz[0m
+
+"#)]
+    fn fails_string() {
+        ::pretty_assertions::assert_eq!("foo\nbar".to_string(), "foo\nbaz".to_string());
     }
 }
 
