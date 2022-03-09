@@ -1,9 +1,13 @@
-[![Build status](https://travis-ci.org/colin-kiegel/rust-pretty-assertions.svg?branch=master)](https://travis-ci.org/colin-kiegel/rust-pretty-assertions)
-[![Latest version](https://img.shields.io/crates/v/pretty-assertions.svg)](https://crates.io/crates/pretty-assertions)
-[![All downloads](https://img.shields.io/crates/d/pretty-assertions.svg)](https://crates.io/crates/pretty-assertions)
-[![Downloads of latest version](https://img.shields.io/crates/dv/pretty-assertions.svg)](https://crates.io/crates/pretty-assertions)
-
 # Pretty Assertions
+
+[![Latest version](https://img.shields.io/crates/v/pretty-assertions.svg)](https://crates.io/crates/pretty-assertions)
+[![docs.rs](https://img.shields.io/docsrs/pretty_assertions)](https://docs.rs/pretty_assertions)
+[![Downloads of latest version](https://img.shields.io/crates/dv/pretty-assertions.svg)](https://crates.io/crates/pretty-assertions)
+[![All downloads](https://img.shields.io/crates/d/pretty-assertions.svg)](https://crates.io/crates/pretty-assertions)
+
+Overwrite `assert_eq!` with a drop-in replacement, adding a colorful diff.
+
+## Usage
 
 When writing tests in Rust, you'll probably use `assert_eq!(a, b)` _a lot_.
 
