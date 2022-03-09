@@ -161,6 +161,18 @@ mod assert_eq {
     fn fails_custom_trailing_comma() {
         ::pretty_assertions::assert_eq!(666, 999, "custom panic message",);
     }
+
+    #[test]
+    #[should_panic(expected = r#"assertion failed: `(left == right)`
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+[31m<"foo\nba[0m[1;48;5;52;31mr[0m[31m"[0m
+[32m>"foo\nba[0m[1;48;5;22;32mz[0m[32m"[0m
+
+"#)]
+    fn fails_str() {
+        ::pretty_assertions::assert_eq!("foo\nbar", "foo\nbaz");
+    }
 }
 
 mod assert_ne {
