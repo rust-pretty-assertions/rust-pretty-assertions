@@ -166,8 +166,9 @@ mod assert_eq {
     #[should_panic(expected = r#"assertion failed: `(left == right)`
 
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
-[31m<"foo\nba[0m[1;48;5;52;31mr[0m[31m"[0m
-[32m>"foo\nba[0m[1;48;5;22;32mz[0m[32m"[0m
+ foo
+[31m<ba[0m[1;48;5;52;31mr[0m
+[32m>ba[0m[1;48;5;22;32mz[0m
 
 "#)]
     fn fails_str() {

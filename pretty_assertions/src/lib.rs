@@ -242,13 +242,14 @@ macro_rules! assert_eq {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
+                    use $crate::private::CreateComparison;
                     ::core::panic!("assertion failed: `(left == right)`{}{}\
                        \n\
                        \n{}\
                        \n",
                        $maybe_colon,
                        format_args!($($arg)*),
-                       $crate::Comparison::new(left_val, right_val)
+                       (left_val, right_val).create_comparison()
                     )
                 }
             }
@@ -429,4 +430,39 @@ macro_rules! assert_matches {
             }
         }
     });
+}
+
+// Not public API. Used by the expansion of this crate's assert macros.
+#[doc(hidden)]
+pub mod private {
+    #[cfg(feature = "alloc")]
+    use alloc::string::String;
+
+    pub trait CompareAsStrByDefault: AsRef<str> {}
+    impl CompareAsStrByDefault for str {}
+    impl CompareAsStrByDefault for String {}
+    impl<T: CompareAsStrByDefault + ?Sized> CompareAsStrByDefault for &T {}
+
+    pub trait CreateComparison {
+        type Comparison;
+        fn create_comparison(self) -> Self::Comparison;
+    }
+
+    impl<'a, T, U> CreateComparison for &'a (T, U) {
+        type Comparison = crate::Comparison<'a, T, U>;
+        fn create_comparison(self) -> Self::Comparison {
+            crate::Comparison::new(&self.0, &self.1)
+        }
+    }
+
+    impl<'a, T, U> CreateComparison for (&'a T, &'a U)
+    where
+        T: CompareAsStrByDefault + ?Sized,
+        U: CompareAsStrByDefault + ?Sized,
+    {
+        type Comparison = crate::StrComparison<'a, T, U>;
+        fn create_comparison(self) -> Self::Comparison {
+            crate::StrComparison::new(self.0, self.1)
+        }
+    }
 }
