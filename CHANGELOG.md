@@ -1,5 +1,11 @@
 # Unreleased
 
+# v1.2.0
+
+## Changed
+
+- `assert_eq` compares `str`-like values without `Debug` formatting. ([#92](https://github.com/colin-kiegel/rust-pretty-assertions/pull/92), [@dtolnay](https://github.com/dtolnay))
+
 # v1.1.0
 
 ## Added

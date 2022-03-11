@@ -52,6 +52,13 @@ fn main() {
 
 </details>
 
+## Semantic Versioning
+
+The exact output of assertions is **not guaranteed** to be consistent over time, and may change between minor versions.
+The output of this crate is designed to be read by a human. It is not suitable for exact comparison, for example in snapshot testing.
+
+This crate adheres to semantic versioning for publically exported crate items, **except** the `private` module, which may change between any version.
+
 ## Tip
 
 Specify it as [`[dev-dependencies]`](http://doc.crates.io/specifying-dependencies.html#development-dependencies)
@@ -65,7 +72,7 @@ Also add `#[cfg(test)]` to your `use` statements, like this:
 use pretty_assertions::{assert_eq, assert_ne};
 ```
 
-## Note
+## Notes
 
 - Since `Rust 2018` edition, you need to declare
   `use pretty_assertions::{assert_eq, assert_ne};` per module.
