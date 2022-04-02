@@ -1,5 +1,11 @@
 # Unreleased
 
+# v1.2.1
+
+## Fixed
+
+- Fixed a panic caused by diffing two `str`-like values where only the left has a trailing newline - thanks [@Michael-F-Bryan](https://github.com/Michael-F-Bryan) for reporting this ([#97](https://github.com/colin-kiegel/rust-pretty-assertions/pull/97), [@tommilligan](https://github.com/tommilligan))
+
 # v1.2.0
 
 ## Changed
