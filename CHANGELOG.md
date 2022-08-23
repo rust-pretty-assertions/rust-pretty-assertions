@@ -1,5 +1,16 @@
 # Unreleased
 
+# v1.3.0
+
+## Changed
+
+- MSRV bumped to 1.54.0 (see [#102](https://github.com/colin-kiegel/rust-pretty-assertions/pull/102))
+- Removed the publically re-exported `ansi_term::Style`. This was never intended for public use. (see [#102](https://github.com/colin-kiegel/rust-pretty-assertions/pull/102))
+
+## Fixed
+
+- Moved from the unmaintained `ansi_term` crate to `yansi` for ANSI terminal escape code support. Thanks to [@Roguelazer](https://github.com/Roguelazer) for reporting and fixing this! ([#102](https://github.com/colin-kiegel/rust-pretty-assertions/pull/102), [@Roguelazer](https://github.com/Roguelazer))
+
 # v1.2.1
 
 ## Fixed
