@@ -575,7 +575,7 @@ Cabbage"#;
 
         /// Regression test for double abort
         ///
-        /// See: https://github.com/colin-kiegel/rust-pretty-assertions/issues/96
+        /// See: https://github.com/rust-pretty-assertions/rust-pretty-assertions/issues/96
         #[test]
         fn trailing_deleted() {
             // The below inputs caused an abort via double panic
