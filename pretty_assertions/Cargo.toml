@@ -30,7 +30,7 @@ alloc = []
 unstable = []
 
 [dependencies]
-ansi_term = "0.12.1"
+yansi = "0.5"
 diff = "0.1.12"
 
 [target.'cfg(windows)'.dependencies]

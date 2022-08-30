@@ -80,7 +80,6 @@
 #[cfg(feature = "alloc")]
 #[macro_use]
 extern crate alloc;
-pub use ansi_term::Style;
 use core::fmt::{self, Debug, Display};
 
 mod printer;
@@ -335,13 +334,12 @@ macro_rules! assert_ne {
                 if *left_val == *right_val {
                     ::core::panic!("assertion failed: `(left != right)`{}{}\
                         \n\
-                        \n{}:\
+                        \nBoth sides:\
                         \n{:#?}\
                         \n\
                         \n",
                         $maybe_colon,
                         format_args!($($arg)+),
-                        $crate::Style::new().bold().paint("Both sides"),
                         left_val
                     )
                 }

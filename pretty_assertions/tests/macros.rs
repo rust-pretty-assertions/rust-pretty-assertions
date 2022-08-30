@@ -234,7 +234,7 @@ mod assert_ne {
     #[test]
     #[should_panic(expected = r#"assertion failed: `(left != right)`
 
-[1mBoth sides[0m:
+Both sides:
 666
 "#)]
     fn fails() {
@@ -244,7 +244,7 @@ mod assert_ne {
     #[test]
     #[should_panic(expected = r#"assertion failed: `(left != right)`
 
-[1mBoth sides[0m:
+Both sides:
 666
 "#)]
     fn fails_trailing_comma() {
@@ -254,7 +254,7 @@ mod assert_ne {
     #[test]
     #[should_panic(expected = r#"assertion failed: `(left != right)`
 
-[1mBoth sides[0m:
+Both sides:
 [
     101,
 ]
@@ -269,7 +269,7 @@ mod assert_ne {
     #[should_panic(
         expected = r#"assertion failed: `(left != right)`: custom panic message
 
-[1mBoth sides[0m:
+Both sides:
 666
 "#
     )]
@@ -281,7 +281,7 @@ mod assert_ne {
     #[should_panic(
         expected = r#"assertion failed: `(left != right)`: custom panic message
 
-[1mBoth sides[0m:
+Both sides:
 666
 "#
     )]
