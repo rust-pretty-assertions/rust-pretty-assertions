@@ -1,6 +1,6 @@
 [package]
 name = "pretty_assertions"
-version = "1.2.1"
+version = "1.3.0"
 authors = [
     "Colin Kiegel <kiegel@gmx.de>",
     "Florent Fayolle <florent.fayolle69@gmail.com>",
@@ -9,7 +9,7 @@ authors = [
 edition = "2018"
 
 description = "Overwrite `assert_eq!` and `assert_ne!` with drop-in replacements, adding colorful diffs."
-repository = "https://github.com/colin-kiegel/rust-pretty-assertions"
+repository = "https://github.com/rust-pretty-assertions/rust-pretty-assertions"
 documentation = "https://docs.rs/pretty_assertions"
 
 license = "MIT OR Apache-2.0"
