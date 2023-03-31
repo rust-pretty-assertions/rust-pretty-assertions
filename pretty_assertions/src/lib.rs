@@ -72,7 +72,7 @@
 //! - `alloc`: Use the `alloc` crate.
 //!   Exactly one of `std` and `alloc` is required.
 //! - `unstable`: opt-in to unstable features that may not follow Semantic Versioning.
-//!   Implmenetion behind this feature is subject to change without warning between patch versions.
+//!   The implementation behind this feature is subject to change without warning between patch versions.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![deny(clippy::all, missing_docs, unsafe_code)]
