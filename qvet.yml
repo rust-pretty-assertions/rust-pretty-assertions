@@ -1,0 +1,14 @@
+action:
+  ready:
+    type: link
+    name: "Cut Release"
+    url: "https://github.com/rust-pretty-assertions/rust-pretty-assertions/releases/new"
+
+commit:
+  ignore:
+    merges: true
+
+release:
+  identifiers:
+    - type: tag
+      pattern: "^v[0-9]"
