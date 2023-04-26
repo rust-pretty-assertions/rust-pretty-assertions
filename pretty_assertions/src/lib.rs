@@ -84,12 +84,20 @@ use core::fmt::{self, Debug, Display};
 
 mod printer;
 
+#[doc(hidden)]
+#[cfg(not(windows))]
+pub fn __init() {}
+
+#[doc(hidden)]
 #[cfg(windows)]
-use ctor::*;
-#[cfg(windows)]
-#[ctor]
-fn init() {
-    output_vt100::try_init().ok(); // Do not panic on fail
+pub fn __init() {
+    use std::sync::Once;
+
+    static START: Once = Once::new();
+
+    START.call_once(|| {
+        output_vt100::try_init().ok(); // Do not panic on fail
+    });
 }
 
 /// A comparison of two values.
@@ -241,6 +249,8 @@ macro_rules! assert_eq {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
+                    $crate::__init();
+
                     use $crate::private::CreateComparison;
                     ::core::panic!("assertion failed: `(left == right)`{}{}\
                        \n\
@@ -287,6 +297,8 @@ macro_rules! assert_str_eq {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
+                    $crate::__init();
+
                     ::core::panic!("assertion failed: `(left == right)`{}{}\
                        \n\
                        \n{}\
@@ -332,6 +344,8 @@ macro_rules! assert_ne {
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if *left_val == *right_val {
+                    $crate::__init();
+
                     ::core::panic!("assertion failed: `(left != right)`{}{}\
                         \n\
                         \nBoth sides:\
@@ -408,6 +422,7 @@ macro_rules! assert_matches {
     (@ $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)*) => ({
         match (&($left), &($right)) {
             (left_val, right_val) => {
+                $crate::__init();
                 // Use the Display implementation to display the pattern,
                 // as using Debug would add another layer of quotes to the output.
                 struct Pattern<'a>(&'a str);
