@@ -124,6 +124,36 @@ mod assert_eq {
     #[test]
     #[should_panic(expected = r#"assertion failed: `(left == right)`
 
+[1mDiff[0m [31m- left[0m / [32mright +[0m :
+[31m-[0m[1;48;5;52;31m666[0m
+[32m+[0m[1;48;5;22;32m999[0m
+
+"#)]
+    fn fails_with_config() {
+        use ::core::default::Default;
+        let config = ::pretty_assertions::config::Config::default()
+            .line_symbol(::pretty_assertions::config::LineSymbol::Sign);
+        ::pretty_assertions::assert_eq!(config = config, 666, 999);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"assertion failed: `(left == right)`
+
+[1mDiff[0m [31m- left[0m / [32mright +[0m :
+[31m-[0m[1;48;5;52;31m666[0m
+[32m+[0m[1;48;5;22;32m999[0m
+
+"#)]
+    fn fails_with_config_reference() {
+        use ::core::default::Default;
+        let config = ::pretty_assertions::config::Config::default()
+            .line_symbol(::pretty_assertions::config::LineSymbol::Sign);
+        ::pretty_assertions::assert_eq!(config = &config, 666, 999);
+    }
+
+    #[test]
+    #[should_panic(expected = r#"assertion failed: `(left == right)`
+
 [1mDiff[0m [31m< left[0m / [32mright >[0m :
 [31m<[0m[1;48;5;52;31m666[0m
 [32m>[0m[1;48;5;22;32m999[0m
