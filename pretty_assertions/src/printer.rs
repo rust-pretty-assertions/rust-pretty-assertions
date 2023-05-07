@@ -1,3 +1,4 @@
+use crate::config::{Config, LineSymbol};
 #[cfg(feature = "alloc")]
 use alloc::format;
 use core::fmt;
@@ -12,17 +13,35 @@ macro_rules! paint {
     )
 }
 
-const SIGN_RIGHT: char = '>'; // + > →
-const SIGN_LEFT: char = '<'; // - < ←
+pub(crate) struct PrinterConfig {
+    line_symbols: LineSymbols,
+}
+
+struct LineSymbols {
+    removed: char,
+    added: char,
+}
+
+impl From<Config> for PrinterConfig {
+    fn from(other: Config) -> Self {
+        let (removed, added) = match other.line_symbol {
+            LineSymbol::Arrow => ('<', '>'),
+            LineSymbol::Sign => ('-', '+'),
+        };
+        Self {
+            line_symbols: LineSymbols { removed, added },
+        }
+    }
+}
 
 /// Present the diff output for two mutliline strings in a pretty, colorised manner.
-pub(crate) fn write_header(f: &mut fmt::Formatter) -> fmt::Result {
+pub(crate) fn write_header(f: &mut fmt::Formatter, config: &PrinterConfig) -> fmt::Result {
     writeln!(
         f,
         "{} {} / {} :",
         Style::new(Unset).bold().paint("Diff"),
-        Red.paint(format!("{} left", SIGN_LEFT)),
-        Green.paint(format!("right {}", SIGN_RIGHT))
+        Red.paint(format!("{} left", config.line_symbols.removed)),
+        Green.paint(format!("right {}", config.line_symbols.added))
     )
 }
 
@@ -30,15 +49,23 @@ pub(crate) fn write_header(f: &mut fmt::Formatter) -> fmt::Result {
 ///
 /// It can be formatted as a whole chunk by calling `flush`, or the inner value
 /// obtained with `take` for further processing (such as an inline diff).
-#[derive(Default)]
 struct LatentDeletion<'a> {
     // The most recent deleted line we've seen
     value: Option<&'a str>,
     // The number of deleted lines we've seen, including the current value
     count: usize,
+    line_symbol_removed: char,
 }
 
 impl<'a> LatentDeletion<'a> {
+    fn new(line_symbol_removed: char) -> Self {
+        Self {
+            value: None,
+            count: 0,
+            line_symbol_removed,
+        }
+    }
+
     /// Set the chunk value.
     fn set(&mut self, value: &'a str) {
         self.value = Some(value);
@@ -62,7 +89,7 @@ impl<'a> LatentDeletion<'a> {
     /// without seeing another deletion. Therefore the line in the middle was something else).
     fn flush<TWrite: fmt::Write>(&mut self, f: &mut TWrite) -> fmt::Result {
         if let Some(value) = self.value {
-            paint!(f, Red, "{}{}", SIGN_LEFT, value)?;
+            paint!(f, Red, "{}{}", self.line_symbol_removed, value)?;
             writeln!(f)?;
             self.value = None;
         } else {
@@ -82,11 +109,12 @@ pub(crate) fn write_lines<TWrite: fmt::Write>(
     f: &mut TWrite,
     left: &str,
     right: &str,
+    config: &PrinterConfig,
 ) -> fmt::Result {
     let diff = ::diff::lines(left, right);
 
     let mut changes = diff.into_iter().peekable();
-    let mut previous_deletion = LatentDeletion::default();
+    let mut previous_deletion = LatentDeletion::new(config.line_symbols.removed);
 
     while let Some(change) = changes.next() {
         match (change, changes.peek()) {
@@ -103,16 +131,16 @@ pub(crate) fn write_lines<TWrite: fmt::Write>(
             // If we're being followed by more insertions, don't inline diff
             (::diff::Result::Right(inserted), Some(::diff::Result::Right(_))) => {
                 previous_deletion.flush(f)?;
-                paint!(f, Green, "{}{}", SIGN_RIGHT, inserted)?;
+                paint!(f, Green, "{}{}", config.line_symbols.added, inserted)?;
                 writeln!(f)?;
             }
             // Otherwise, check if we need to inline diff with the previous line (if it was a deletion)
             (::diff::Result::Right(inserted), _) => {
                 if let Some(deleted) = previous_deletion.take() {
-                    write_inline_diff(f, deleted, inserted)?;
+                    write_inline_diff(f, deleted, inserted, config)?;
                 } else {
                     previous_deletion.flush(f)?;
-                    paint!(f, Green, "{}{}", SIGN_RIGHT, inserted)?;
+                    paint!(f, Green, "{}{}", config.line_symbols.added, inserted)?;
                     writeln!(f)?;
                 }
             }
@@ -175,14 +203,19 @@ where
 /// The given strings should not have a trailing newline.
 ///
 /// The output of this function will be two lines, each with a trailing newline.
-fn write_inline_diff<TWrite: fmt::Write>(f: &mut TWrite, left: &str, right: &str) -> fmt::Result {
+fn write_inline_diff<TWrite: fmt::Write>(
+    f: &mut TWrite,
+    left: &str,
+    right: &str,
+    config: &PrinterConfig,
+) -> fmt::Result {
     let diff = ::diff::chars(left, right);
     let mut writer = InlineWriter::new(f);
 
     // Print the left string on one line, with differences highlighted
     let light = Style::new(Red);
     let heavy = Style::new(Red).bg(Fixed(52)).bold();
-    writer.write_with_style(&SIGN_LEFT, light)?;
+    writer.write_with_style(&config.line_symbols.removed, light)?;
     for change in diff.iter() {
         match change {
             ::diff::Result::Both(value, _) => writer.write_with_style(value, light)?,
@@ -195,7 +228,7 @@ fn write_inline_diff<TWrite: fmt::Write>(f: &mut TWrite, left: &str, right: &str
     // Print the right string on one line, with differences highlighted
     let light = Style::new(Green);
     let heavy = Style::new(Green).bg(Fixed(22)).bold();
-    writer.write_with_style(&SIGN_RIGHT, light)?;
+    writer.write_with_style(&config.line_symbols.added, light)?;
     for change in diff.iter() {
         match change {
             ::diff::Result::Both(value, _) => writer.write_with_style(value, light)?,
@@ -222,16 +255,28 @@ mod test {
     const GREEN_HEAVY: &str = "\u{1b}[1;48;5;22;32m";
     const RESET: &str = "\u{1b}[0m";
 
+    const V1_CONFIG: PrinterConfig = PrinterConfig {
+        line_symbols: LineSymbols {
+            removed: '<',
+            added: '>',
+        },
+    };
+
     /// Given that both of our diff printing functions have the same
     /// type signature, we can reuse the same test code for them.
     ///
     /// This could probably be nicer with traits!
-    fn check_printer<TPrint>(printer: TPrint, left: &str, right: &str, expected: &str)
-    where
-        TPrint: Fn(&mut String, &str, &str) -> fmt::Result,
+    fn check_printer<TPrint>(
+        printer: TPrint,
+        left: &str,
+        right: &str,
+        expected: &str,
+        config: &PrinterConfig,
+    ) where
+        TPrint: Fn(&mut String, &str, &str, &PrinterConfig) -> fmt::Result,
     {
         let mut actual = String::new();
-        printer(&mut actual, left, right).expect("printer function failed");
+        printer(&mut actual, left, right, config).expect("printer function failed");
 
         // Cannot use IO without stdlib
         #[cfg(feature = "std")]
@@ -261,7 +306,33 @@ mod test {
             reset = RESET,
         );
 
-        check_printer(write_inline_diff, left, right, &expected);
+        check_printer(write_inline_diff, left, right, &expected, &V1_CONFIG);
+    }
+
+    #[test]
+    fn write_inline_diff_empty_git() {
+        let left = "";
+        let right = "";
+        let expected = format!(
+            "{red_light}-{reset}\n\
+             {green_light}+{reset}\n",
+            red_light = RED_LIGHT,
+            green_light = GREEN_LIGHT,
+            reset = RESET,
+        );
+
+        check_printer(
+            write_inline_diff,
+            left,
+            right,
+            &expected,
+            &PrinterConfig {
+                line_symbols: LineSymbols {
+                    removed: '-',
+                    added: '+',
+                },
+            },
+        );
     }
 
     #[test]
@@ -277,7 +348,7 @@ mod test {
             reset = RESET,
         );
 
-        check_printer(write_inline_diff, left, right, &expected);
+        check_printer(write_inline_diff, left, right, &expected, &V1_CONFIG);
     }
 
     #[test]
@@ -293,7 +364,7 @@ mod test {
             reset = RESET,
         );
 
-        check_printer(write_inline_diff, left, right, &expected);
+        check_printer(write_inline_diff, left, right, &expected, &V1_CONFIG);
     }
 
     #[test]
@@ -310,7 +381,7 @@ mod test {
             reset = RESET,
         );
 
-        check_printer(write_inline_diff, left, right, &expected);
+        check_printer(write_inline_diff, left, right, &expected, &V1_CONFIG);
     }
 
     /// If one of our strings is empty, it should not be shown at all in the output.
@@ -324,7 +395,7 @@ mod test {
             reset = RESET,
         );
 
-        check_printer(write_lines, left, right, &expected);
+        check_printer(write_lines, left, right, &expected, &V1_CONFIG);
     }
 
     /// Realistic multiline struct diffing case.
@@ -368,7 +439,7 @@ mod test {
             reset = RESET,
         );
 
-        check_printer(write_lines, left, right, &expected);
+        check_printer(write_lines, left, right, &expected, &V1_CONFIG);
     }
 
     /// Relistic multiple line chunks
@@ -394,7 +465,7 @@ Caravaggio"#;
             reset = RESET,
         );
 
-        check_printer(write_lines, left, right, &expected);
+        check_printer(write_lines, left, right, &expected, &V1_CONFIG);
     }
 
     /// Single deletion line, multiple insertions - no inline diffing.
@@ -413,7 +484,7 @@ Caravaggio"#;
             reset = RESET,
         );
 
-        check_printer(write_lines, left, right, &expected);
+        check_printer(write_lines, left, right, &expected, &V1_CONFIG);
     }
 
     /// Multiple deletion, single insertion - no inline diffing.
@@ -432,7 +503,7 @@ Cabbage"#;
             reset = RESET,
         );
 
-        check_printer(write_lines, left, right, &expected);
+        check_printer(write_lines, left, right, &expected, &V1_CONFIG);
     }
 
     /// Regression test for multiline highlighting issue
@@ -474,7 +545,7 @@ Cabbage"#;
             reset = RESET,
         );
 
-        check_printer(write_lines, left, right, &expected);
+        check_printer(write_lines, left, right, &expected, &V1_CONFIG);
     }
 
     mod write_lines_edge_newlines {
@@ -498,7 +569,7 @@ Cabbage"#;
                 reset = RESET,
             );
 
-            check_printer(write_lines, left, right, &expected);
+            check_printer(write_lines, left, right, &expected, &V1_CONFIG);
         }
 
         #[test]
@@ -519,7 +590,7 @@ Cabbage"#;
                 reset = RESET,
             );
 
-            check_printer(write_lines, left, right, &expected);
+            check_printer(write_lines, left, right, &expected, &V1_CONFIG);
         }
 
         #[test]
@@ -536,7 +607,7 @@ Cabbage"#;
                 reset = RESET,
             );
 
-            check_printer(write_lines, left, right, &expected);
+            check_printer(write_lines, left, right, &expected, &V1_CONFIG);
         }
 
         #[test]
@@ -553,7 +624,7 @@ Cabbage"#;
                 reset = RESET,
             );
 
-            check_printer(write_lines, left, right, &expected);
+            check_printer(write_lines, left, right, &expected, &V1_CONFIG);
         }
 
         #[test]
@@ -570,7 +641,7 @@ Cabbage"#;
                 reset = RESET,
             );
 
-            check_printer(write_lines, left, right, &expected);
+            check_printer(write_lines, left, right, &expected, &V1_CONFIG);
         }
 
         /// Regression test for double abort
@@ -594,7 +665,7 @@ Cabbage"#;
                 reset = RESET,
             );
 
-            check_printer(write_lines, left, right, &expected);
+            check_printer(write_lines, left, right, &expected, &V1_CONFIG);
         }
     }
 }

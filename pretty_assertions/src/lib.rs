@@ -82,7 +82,11 @@
 extern crate alloc;
 use core::fmt::{self, Debug, Display};
 
+/// Configuration options to customise the output format.
+pub mod config;
 mod printer;
+
+use config::Config;
 
 #[cfg(windows)]
 use ctor::*;
@@ -110,6 +114,7 @@ where
 {
     left: &'a TLeft,
     right: &'a TRight,
+    config: Option<&'a Config>,
 }
 
 impl<'a, TLeft, TRight> Comparison<'a, TLeft, TRight>
@@ -121,7 +126,16 @@ where
     ///
     /// Expensive diffing is deferred until calling `Debug::fmt`.
     pub fn new(left: &'a TLeft, right: &'a TRight) -> Comparison<'a, TLeft, TRight> {
-        Comparison { left, right }
+        Comparison {
+            left,
+            right,
+            config: None,
+        }
+    }
+
+    fn config(mut self, config: Option<&'a Config>) -> Self {
+        self.config = config;
+        self
     }
 }
 
@@ -134,9 +148,10 @@ where
         // To diff arbitary types, render them as debug strings
         let left_debug = format!("{:#?}", self.left);
         let right_debug = format!("{:#?}", self.right);
+        let config = self.config.cloned().unwrap_or_default().into();
         // And then diff the debug output
-        printer::write_header(f)?;
-        printer::write_lines(f, &left_debug, &right_debug)
+        printer::write_header(f, &config)?;
+        printer::write_lines(f, &left_debug, &right_debug, &config)
     }
 }
 
@@ -184,6 +199,7 @@ where
 {
     left: &'a TLeft,
     right: &'a TRight,
+    config: Option<&'a Config>,
 }
 
 impl<'a, TLeft, TRight> StrComparison<'a, TLeft, TRight>
@@ -195,7 +211,16 @@ where
     ///
     /// Expensive diffing is deferred until calling `Debug::fmt`.
     pub fn new(left: &'a TLeft, right: &'a TRight) -> StrComparison<'a, TLeft, TRight> {
-        StrComparison { left, right }
+        StrComparison {
+            left,
+            right,
+            config: None,
+        }
+    }
+
+    fn config(mut self, config: Option<&'a Config>) -> Self {
+        self.config = config;
+        self
     }
 }
 
@@ -205,8 +230,9 @@ where
     TRight: AsRef<str> + ?Sized,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        printer::write_header(f)?;
-        printer::write_lines(f, self.left.as_ref(), self.right.as_ref())
+        let config = self.config.cloned().unwrap_or_default().into();
+        printer::write_header(f, &config)?;
+        printer::write_lines(f, self.left.as_ref(), self.right.as_ref(), &config)
     }
 }
 
@@ -225,19 +251,67 @@ where
 ///
 /// let a = 3;
 /// let b = 1 + 2;
+///
+/// // Simple use
 /// assert_eq!(a, b);
 ///
+/// // Custom message on failure
 /// assert_eq!(a, b, "we are testing addition with {} and {}", a, b);
+/// ```
+///
+/// # Configuration
+///
+/// You can provide an optional `config = ...` argument to customize the output format.
+///
+/// See the [`config::Config`] docs for available options.
+///
+/// ```
+/// use pretty_assertions::assert_eq;
+/// use pretty_assertions::config::{Config, LineSymbol};
+///
+/// // Uses '+' and '-' symbols, instead of '<' and '>'
+/// let config = Config::default().line_symbol(LineSymbol::Sign);
+/// assert_eq!(config = config, 42, 42);
+/// ```
+///
+/// If you'd like for all your assertions to use the same settings, we recommend
+/// defining a helper macro like:
+///
+/// ```
+/// use pretty_assertions::assert_eq;
+/// use pretty_assertions::config::{Config, LineSymbol};
+///
+/// macro_rules! assert_eq {
+///     ($left:expr, $right:expr) => ({
+///         let config = Config::default().line_symbol(LineSymbol::Sign);
+///         ::pretty_assertions::assert_eq!(config = config, $left, $right);
+///     });
+/// }
+///
+/// // Will use your custom settings
+/// assert_eq!(42, 42);
 /// ```
 #[macro_export]
 macro_rules! assert_eq {
+    (config = $config:expr, $left:expr, $right:expr$(,)?) => ({
+        use ::core::borrow::Borrow;
+        use ::core::option::Option::Some;
+        $crate::assert_eq!(@ Some($config.borrow()), $left, $right, "", "");
+    });
+    (config = $config:expr, $left:expr, $right:expr, $($arg:tt)*) => ({
+        use ::core::borrow::Borrow;
+        use ::core::option::Option::Some;
+        $crate::assert_eq!(@ Some($config.borrow()), $left, $right, ": ", $($arg)+);
+    });
     ($left:expr, $right:expr$(,)?) => ({
-        $crate::assert_eq!(@ $left, $right, "", "");
+        use ::core::option::Option::None;
+        $crate::assert_eq!(@ None, $left, $right, "", "");
     });
     ($left:expr, $right:expr, $($arg:tt)*) => ({
-        $crate::assert_eq!(@ $left, $right, ": ", $($arg)+);
+        use ::core::option::Option::None;
+        $crate::assert_eq!(@ None, $left, $right, ": ", $($arg)+);
     });
-    (@ $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)*) => ({
+    (@ $config:expr, $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)*) => ({
         match (&($left), &($right)) {
             (left_val, right_val) => {
                 if !(*left_val == *right_val) {
@@ -248,7 +322,7 @@ macro_rules! assert_eq {
                        \n",
                        $maybe_colon,
                        format_args!($($arg)*),
-                       (left_val, right_val).create_comparison()
+                       (left_val, right_val, $config).create_comparison()
                     )
                 }
             }
@@ -446,21 +520,21 @@ pub mod private {
         fn create_comparison(self) -> Self::Comparison;
     }
 
-    impl<'a, T, U> CreateComparison for &'a (T, U) {
+    impl<'a, T, U> CreateComparison for &'a (T, U, Option<&'a crate::Config>) {
         type Comparison = crate::Comparison<'a, T, U>;
         fn create_comparison(self) -> Self::Comparison {
-            crate::Comparison::new(&self.0, &self.1)
+            crate::Comparison::new(&self.0, &self.1).config(self.2)
         }
     }
 
-    impl<'a, T, U> CreateComparison for (&'a T, &'a U)
+    impl<'a, T, U> CreateComparison for (&'a T, &'a U, Option<&'a crate::Config>)
     where
         T: CompareAsStrByDefault + ?Sized,
         U: CompareAsStrByDefault + ?Sized,
     {
         type Comparison = crate::StrComparison<'a, T, U>;
         fn create_comparison(self) -> Self::Comparison {
-            crate::StrComparison::new(self.0, self.1)
+            crate::StrComparison::new(self.0, self.1).config(self.2)
         }
     }
 }
