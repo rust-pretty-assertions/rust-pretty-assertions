@@ -51,7 +51,7 @@ jobs:
         rust:
           - stable
           - beta
-          - 1.54.0
+          - 1.56
         experimental:
           - false
         # Run a canary test on nightly that's allowed to fail

@@ -83,7 +83,6 @@ use pretty_assertions::{assert_eq, assert_ne};
   a diff.
 - Under Windows, the terminal state is modified to properly handle VT100
   escape sequences, which may break display for certain use cases.
-- The minimum supported rust version (MSRV) is 1.35.0
 
 ### `no_std` support
 
