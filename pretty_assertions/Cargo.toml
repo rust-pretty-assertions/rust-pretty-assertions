@@ -32,8 +32,3 @@ unstable = []
 [dependencies]
 yansi = "0.5"
 diff = "0.1.12"
-
-[target.'cfg(windows)'.dependencies]
-output_vt100 = "0.1.2"
-ctor = "0.1.9"
-

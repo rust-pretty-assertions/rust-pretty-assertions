@@ -84,14 +84,6 @@ use core::fmt::{self, Debug, Display};
 
 mod printer;
 
-#[cfg(windows)]
-use ctor::*;
-#[cfg(windows)]
-#[ctor]
-fn init() {
-    output_vt100::try_init().ok(); // Do not panic on fail
-}
-
 /// A comparison of two values.
 ///
 /// Where both values implement `Debug`, the comparison can be displayed as a pretty diff.
