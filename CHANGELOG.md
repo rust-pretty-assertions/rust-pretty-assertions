@@ -1,5 +1,15 @@
 # Unreleased
 
+# v1.4.0
+
+## Changed
+
+- (Windows only) Removed the `ctor` and `output_vt100` dependencies, as their benefit could not be demonstrated ([#118](https://github.com/rust-pretty-assertions/rust-pretty-assertions/pull/118))
+
+## Fixed
+
+- Minor documentation fixes ([#107](https://github.com/rust-pretty-assertions/rust-pretty-assertions/pull/107))
+
 # v1.3.0
 
 ## Changed
