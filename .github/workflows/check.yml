@@ -47,7 +47,7 @@ jobs:
       matrix:
         os:
           - ubuntu-22.04
-          - windows-2019
+          - windows-2022
         rust:
           - stable
           - beta
