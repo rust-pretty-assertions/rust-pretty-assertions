@@ -30,5 +30,5 @@ alloc = []
 unstable = []
 
 [dependencies]
-yansi = "0.5"
+yansi = "1.0.0-rc.1"
 diff = "0.1.12"

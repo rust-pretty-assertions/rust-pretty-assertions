@@ -47,11 +47,11 @@ jobs:
       matrix:
         os:
           - ubuntu-22.04
-          - windows-2019
+          - windows-2022
         rust:
           - stable
           - beta
-          - 1.54.0
+          - 1.63.0
         experimental:
           - false
         # Run a canary test on nightly that's allowed to fail

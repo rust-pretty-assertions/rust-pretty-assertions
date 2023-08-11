@@ -1,14 +1,12 @@
 #[cfg(feature = "alloc")]
 use alloc::format;
 use core::fmt;
-use yansi::{
-    Color::{Fixed, Green, Red, Unset},
-    Style,
-};
+use yansi::Color::{Green, Red};
+use yansi::{Paint, Style};
 
 macro_rules! paint {
-    ($f:expr, $colour:expr, $fmt:expr, $($args:tt)*) => (
-        write!($f, "{}", $colour.paint(format!($fmt, $($args)*)))
+    ($f:expr, $style:expr, $fmt:expr, $($args:tt)*) => (
+        write!($f, "{}", format!($fmt, $($args)*).paint($style))
     )
 }
 
@@ -19,10 +17,12 @@ const SIGN_LEFT: char = '<'; // - < ←
 pub(crate) fn write_header(f: &mut fmt::Formatter) -> fmt::Result {
     writeln!(
         f,
-        "{} {} / {} :",
-        Style::new(Unset).bold().paint("Diff"),
-        Red.paint(format!("{} left", SIGN_LEFT)),
-        Green.paint(format!("right {}", SIGN_RIGHT))
+        "{} {} {} / {} {} :",
+        "Diff".bold(),
+        SIGN_LEFT.red().linger(),
+        "left".clear(),
+        "right".green().linger(),
+        SIGN_RIGHT.clear(),
     )
 }
 
@@ -139,13 +139,14 @@ where
     fn new(f: &'a mut Writer) -> Self {
         InlineWriter {
             f,
-            style: Style::new(Unset),
+            style: Style::new(),
         }
     }
 
     /// Push a new character into the buffer, specifying the style it should be written in.
-    fn write_with_style(&mut self, c: &char, style: Style) -> fmt::Result {
+    fn write_with_style<T: Into<Style>>(&mut self, c: &char, style: T) -> fmt::Result {
         // If the style is the same as previously, just write character
+        let style = style.into();
         if style == self.style {
             write!(self.f, "{}", c)?;
         } else {
@@ -165,7 +166,7 @@ where
         // Close out previous style
         self.style.fmt_suffix(self.f)?;
         writeln!(self.f)?;
-        self.style = Style::new(Unset);
+        self.style = Style::new();
         Ok(())
     }
 }
@@ -180,8 +181,8 @@ fn write_inline_diff<TWrite: fmt::Write>(f: &mut TWrite, left: &str, right: &str
     let mut writer = InlineWriter::new(f);
 
     // Print the left string on one line, with differences highlighted
-    let light = Style::new(Red);
-    let heavy = Style::new(Red).bg(Fixed(52)).bold();
+    let light = Red;
+    let heavy = Red.on_fixed(52).bold();
     writer.write_with_style(&SIGN_LEFT, light)?;
     for change in diff.iter() {
         match change {
@@ -193,8 +194,8 @@ fn write_inline_diff<TWrite: fmt::Write>(f: &mut TWrite, left: &str, right: &str
     writer.finish()?;
 
     // Print the right string on one line, with differences highlighted
-    let light = Style::new(Green);
-    let heavy = Style::new(Green).bg(Fixed(22)).bold();
+    let light = Green;
+    let heavy = Green.on_fixed(22).bold();
     writer.write_with_style(&SIGN_RIGHT, light)?;
     for change in diff.iter() {
         match change {
