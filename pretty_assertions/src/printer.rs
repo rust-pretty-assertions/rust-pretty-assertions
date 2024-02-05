@@ -4,9 +4,27 @@ use core::fmt;
 use yansi::Color::{Green, Red};
 use yansi::{Paint, Style};
 
+#[cfg(not(feature = "detect-terminal"))]
+fn should_apply_color() -> bool {
+    true
+}
+
+#[cfg(feature = "detect-terminal")]
+fn should_apply_color() -> bool {
+    use std::io::IsTerminal;
+    use std::sync::OnceLock;
+    static IS_STDERR_TERMINAL: OnceLock<bool> = OnceLock::new();
+
+    *IS_STDERR_TERMINAL.get_or_init(|| std::io::stderr().is_terminal())
+}
+
 macro_rules! paint {
     ($f:expr, $style:expr, $fmt:expr, $($args:tt)*) => (
-        write!($f, "{}", format!($fmt, $($args)*).paint($style))
+        if should_apply_color() {
+            write!($f, "{}", format!($fmt, $($args)*).paint($style))
+        } else{
+            write!($f, "{}", format!($fmt, $($args)*))
+        }
     )
 }
 
@@ -14,16 +32,25 @@ const SIGN_RIGHT: char = '>'; // + > →
 const SIGN_LEFT: char = '<'; // - < ←
 
 /// Present the diff output for two mutliline strings in a pretty, colorised manner.
+#[allow(clippy::write_literal)]
 pub(crate) fn write_header(f: &mut fmt::Formatter) -> fmt::Result {
-    writeln!(
-        f,
-        "{} {} {} / {} {} :",
-        "Diff".bold(),
-        SIGN_LEFT.red().linger(),
-        "left".clear(),
-        "right".green().linger(),
-        SIGN_RIGHT.clear(),
-    )
+    if should_apply_color() {
+        writeln!(
+            f,
+            "{} {} {} / {} {} :",
+            "Diff".bold(),
+            SIGN_LEFT.red().linger(),
+            "left".clear(),
+            "right".green().linger(),
+            SIGN_RIGHT.clear(),
+        )
+    } else {
+        writeln!(
+            f,
+            "{} {} {} / {} {} :",
+            "", SIGN_LEFT, "left", "right", SIGN_RIGHT,
+        )
+    }
 }
 
 /// Delay formatting this deleted chunk until later.
@@ -147,7 +174,7 @@ where
     fn write_with_style<T: Into<Style>>(&mut self, c: &char, style: T) -> fmt::Result {
         // If the style is the same as previously, just write character
         let style = style.into();
-        if style == self.style {
+        if style == self.style || !should_apply_color() {
             write!(self.f, "{}", c)?;
         } else {
             // Close out previous style
