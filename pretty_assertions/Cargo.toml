@@ -17,6 +17,9 @@ categories = ["development-tools"]
 keywords = ["assert", "diff", "pretty", "color"]
 readme = "README.md"
 
+[package.metadata.docs.rs]
+all-features = true
+
 [features]
 default = ["std"]
 
