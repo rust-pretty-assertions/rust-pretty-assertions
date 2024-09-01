@@ -20,9 +20,9 @@ pub(crate) fn write_header(f: &mut fmt::Formatter) -> fmt::Result {
         "{} {} {} / {} {} :",
         "Diff".bold(),
         SIGN_LEFT.red().linger(),
-        "left".clear(),
+        "left".resetting(),
         "right".green().linger(),
-        SIGN_RIGHT.clear(),
+        SIGN_RIGHT.resetting(),
     )
 }
 
