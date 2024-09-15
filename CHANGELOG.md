@@ -1,5 +1,15 @@
 # Unreleased
 
+# v1.4.1
+
+## Fixed
+
+- Show feature-flagged code in documentation. Thanks to [@sandydoo](https://github.com/sandydoo) for the fix! ([#130](https://github.com/rust-pretty-assertions/rust-pretty-assertions/pull/130))
+
+## Internal
+
+- Bump `yansi` version to `1.x`. Thanks to [@SergioBenitez](https://github.com/SergioBenitez) for the update, and maintaining this library! ([#121](https://github.com/rust-pretty-assertions/rust-pretty-assertions/pull/121))
+
 # v1.4.0
 
 ## Changed
