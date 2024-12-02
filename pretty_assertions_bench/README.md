@@ -25,7 +25,7 @@ cargo bench
 xdg-open target/criterion/report/index.html
 ```
 
-You may like to save a stable branch banchmark under a name, to compare other branches to:
+You may like to save a stable branch benchmark under a name, to compare other branches to:
 
 ```bash
 git checkout main
