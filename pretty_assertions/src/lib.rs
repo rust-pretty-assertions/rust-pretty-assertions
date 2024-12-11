@@ -117,7 +117,7 @@ where
     }
 }
 
-impl<'a, TLeft, TRight> Display for Comparison<'a, TLeft, TRight>
+impl<TLeft, TRight> Display for Comparison<'_, TLeft, TRight>
 where
     TLeft: Debug + ?Sized,
     TRight: Debug + ?Sized,
@@ -191,7 +191,7 @@ where
     }
 }
 
-impl<'a, TLeft, TRight> Display for StrComparison<'a, TLeft, TRight>
+impl<TLeft, TRight> Display for StrComparison<'_, TLeft, TRight>
 where
     TLeft: AsRef<str> + ?Sized,
     TRight: AsRef<str> + ?Sized,
