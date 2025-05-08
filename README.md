@@ -72,6 +72,16 @@ Also add `#[cfg(test)]` to your `use` statements, like this:
 use pretty_assertions::{assert_eq, assert_ne};
 ```
 
+If you want to enforce usage of `pretty_assertions` macros over `std`, add the following to `clippy.toml`:
+
+```rs
+disallowed-macros = [
+  { path = "std::assert_ne", reason = "use `pretty_assertions::assert_ne` instead" },
+  { path = "std::assert_eq", reason = "use `pretty_assertions::assert_eq` instead" },
+  { path = "std::assert_matches", reason = "use `pretty_assertions::assert_matches` instead" },
+]
+```
+
 ## Notes
 
 - Since `Rust 2018` edition, you need to declare
