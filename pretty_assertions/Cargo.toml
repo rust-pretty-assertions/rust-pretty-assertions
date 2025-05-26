@@ -31,6 +31,8 @@ std = []
 alloc = []
 # Enable unstable features. Requires nightly rustc.
 unstable = []
+# Enable pretty assertions only when RUST_PRETTY_ASSERTIONS=1.
+enable-via-env = ["std"]
 
 [dependencies]
 yansi = "1.0.1"
