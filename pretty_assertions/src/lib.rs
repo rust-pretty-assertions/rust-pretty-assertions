@@ -202,6 +202,18 @@ where
     }
 }
 
+/// Returns true if pretty-assertions is enabled.
+#[cfg(feature = "enable-via-env")]
+pub fn pretty_assertions_enabled() -> bool {
+    matches!(::std::env::var("RUST_PRETTY_ASSERTIONS"), Ok(var) if var.trim() == "1")
+}
+
+/// Returns true if pretty-assertions is enabled.
+#[cfg(not(feature = "enable-via-env"))]
+pub fn pretty_assertions_enabled() -> bool {
+    true
+}
+
 /// Asserts that two expressions are equal to each other (using [`PartialEq`]).
 ///
 /// On panic, this macro will print a diff derived from [`Debug`] representation of
@@ -230,20 +242,24 @@ macro_rules! assert_eq {
         $crate::assert_eq!(@ $left, $right, ": ", $($arg)+);
     });
     (@ $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)*) => ({
-        match (&($left), &($right)) {
-            (left_val, right_val) => {
-                if !(*left_val == *right_val) {
-                    use $crate::private::CreateComparison;
-                    ::core::panic!("assertion failed: `(left == right)`{}{}\
-                       \n\
-                       \n{}\
-                       \n",
-                       $maybe_colon,
-                       format_args!($($arg)*),
-                       (left_val, right_val).create_comparison()
-                    )
+        if $crate::pretty_assertions_enabled() {
+            match (&($left), &($right)) {
+                (left_val, right_val) => {
+                    if !(*left_val == *right_val) {
+                        use $crate::private::CreateComparison;
+                        ::core::panic!("assertion failed: `(left == right)`{}{}\
+                           \n\
+                           \n{}\
+                           \n",
+                           $maybe_colon,
+                           format_args!($($arg)*),
+                           (left_val, right_val).create_comparison()
+                        )
+                    }
                 }
             }
+        } else {
+            ::core::assert_eq!($left, $right, $($arg)*)
         }
     });
 }
@@ -321,21 +337,25 @@ macro_rules! assert_ne {
         $crate::assert_ne!(@ $left, $right, ": ", $($arg)+);
     });
     (@ $left:expr, $right:expr, $maybe_colon:expr, $($arg:tt)+) => ({
-        match (&($left), &($right)) {
-            (left_val, right_val) => {
-                if *left_val == *right_val {
-                    ::core::panic!("assertion failed: `(left != right)`{}{}\
-                        \n\
-                        \nBoth sides:\
-                        \n{:#?}\
-                        \n\
-                        \n",
-                        $maybe_colon,
-                        format_args!($($arg)+),
-                        left_val
-                    )
+        if $crate::pretty_assertions_enabled() {
+            match (&($left), &($right)) {
+                (left_val, right_val) => {
+                    if *left_val == *right_val {
+                        ::core::panic!("assertion failed: `(left != right)`{}{}\
+                            \n\
+                            \nBoth sides:\
+                            \n{:#?}\
+                            \n\
+                            \n",
+                            $maybe_colon,
+                            format_args!($($arg)+),
+                            left_val
+                        )
+                    }
                 }
             }
+        } else {
+            ::core::assert_ne!($left, $right, $($arg)*)
         }
     });
 }

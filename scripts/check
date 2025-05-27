@@ -21,11 +21,17 @@ eprintln "Running tests (default)"
 cargo test
 eprintln "Running tests (alloc)"
 cargo test --no-default-features --features alloc
+eprintln "Running tests (enable-via-env)"
+RUST_PRETTY_ASSERTIONS=1 cargo test --features enable-via-env
+cargo test --features enable-via-env -- --ignored
 
 eprintln "Running tests (nightly) (unstable)"
 cargo +nightly test --features unstable
 eprintln "Running tests (nightly) (alloc, unstable)"
 cargo +nightly test --no-default-features --features alloc --features unstable
+eprintln "Running tests (enable-via-env, unstable)"
+RUST_PRETTY_ASSERTIONS=1 cargo test --features enable-via-env --features unstable
+cargo +nightly test --features enable-via-env --features unstable -- --ignored
 
 popd
 
