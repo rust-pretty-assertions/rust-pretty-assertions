@@ -78,7 +78,7 @@ If you want to enforce usage of `pretty_assertions` macros over `std`, add the f
 disallowed-macros = [
   { path = "std::assert_ne", reason = "use `pretty_assertions::assert_ne` instead" },
   { path = "std::assert_eq", reason = "use `pretty_assertions::assert_eq` instead" },
-  { path = "std::assert_matches", reason = "use `pretty_assertions::assert_matches` instead" },
+  { path = "std::assert_matches::assert_matches", reason = "use `pretty_assertions::assert_matches` instead" },
 ]
 ```
 
