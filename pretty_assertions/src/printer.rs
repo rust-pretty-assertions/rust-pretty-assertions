@@ -77,7 +77,7 @@ impl<'a> LatentDeletion<'a> {
 // https://github.com/johannhof/difference.rs/blob/c5749ad7d82aa3d480c15cb61af9f6baa08f116f/examples/github-style.rs
 // Credits johannhof (MIT License)
 
-/// Present the diff output for two mutliline strings in a pretty, colorised manner.
+/// Present the diff output for two multiline strings in a pretty, colorised manner.
 pub(crate) fn write_lines<TWrite: fmt::Write>(
     f: &mut TWrite,
     left: &str,
@@ -121,6 +121,20 @@ pub(crate) fn write_lines<TWrite: fmt::Write>(
 
     previous_deletion.flush(f)?;
     Ok(())
+}
+
+/// Present the diff output for two multiline strings by debug output.
+pub(crate) fn write_lines_debug_output_fallback<TWrite: fmt::Write>(
+    f: &mut TWrite,
+    left: &str,
+    right: &str,
+) -> fmt::Result {
+    writeln!(
+        f,
+        r#" left: `{:?}`,
+right: `{:?}`"#,
+        left, right,
+    )
 }
 
 /// Group character styling for an inline diff, to prevent wrapping each single
@@ -248,6 +262,22 @@ mod test {
             left, right, actual, expected
         );
         assert_eq!(actual, expected);
+    }
+
+    /// Test diffing newlines from different conventions.
+    ///
+    /// See: https://github.com/colin-kiegel/rust-pretty-assertions/issues/100
+    #[test]
+    fn different_newlines() {
+        // The below inputs caused an output with no visible diff
+        let left = "Foo\r\n";
+        let right = "Foo\n";
+        let expected = r#" left: `"Foo\r\n"`,
+right: `"Foo\n"`
+"#
+        .to_string();
+
+        check_printer(write_lines_debug_output_fallback, left, right, &expected);
     }
 
     #[test]

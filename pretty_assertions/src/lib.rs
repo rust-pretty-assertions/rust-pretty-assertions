@@ -197,8 +197,22 @@ where
     TRight: AsRef<str> + ?Sized,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        printer::write_header(f)?;
-        printer::write_lines(f, self.left.as_ref(), self.right.as_ref())
+        let left = self.left.as_ref();
+        let right = self.right.as_ref();
+        if left != right
+            && ::diff::lines(left, right)
+                .iter()
+                .all(|result| matches!(result, ::diff::Result::Both(..)))
+        {
+            // If left and right are not the same and all changes are both, then we cannot print good diff.
+            // We should print the warning here and fallback to the debug output.
+            writeln!(f, "Warning: values were different, but no line diff was generated. It seems like these values only differ in line endings - falling back to debug output:")?;
+            printer::write_header(f)?;
+            printer::write_lines_debug_output_fallback(f, left, right)
+        } else {
+            printer::write_header(f)?;
+            printer::write_lines(f, left, right)
+        }
     }
 }
 
