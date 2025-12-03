@@ -390,3 +390,51 @@ mod assert_matches {
         ::pretty_assertions::assert_matches!(666, 999, "custom panic message",);
     }
 }
+
+/// Tests for cases where pretty-assertions is disabled.
+///
+/// These test cases are ignored by default as they have to be run with
+/// RUST_PRETTY_ASSERTIONS != "1" to disable pretty-assertions. We cannot easily
+/// modify environment variables within tests as this could cause side effects
+/// in other tests because `cargo test` is running them in multiple threads
+/// within one process,
+#[cfg(feature = "enable-via-env")]
+mod disabled_via_env {
+    use ::std::string::ToString;
+
+    #[test]
+    #[ignore]
+    #[should_panic(expected = "assertion `left == right` failed: \n  \
+                               left: \"foo\\nbar\"\n right: \"foo\\nbaz\"")]
+    fn uses_core_assert_eq() {
+        ::pretty_assertions::assert_eq!("foo\nbar".to_string(), "foo\nbaz".to_string());
+    }
+
+    #[test]
+    #[ignore]
+    #[should_panic(expected = "assertion `left == right` failed: \
+                               1 + 2 = 5\n  left: 3\n right: 5")]
+    fn uses_core_assert_eq_with_message() {
+        let a = 1;
+        let b = 2;
+        ::pretty_assertions::assert_eq!(a + b, 5, "{} + {} = 5", a, b);
+    }
+
+    #[test]
+    #[ignore]
+    #[should_panic(expected = "assertion `left != right` failed: \n  \
+                               left: \"foo\\nbar\"\n right: \"foo\\nbar\"")]
+    fn uses_core_assert_ne() {
+        ::pretty_assertions::assert_ne!("foo\nbar".to_string(), "foo\nbar".to_string());
+    }
+
+    #[test]
+    #[ignore]
+    #[should_panic(expected = "assertion `left != right` failed: \
+                               1 + 2 != 3\n  left: 3\n right: 3")]
+    fn uses_core_assert_ne_with_message() {
+        let a = 1;
+        let b = 2;
+        ::pretty_assertions::assert_ne!(a + b, 3, "{} + {} != 3", a, b);
+    }
+}
