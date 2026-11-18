@@ -25,13 +25,12 @@ default = ["std"]
 
 # Use the Rust standard library.
 # Exactly one of `std` and `alloc` is required.
-std = []
+std = ["yansi/std"]
 # Use the `alloc` crate.
 # Exactly one of `std` and `alloc` is required.
-alloc = []
+alloc = ["yansi/alloc"]
 # Enable unstable features. Requires nightly rustc.
 unstable = []
 
 [dependencies]
-yansi = "1.0.1"
-diff = "0.1.12"
+yansi = { version = "1.0.1", default-features = false }
