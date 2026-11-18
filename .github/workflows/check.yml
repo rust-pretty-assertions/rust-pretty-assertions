@@ -33,8 +33,11 @@ jobs:
         with:
           toolchain: stable
           components: clippy, rustfmt
+          targets: thumbv7em-none-eabi
       - name: Run check script
         run: ./scripts/check
+      - name: Check alloc-only build on a bare-metal target
+        run: cargo check --package pretty_assertions --lib --no-default-features --features alloc --target thumbv7em-none-eabi
 
   # Test on all supported platforms
   test:

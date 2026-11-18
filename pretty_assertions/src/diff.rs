@@ -1,6 +1,10 @@
-// Adapted from:
-// https://github.com/utkarshkukreti/diff.rs/blob/d362d6fb2ddab31fbbfeeccce8f6fb68f3f48c0f/src/lib.rs
-// Credits Utkarsh Kukreti (MIT OR Apache-2.0 License)
+// SPDX-License-Identifier: MIT OR Apache-2.0
+// Copyright (c) 2015 Utkarsh Kukreti
+// See LICENSE-DIFF-MIT and LICENSE-APACHE in the package root.
+//
+// Adapted from diff 0.1.13 to support alloc-only builds and keep only the
+// line and character diff APIs used by pretty_assertions.
+// https://github.com/utkarshkukreti/diff.rs/blob/0d0e68b2d462a7a55902be6b77e370e51b17fa0e/src/lib.rs
 
 #[cfg(all(feature = "alloc", not(feature = "std")))]
 use alloc::vec;
