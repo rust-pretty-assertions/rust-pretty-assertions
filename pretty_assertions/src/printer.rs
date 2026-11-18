@@ -83,7 +83,7 @@ pub(crate) fn write_lines<TWrite: fmt::Write>(
     left: &str,
     right: &str,
 ) -> fmt::Result {
-    let diff = ::diff::lines(left, right);
+    let diff = crate::diff::lines(left, right);
 
     let mut changes = diff.into_iter().peekable();
     let mut previous_deletion = LatentDeletion::default();
@@ -91,23 +91,23 @@ pub(crate) fn write_lines<TWrite: fmt::Write>(
     while let Some(change) = changes.next() {
         match (change, changes.peek()) {
             // If the text is unchanged, just print it plain
-            (::diff::Result::Both(value, _), _) => {
+            (crate::diff::Result::Both(value, _), _) => {
                 previous_deletion.flush(f)?;
                 writeln!(f, " {}", value)?;
             }
             // Defer any deletions to next loop
-            (::diff::Result::Left(deleted), _) => {
+            (crate::diff::Result::Left(deleted), _) => {
                 previous_deletion.flush(f)?;
                 previous_deletion.set(deleted);
             }
             // If we're being followed by more insertions, don't inline diff
-            (::diff::Result::Right(inserted), Some(::diff::Result::Right(_))) => {
+            (crate::diff::Result::Right(inserted), Some(crate::diff::Result::Right(_))) => {
                 previous_deletion.flush(f)?;
                 paint!(f, Green, "{}{}", SIGN_RIGHT, inserted)?;
                 writeln!(f)?;
             }
             // Otherwise, check if we need to inline diff with the previous line (if it was a deletion)
-            (::diff::Result::Right(inserted), _) => {
+            (crate::diff::Result::Right(inserted), _) => {
                 if let Some(deleted) = previous_deletion.take() {
                     write_inline_diff(f, deleted, inserted)?;
                 } else {
@@ -177,7 +177,7 @@ where
 ///
 /// The output of this function will be two lines, each with a trailing newline.
 fn write_inline_diff<TWrite: fmt::Write>(f: &mut TWrite, left: &str, right: &str) -> fmt::Result {
-    let diff = ::diff::chars(left, right);
+    let diff = crate::diff::chars(left, right);
     let mut writer = InlineWriter::new(f);
 
     // Print the left string on one line, with differences highlighted
@@ -186,8 +186,8 @@ fn write_inline_diff<TWrite: fmt::Write>(f: &mut TWrite, left: &str, right: &str
     writer.write_with_style(&SIGN_LEFT, light)?;
     for change in diff.iter() {
         match change {
-            ::diff::Result::Both(value, _) => writer.write_with_style(value, light)?,
-            ::diff::Result::Left(value) => writer.write_with_style(value, heavy)?,
+            crate::diff::Result::Both(value, _) => writer.write_with_style(value, light)?,
+            crate::diff::Result::Left(value) => writer.write_with_style(value, heavy)?,
             _ => (),
         }
     }
@@ -199,8 +199,8 @@ fn write_inline_diff<TWrite: fmt::Write>(f: &mut TWrite, left: &str, right: &str
     writer.write_with_style(&SIGN_RIGHT, light)?;
     for change in diff.iter() {
         match change {
-            ::diff::Result::Both(value, _) => writer.write_with_style(value, light)?,
-            ::diff::Result::Right(value) => writer.write_with_style(value, heavy)?,
+            crate::diff::Result::Both(value, _) => writer.write_with_style(value, light)?,
+            crate::diff::Result::Right(value) => writer.write_with_style(value, heavy)?,
             _ => (),
         }
     }

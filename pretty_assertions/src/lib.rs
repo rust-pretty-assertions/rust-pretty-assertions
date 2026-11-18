@@ -82,6 +82,7 @@
 extern crate alloc;
 use core::fmt::{self, Debug, Display};
 
+mod diff;
 mod printer;
 
 /// A comparison of two values.
